@@ -6,6 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E24D4C502D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */; };
+		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
+		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
+		E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C892D3C260400C9ABA5 /* .gitignore */; };
+		E24D4C922D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */; };
+		E24D4C932D3CF57E00C9ABA5 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */; };
+		E24D4C942D3CF57E00C9ABA5 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */; };
+		E24D4C952D3CF57E00C9ABA5 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */; };
+		E24D4CA62D3F841C00C9ABA5 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E264F46B2CFA437F002ED763 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -23,7 +35,27 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		E24D4C7B2D3BD03C00C9ABA5 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hakgyoansim-Dunggeunmiso-R.otf"; sourceTree = "<group>"; };
+		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
+		E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
+		E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
+		E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
+		E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F4742CFA437F002ED763 /* Roll-PeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -65,6 +97,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */,
+				E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +119,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E24D4C4F2D3A2BA900C9ABA5 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */,
+				E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */,
+				E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */,
+				E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */,
+				E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */,
+				E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		E24D4C612D3BD03C00C9ABA5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		E264F44B2CFA437D002ED763 = {
 			isa = PBXGroup;
 			children = (
+				E24D4C892D3C260400C9ABA5 /* .gitignore */,
+				E24D4C4F2D3A2BA900C9ABA5 /* Fonts */,
 				E264F4562CFA437D002ED763 /* Roll-Pe */,
 				E264F46D2CFA437F002ED763 /* Roll-PeTests */,
 				E264F4772CFA437F002ED763 /* Roll-PeUITests */,
+				E24D4C612D3BD03C00C9ABA5 /* Frameworks */,
 				E264F4552CFA437D002ED763 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -115,6 +172,7 @@
 				E264F4502CFA437D002ED763 /* Sources */,
 				E264F4512CFA437D002ED763 /* Frameworks */,
 				E264F4522CFA437D002ED763 /* Resources */,
+				E24D4C7B2D3BD03C00C9ABA5 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -125,6 +183,8 @@
 			);
 			name = "Roll-Pe";
 			packageProductDependencies = (
+				E24D4C7D2D3BD52300C9ABA5 /* RxSwift */,
+				E24D4C852D3BD54400C9ABA5 /* SnapKit */,
 			);
 			productName = "Roll-Pe";
 			productReference = E264F4542CFA437D002ED763 /* Roll-Pe.app */;
@@ -200,14 +260,18 @@
 				};
 			};
 			buildConfigurationList = E264F44F2CFA437D002ED763 /* Build configuration list for PBXProject "Roll-Pe" */;
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				ko,
 			);
 			mainGroup = E264F44B2CFA437D002ED763;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E24D4C7C2D3BD52300C9ABA5 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				E24D4C842D3BD54400C9ABA5 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E264F4552CFA437D002ED763 /* Products */;
 			projectDirPath = "";
@@ -225,6 +289,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E24D4CA62D3F841C00C9ABA5 /* LICENSE.txt in Resources */,
+				E24D4C922D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf in Resources */,
+				E24D4C932D3CF57E00C9ABA5 /* Pretendard-Regular.otf in Resources */,
+				E24D4C942D3CF57E00C9ABA5 /* Pretendard-Bold.otf in Resources */,
+				E24D4C952D3CF57E00C9ABA5 /* Pretendard-Medium.otf in Resources */,
+				E24D4C502D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */,
+				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,21 +363,28 @@
 				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.hugesilver.Roll-Pe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -320,21 +398,28 @@
 				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.hugesilver.Roll-Pe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -343,6 +428,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -390,7 +476,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -406,6 +492,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -447,7 +534,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -569,6 +656,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E24D4C7C2D3BD52300C9ABA5 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.8.0;
+			};
+		};
+		E24D4C842D3BD54400C9ABA5 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E24D4C7D2D3BD52300C9ABA5 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E24D4C7C2D3BD52300C9ABA5 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		E24D4C852D3BD54400C9ABA5 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E24D4C842D3BD54400C9ABA5 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E264F44C2CFA437D002ED763 /* Project object */;
 }
