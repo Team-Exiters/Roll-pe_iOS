@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E24D4C502D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */; };
+		8B52E8BB2D40E9220090AFFF /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B52E8B62D40E9220090AFFF /* Hakgyoansim-Dunggeunmiso-R.otf */; };
+		8B52E8BC2D40E9220090AFFF /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B52E8B72D40E9220090AFFF /* Pretendard-Bold.otf */; };
+		8B52E8BD2D40E9220090AFFF /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B52E8B92D40E9220090AFFF /* Pretendard-Regular.otf */; };
+		8B52E8BE2D40E9220090AFFF /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B52E8BA2D40E9220090AFFF /* Pretendard-SemiBold.otf */; };
+		8B52E8BF2D40E9220090AFFF /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B52E8B82D40E9220090AFFF /* Pretendard-Medium.otf */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
 		E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C892D3C260400C9ABA5 /* .gitignore */; };
-		E24D4C922D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */; };
-		E24D4C932D3CF57E00C9ABA5 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */; };
-		E24D4C942D3CF57E00C9ABA5 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */; };
-		E24D4C952D3CF57E00C9ABA5 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */; };
 		E24D4CA62D3F841C00C9ABA5 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */; };
 /* End PBXBuildFile section */
 
@@ -49,12 +49,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hakgyoansim-Dunggeunmiso-R.otf"; sourceTree = "<group>"; };
+		8B52E8B62D40E9220090AFFF /* Hakgyoansim-Dunggeunmiso-R.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hakgyoansim-Dunggeunmiso-R.otf"; sourceTree = "<group>"; };
+		8B52E8B72D40E9220090AFFF /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
+		8B52E8B82D40E9220090AFFF /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
+		8B52E8B92D40E9220090AFFF /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
+		8B52E8BA2D40E9220090AFFF /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,12 +122,12 @@
 		E24D4C4F2D3A2BA900C9ABA5 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				8B52E8B62D40E9220090AFFF /* Hakgyoansim-Dunggeunmiso-R.otf */,
+				8B52E8B72D40E9220090AFFF /* Pretendard-Bold.otf */,
+				8B52E8B82D40E9220090AFFF /* Pretendard-Medium.otf */,
+				8B52E8B92D40E9220090AFFF /* Pretendard-Regular.otf */,
+				8B52E8BA2D40E9220090AFFF /* Pretendard-SemiBold.otf */,
 				E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */,
-				E24D4C8E2D3CF57E00C9ABA5 /* Pretendard-Bold.otf */,
-				E24D4C8F2D3CF57E00C9ABA5 /* Pretendard-Medium.otf */,
-				E24D4C902D3CF57E00C9ABA5 /* Pretendard-Regular.otf */,
-				E24D4C912D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf */,
-				E24D4C4E2D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -290,12 +290,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E24D4CA62D3F841C00C9ABA5 /* LICENSE.txt in Resources */,
-				E24D4C922D3CF57E00C9ABA5 /* Pretendard-SemiBold.otf in Resources */,
-				E24D4C932D3CF57E00C9ABA5 /* Pretendard-Regular.otf in Resources */,
-				E24D4C942D3CF57E00C9ABA5 /* Pretendard-Bold.otf in Resources */,
-				E24D4C952D3CF57E00C9ABA5 /* Pretendard-Medium.otf in Resources */,
-				E24D4C502D3A2BA900C9ABA5 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */,
 				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
+				8B52E8BB2D40E9220090AFFF /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */,
+				8B52E8BC2D40E9220090AFFF /* Pretendard-Bold.otf in Resources */,
+				8B52E8BD2D40E9220090AFFF /* Pretendard-Regular.otf in Resources */,
+				8B52E8BE2D40E9220090AFFF /* Pretendard-SemiBold.otf in Resources */,
+				8B52E8BF2D40E9220090AFFF /* Pretendard-Medium.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

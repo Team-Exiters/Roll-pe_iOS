@@ -75,8 +75,7 @@ class MainTopSecionView: UIView {
         centerView.setCustomSpacing(60, after: title)
         
         // 버튼
-        let button: RollpeButtonPrimary = RollpeButtonPrimary()
-        button.setText("롤페 시작하기")
+        let button: RollpeButtonPrimary = RollpeButtonPrimary(title: "롤페 시작하기")
         
         centerView.addArrangedSubview(button)
         

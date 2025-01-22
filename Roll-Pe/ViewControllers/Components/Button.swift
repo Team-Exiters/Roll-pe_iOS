@@ -8,56 +8,32 @@
 import UIKit
 import SnapKit
 
-class RollpeButtonPrimary: UIView {
-    private let label: UILabel = UILabel()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
+
+
+class RollpeButtonPrimary: UIButton {
+    init(title: String) {
+        super.init(frame: .zero)
+        setupButton(title: title)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        setupButton(title: "")
     }
     
-    private func setup() {
+    private func setupButton(title: String) {
+        self.setTitle(title, for: .normal)
+        self.setTitleColor(.white, for: .normal)
         self.layer.cornerRadius = 8
-        self.backgroundColor = .rollpeMain
         
-        self.translatesAutoresizingMaskIntoConstraints = false
+        self.contentEdgeInsets = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         
-        self.snp.makeConstraints { make in
-            make.width.greaterThanOrEqualTo(0)
-        }
+        self.backgroundColor = UIColor(named: "rollpe_main")
         
-        // 터치 감지
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(buttonTapped))
-        self.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func buttonTapped() {
-    }
-    
-    func setText(_ text: String) {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        
-        let attributedText = NSAttributedString(
-            string: text,
-            attributes: [
-                .font: UIFont(name: "Pretendard-SemiBold", size: 16)!,
-                .foregroundColor: UIColor.rollpePrimary,
-                .paragraphStyle: paragraphStyle
-            ]
-        )
-        
-        label.attributedText = attributedText
-        
-        self.addSubview(label)
-        
-        label.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.verticalEdges.equalToSuperview().inset(12)
+        if let customFont = UIFont(name: "Pretendard-SemiBold", size: 16) {
+            self.titleLabel?.font = customFont
+        } else {
+            self.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         }
     }
 }
