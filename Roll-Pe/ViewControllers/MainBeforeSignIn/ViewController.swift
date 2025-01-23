@@ -7,8 +7,9 @@
 
 import UIKit
 import SnapKit
+import SwiftUI
 
-class MainViewController: UIViewController {
+class MainBeforeSignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -97,3 +98,10 @@ class MainViewController: UIViewController {
     }
 }
 
+struct MainBeforeSignInViewControllerPreview: PreviewProvider {
+    static var previews: some View {
+        UIViewControllerPreview {
+            MainBeforeSignInViewController() // UIKit ViewController 연결
+        }
+    }
+}
