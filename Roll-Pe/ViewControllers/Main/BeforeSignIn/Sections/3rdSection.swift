@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-func Main3rdSection() -> UIView {
+func MainBeforeSignIn3rdSection() -> UIView {
     let view: UIView = UIView()
     
     view.translatesAutoresizingMaskIntoConstraints = false
