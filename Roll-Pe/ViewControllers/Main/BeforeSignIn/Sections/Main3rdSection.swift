@@ -8,15 +8,13 @@
 import UIKit
 import SnapKit
 
-func Main3rdSection() -> UIView {
+func MainBeforeSignIn3rdSection() -> UIView {
     let view: UIView = UIView()
     
-    view.translatesAutoresizingMaskIntoConstraints = false
     view.backgroundColor = .rollpeSectionBackground
     
     let contentView: UIStackView = UIStackView()
     
-    contentView.translatesAutoresizingMaskIntoConstraints = false
     contentView.axis = .vertical
     contentView.spacing = 44
     contentView.alignment = .leading
@@ -44,9 +42,8 @@ func Main3rdSection() -> UIView {
     
     // 이미지
     let imageView: UIImageView = UIImageView()
-    let image: UIImage! = UIImage(named: "img_main_3rd_section")
+    let image: UIImage = .imgMain3RdSection
     imageView.image = image
-    imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFit
     imageView.clipsToBounds = true
     
@@ -54,7 +51,7 @@ func Main3rdSection() -> UIView {
     
     imageView.snp.makeConstraints { make in
         make.width.equalToSuperview()
-        make.height.equalTo(imageView.snp.width).dividedBy(getImageRatio(image: image!))
+        make.height.equalTo(imageView.snp.width).dividedBy(getImageRatio(image: image))
     }
     
     view.snp.makeConstraints { make in

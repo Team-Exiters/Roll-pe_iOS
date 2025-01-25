@@ -7,15 +7,45 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
 let windowScene = scenes.first as? UIWindowScene
 let window = windowScene?.windows.first
+
 let safeareaTop = window?.safeAreaInsets.top ?? 0
 let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
 
 // 이미지 비율 계산
 func getImageRatio(image: UIImage) -> CGFloat {
     return image.size.width / image.size.height
+}
+
+// 키보드 숨기기
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// 미리보기
+struct UIViewControllerPreview: UIViewControllerRepresentable {
+    let viewController: () -> UIViewController
+
+    init(_ viewController: @escaping () -> UIViewController) {
+        self.viewController = viewController
+    }
+
+    func makeUIViewController(context: Context) -> UIViewController {
+        return viewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }

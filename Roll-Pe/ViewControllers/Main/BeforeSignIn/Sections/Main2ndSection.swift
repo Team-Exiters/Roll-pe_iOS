@@ -8,10 +8,9 @@
 import UIKit
 import SnapKit
 
-func Main2ndSection() -> UIView {
+func MainBeforeSignIn2ndSection() -> UIView {
     let view: UIView = UIView()
     
-    view.translatesAutoresizingMaskIntoConstraints = false
     view.backgroundColor = .rollpePrimary
     
     let contentView: UIStackView = UIStackView()
@@ -21,7 +20,6 @@ func Main2ndSection() -> UIView {
     contentView.alignment = .leading
     contentView.backgroundColor = .rollpePrimary
     
-    contentView.isLayoutMarginsRelativeArrangement = true
     contentView.layoutMargins = UIEdgeInsets(top: 44, left: 0, bottom: 52, right: 0)
     
     view.addSubview(contentView)
@@ -44,9 +42,8 @@ func Main2ndSection() -> UIView {
     
     // 이미지
     let imageView: UIImageView = UIImageView()
-    let image: UIImage! = UIImage(named: "img_main_2nd_section")
+    let image: UIImage = .imgMain2NdSection
     imageView.image = image
-    imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFit
     imageView.clipsToBounds = true
     
@@ -54,7 +51,7 @@ func Main2ndSection() -> UIView {
     
     imageView.snp.makeConstraints { make in
         make.width.equalToSuperview()
-        make.height.equalTo(imageView.snp.width).dividedBy(getImageRatio(image: image!))
+        make.height.equalTo(imageView.snp.width).dividedBy(getImageRatio(image: image))
     }
     
     view.snp.makeConstraints { make in

@@ -21,7 +21,6 @@ class MainBeforeSignInViewController: UIViewController {
         
         view.addSubview(scrollView)
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.backgroundColor = .rollpePrimary
         scrollView.bounces = false
         
@@ -32,7 +31,6 @@ class MainBeforeSignInViewController: UIViewController {
         
         // 스크롤 내부 뷰
         let contentView: UIStackView = UIStackView()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.axis = .vertical
         contentView.spacing = 0
         
@@ -47,7 +45,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 상단 섹션
         
-        let mainTopSection = MainTopSecionView()
+        let mainTopSection = MainBeforeSignInTopSecionView()
         
         contentView.addArrangedSubview(mainTopSection)
         
@@ -58,7 +56,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 두번째 섹션
         
-        let main2ndSection = Main2ndSection()
+        let main2ndSection = MainBeforeSignIn2ndSection()
         
         contentView.addArrangedSubview(main2ndSection)
         
@@ -68,7 +66,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 세번째 섹션
         
-        let main3rdSection = Main3rdSection()
+        let main3rdSection = MainBeforeSignIn3rdSection()
         
         contentView.addArrangedSubview(main3rdSection)
         
@@ -78,7 +76,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 네번째 섹션
         
-        let main4thSection = Main4thSection()
+        let main4thSection = MainBeforeSignIn4thSection()
         
         contentView.addArrangedSubview(main4thSection)
         

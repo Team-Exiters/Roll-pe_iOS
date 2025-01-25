@@ -8,29 +8,28 @@
 import UIKit
 import SnapKit
 
-func MainTopSecionView() -> UIView {
+func MainBeforeSignInTopSecionView() -> UIView {
     let view: UIView = UIView()
     view.translatesAutoresizingMaskIntoConstraints = false
     
     // MARK: - 배경 이미지
+    
     let background: UIImageView = UIImageView()
-    background.image = UIImage(named: "img_background")
+    background.image = .imgBackground
     background.contentMode = .scaleAspectFill
     background.clipsToBounds = true
-    background.translatesAutoresizingMaskIntoConstraints = false
     
     view.addSubview(background)
     
     background.snp.makeConstraints { make in
-        make.width.equalToSuperview()
-        make.height.equalToSuperview()
+        make.size.equalToSuperview()
         make.top.equalToSuperview()
         make.horizontalEdges.equalToSuperview()
     }
     
     // MARK: - 중앙 요소
+    
     let centerView: UIStackView = UIStackView()
-    centerView.translatesAutoresizingMaskIntoConstraints = false
     centerView.axis = .vertical
     centerView.spacing = 0
     centerView.alignment = .center
@@ -44,9 +43,8 @@ func MainTopSecionView() -> UIView {
     
     // 로고
     let logo: UIImageView = UIImageView()
-    let logoImage = UIImage(named: "img_logo")
+    let logoImage: UIImage = .imgLogo
     logo.image = logoImage
-    logo.translatesAutoresizingMaskIntoConstraints = false
     logo.contentMode = .scaleAspectFit
     logo.clipsToBounds = true
     
@@ -54,7 +52,7 @@ func MainTopSecionView() -> UIView {
     
     logo.snp.makeConstraints { make in
         make.width.equalToSuperview().multipliedBy(0.427)
-        make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage!))
+        make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage))
     }
     
     centerView.setCustomSpacing(20, after: logo)
@@ -73,8 +71,7 @@ func MainTopSecionView() -> UIView {
     centerView.setCustomSpacing(60, after: title)
     
     // 버튼
-    let button: RollpeButtonPrimary = RollpeButtonPrimary()
-    button.setText("롤페 시작하기")
+    let button = PrimaryButton(title: "롤페 시작하기")
     
     centerView.addArrangedSubview(button)
     
@@ -83,8 +80,8 @@ func MainTopSecionView() -> UIView {
     }
     
     // MARK: - 하단 요소
+    
     let bottomView: UIStackView = UIStackView()
-    bottomView.translatesAutoresizingMaskIntoConstraints = false
     bottomView.axis = .vertical
     bottomView.spacing = 4
     bottomView.alignment = .center
@@ -99,9 +96,8 @@ func MainTopSecionView() -> UIView {
     
     // 아래쪽 화살표
     let arrowDown: UIImageView = UIImageView()
-    let arrowDownImage: UIImage! = UIImage(named: "icon_arrow_down_thin")
+    let arrowDownImage: UIImage = .iconArrowDownThin
     arrowDown.image = arrowDownImage
-    arrowDown.translatesAutoresizingMaskIntoConstraints = false
     arrowDown.contentMode = .scaleAspectFit
     arrowDown.clipsToBounds = true
     arrowDown.tintColor = .rollpeGray
@@ -110,7 +106,7 @@ func MainTopSecionView() -> UIView {
     
     arrowDown.snp.makeConstraints { make in
         make.width.equalTo(15)
-        make.height.equalTo(arrowDown.snp.width).dividedBy(getImageRatio(image: arrowDownImage!))
+        make.height.equalTo(arrowDown.snp.width).dividedBy(getImageRatio(image: arrowDownImage))
     }
     
     // 스크롤 안내 텍스트

@@ -8,15 +8,13 @@
 import UIKit
 import SnapKit
 
-func Main4thSection() -> UIView {
+func MainBeforeSignIn4thSection() -> UIView {
     let view: UIView = UIView()
     
-    view.translatesAutoresizingMaskIntoConstraints = false
     view.backgroundColor = .rollpePrimary
     
     let contentView: UIStackView = UIStackView()
     
-    contentView.translatesAutoresizingMaskIntoConstraints = false
     contentView.axis = .vertical
     contentView.spacing = 44
     contentView.alignment = .leading
@@ -32,10 +30,8 @@ func Main4thSection() -> UIView {
         make.edges.equalToSuperview()
     }
     
-    // MARK: - 제목
+    // 제목
     let titleContainer: UIView = UIView()
-    
-    titleContainer.translatesAutoresizingMaskIntoConstraints = false
     
     contentView.addArrangedSubview(titleContainer)
     
@@ -57,9 +53,8 @@ func Main4thSection() -> UIView {
         make.height.equalTo(title.snp.height)
     }
     
-    // MARK: - 롤페들
+    // 롤페들
     let rollpeScrollView: UIScrollView = UIScrollView()
-    rollpeScrollView.translatesAutoresizingMaskIntoConstraints = false
     rollpeScrollView.isPagingEnabled = true
     
     contentView.addArrangedSubview(rollpeScrollView)
@@ -74,8 +69,6 @@ func Main4thSection() -> UIView {
     rollpes.axis = .horizontal
     rollpes.spacing = 20
     rollpes.alignment = .center
-    
-    rollpes.translatesAutoresizingMaskIntoConstraints = false
     
     rollpeScrollView.addSubview(rollpes)
     

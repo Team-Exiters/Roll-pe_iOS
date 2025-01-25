@@ -17,12 +17,11 @@ func RollpeBlock(image: String, titleText: String) -> UIView {
     
     view.snp.makeConstraints { make in
         make.width.equalTo(170)
-        make.height.equalTo(199)
+        make.height.equalTo(199 - (view.layer.borderWidth * 2))
     }
     
     let contentView: UIStackView = UIStackView()
     
-    contentView.translatesAutoresizingMaskIntoConstraints = false
     contentView.axis = .vertical
     contentView.spacing = 0
     contentView.alignment = .center
@@ -38,10 +37,10 @@ func RollpeBlock(image: String, titleText: String) -> UIView {
     }
     
     // MARK: - 이미지
+    
     let imageView: UIImageView = UIImageView()
     let image: UIImage! = UIImage(named: image)
     imageView.image = image
-    imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFit
     imageView.clipsToBounds = true
     
