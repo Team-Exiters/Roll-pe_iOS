@@ -19,7 +19,7 @@ class RollpeItemView: UIView {
     private let subtitleLabel = UILabel()
     private var theme: String?
     
-    override init(frame: CGRect) {
+    override init(frame: CGRect = .zero) {
         super.init(frame: frame)
         setupView()
     }
@@ -38,12 +38,7 @@ class RollpeItemView: UIView {
         lowerBackgroundView.backgroundColor = .white
         addSubview(lowerBackgroundView)
         
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            dDayLabel.font = font
-        }
-        else{
-            dDayLabel.font = UIFont.systemFont(ofSize: 12)
-        }
+        dDayLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
         dDayLabel.textColor = .white
         dDayLabel.textAlignment = .center
         dDayLabel.backgroundColor = UIColor(named: "rollpe_main")
@@ -55,17 +50,12 @@ class RollpeItemView: UIView {
         imageView.tintColor = .black
         addSubview(imageView)
         
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         titleLabel.textColor = UIColor(named: "rollpe_secondary")
         addSubview(titleLabel)
         
         
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            subtitleLabel.font = font
-        }
-        else{
-            subtitleLabel.font = UIFont.systemFont(ofSize: 12)
-        }
+        subtitleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
         subtitleLabel.textColor = .gray
         addSubview(subtitleLabel)
         
@@ -130,7 +120,7 @@ class RollpeItemView: UIView {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         self.theme = theme
-  
+        
         configureImageView(for: theme)
     }
 }
