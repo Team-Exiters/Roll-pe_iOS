@@ -24,12 +24,21 @@ class SidemenuView: UIView {
     // 메뉴 배경
     private let menuView: UIView = UIView()
     
-    init(menuIndex: Int) {
-        super.init(frame: .zero)
-        
+    init(frame: CGRect = .zero, menuIndex: Int) {
+        super.init(frame: frame)
+        setup(menuIndex: menuIndex)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup(menuIndex: 0)
+    }
+    
+    private func setup(menuIndex: Int) {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         // MARK: - 뒷배경
+        
         background.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: ALPHA).cgColor
         background.isUserInteractionEnabled = true
         
@@ -42,6 +51,7 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 메뉴 배경
+        
         menuView.layer.backgroundColor = UIColor.rollpePrimary.cgColor
         
         menuView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
@@ -59,9 +69,9 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 닫기
+        
         let closeImageView: UIImageView = UIImageView()
-        closeImageView.image = UIImage(named: "icon_x")
-        closeImageView.translatesAutoresizingMaskIntoConstraints = false
+        closeImageView.image = .iconX
         closeImageView.contentMode = .scaleAspectFit
         closeImageView.clipsToBounds = true
         closeImageView.tintColor = .rollpeSecondary
@@ -76,9 +86,9 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 메뉴 뷰
+        
         let contentView: UIStackView = UIStackView()
         
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.axis = .vertical
         contentView.spacing = 0
         contentView.distribution = .equalSpacing
@@ -145,6 +155,7 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 제스쳐
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
         background.addGestureRecognizer(tapGesture)
         closeImageView.addGestureRecognizer(tapGesture)
@@ -153,16 +164,14 @@ class SidemenuView: UIView {
         menuView.addGestureRecognizer(panGesture)
     }
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
     // MARK: - 탭 제스쳐
+    
     @objc private func handleTapGesture() {
         closeMenu()
     }
     
     // MARK: - 드래그 제스쳐
+    
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
         // 제스처의 이동 거리
         let translation = gesture.translation(in: self)
@@ -193,6 +202,7 @@ class SidemenuView: UIView {
     }
     
     // MARK: - 메뉴 닫기
+    
     func closeMenu() {
         UIView.animate(withDuration: ANIMATION_DURATION, animations: {
             self.background.alpha = 0
@@ -206,6 +216,7 @@ class SidemenuView: UIView {
     }
     
     // MARK: - 메뉴 펼치기
+    
     func showMenu() {
         self.background.alpha = 0
         self.menuView.transform = CGAffineTransform(translationX: self.MENU_VIEW_WIDTH, y: 0)

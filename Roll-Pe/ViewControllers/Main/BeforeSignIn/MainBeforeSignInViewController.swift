@@ -21,7 +21,6 @@ class MainBeforeSignInViewController: UIViewController {
         
         view.addSubview(scrollView)
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.backgroundColor = .rollpePrimary
         scrollView.bounces = false
         
@@ -32,7 +31,6 @@ class MainBeforeSignInViewController: UIViewController {
         
         // 스크롤 내부 뷰
         let contentView: UIStackView = UIStackView()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.axis = .vertical
         contentView.spacing = 0
         

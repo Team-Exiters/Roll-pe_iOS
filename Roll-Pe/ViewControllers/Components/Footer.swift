@@ -31,9 +31,8 @@ func Footer() -> UIView {
     // MARK: - 팀 로고
     
     let logo: UIImageView = UIImageView()
-    let image: UIImage! = UIImage(named: "img_team_logo")
+    let image: UIImage = .imgTeamLogo
     logo.image = image
-    logo.translatesAutoresizingMaskIntoConstraints = false
     logo.contentMode = .scaleAspectFit
     logo.clipsToBounds = true
     
@@ -41,7 +40,7 @@ func Footer() -> UIView {
     
     logo.snp.makeConstraints { make in
         make.width.equalTo(192)
-        make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: image!))
+        make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: image))
     }
     
     contentView.setCustomSpacing(24, after: logo)

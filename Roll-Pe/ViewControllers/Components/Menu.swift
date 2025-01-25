@@ -16,7 +16,6 @@ func MenuBlock() -> UIView {
     let imageView: UIImageView = UIImageView()
     let image: UIImage! = UIImage(named: "icon_hamburger")
     imageView.image = image
-    imageView.translatesAutoresizingMaskIntoConstraints = false
     imageView.contentMode = .scaleAspectFit
     imageView.clipsToBounds = true
     imageView.tintColor = .rollpeSecondary
