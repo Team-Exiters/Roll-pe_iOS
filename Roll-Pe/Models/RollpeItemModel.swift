@@ -7,13 +7,16 @@
 
 import Foundation
 
-struct RollpeItemModel: Codable {
-    let theme: String?
-    let dDay: String?
-    let title: String?
-    let subtitle: String?
+class RollpeItemModel {
+    var theme: String?
+    var dDay: String?
+    var title: String?
+    var subtitle: String?
     
-    var id: UUID {
-        UUID()
+    init(theme: String?, dDay: String?, title: String?, subtitle: String?) {
+        self.theme = theme
+        self.dDay = dDay
+        self.title = title
+        self.subtitle = subtitle
     }
 }

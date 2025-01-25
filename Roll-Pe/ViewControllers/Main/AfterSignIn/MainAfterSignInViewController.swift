@@ -17,29 +17,40 @@ class MainAfterSignInViewController: UIViewController {
     private let blackContentView = UIView()
     private let nickNameLabel : UILabel = {
         let label = UILabel()
-        label.text = "몽실이는몽몽님은"
+        label.text = "\("몽실이는몽몽")님은"
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = .rollpeSecondary
+        label.textColor = UIColor(named: "rollpe_secondary")
         return label
     }()
     private let firstLabel : UILabel = {
         let label = UILabel()
-        label.text = "15개의 롤페를 만드셨어요"
+        label.text = "\(15)개의 롤페를 만드셨어요"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
+            label.font = customFont
+            print("폰트로드완료")
+        } else {
+            print("커스텀 폰트를 로드하지 못했습니다.")
+            label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        }
         return label
     }()
     private let secondLabel : UILabel = {
         let label = UILabel()
-        label.text = "15번의 마음을 작성하셨어요"
+        label.text = "\(15)번의 마음을 작성하셨어요"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-        
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
+            label.font = customFont
+            print("폰트로드완료")
+        } else {
+            print("커스텀 폰트를 로드하지 못했습니다.")
+            label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        }
         return label
     }()
     private let primaryButton = PrimaryButton(title: "초대받은 롤페")
@@ -49,8 +60,14 @@ class MainAfterSignInViewController: UIViewController {
         label.text = "지금 뜨고있는 롤페"
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = .rollpeSecondary
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24)
+        label.textColor = UIColor(named: "rollpe_secondary")
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
+            label.font = customFont
+            print("폰트로드완료")
+        } else {
+            print("커스텀 폰트를 로드하지 못했습니다.")
+            label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        }
         return label
     }()
     
@@ -59,7 +76,7 @@ class MainAfterSignInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         getData()
-        view.backgroundColor = .rollpePrimary
+        view.backgroundColor = .white
         setupScrollView()
         setupNickNameLabel()
         setupFirstLabel()
@@ -126,7 +143,14 @@ class MainAfterSignInViewController: UIViewController {
     }
 
     private func setupNickNameLabel() {
-        nickNameLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24)
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
+            nickNameLabel.font = customFont
+            print("폰트로드완료")
+        } else {
+            print("커스텀 폰트를 로드하지 못했습니다.")
+            nickNameLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        }
+
         nickNameLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(nickNameLabel)
 
@@ -196,7 +220,7 @@ class MainAfterSignInViewController: UIViewController {
             let row = index / columns
             let column = index % columns
             
-            let rollpeItemView = RollpeItemView()
+            let rollpeItemView = RollpeItemView(frame: .zero)
             rollpeItemView.configure(
                 theme: model.theme ?? "",
                 dDay: model.dDay ?? "",
@@ -226,12 +250,7 @@ class MainAfterSignInViewController: UIViewController {
     }
     
     private func setupFooter(){
-        let footer = Footer()
-        blackContentView.addSubview(footer)
-        
-        footer.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-        }
+        blackContentView.addSubview(Footer())
     }
 
     
@@ -259,7 +278,7 @@ class MainAfterSignInViewController: UIViewController {
 struct MainAfterSignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            MainAfterSignInViewController()
-        }
+                    MainAfterSignInViewController()
+                }
     }
 }
