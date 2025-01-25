@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 
+// 태은꺼
 class RollpeButtonPrimary: UIView {
     private let label: UILabel = UILabel()
     
@@ -59,5 +60,50 @@ class RollpeButtonPrimary: UIView {
             make.center.equalToSuperview()
             make.verticalEdges.equalToSuperview().inset(12)
         }
+    }
+}
+
+
+//여기서부터 동혁이코드
+class PrimaryButton: UIButton {
+    init(title: String) {
+        super.init(frame: .zero)
+        setupButton(title: title)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupButton(title: "")
+    }
+    private func setupButton(title: String) {
+        self.setTitle(title, for: .normal)
+        self.setTitleColor(.white, for: .normal)
+        self.layer.cornerRadius = 8
+        self.contentEdgeInsets = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        self.backgroundColor = UIColor(named: "rollpe_main")
+        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
+    }
+}
+
+class SecondaryButton: UIButton {
+    init(title: String) {
+        super.init(frame: .zero)
+        setupButton(title: title)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupButton(title: "")
+    }
+    
+    private func setupButton(title: String) {
+        self.setTitle(title, for: .normal)
+        self.setTitleColor(UIColor(named: "rollpe_main"), for: .normal)
+        self.layer.cornerRadius = 8
+        self.contentEdgeInsets = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
+        self.backgroundColor = UIColor(named: "rollpe_primary")
+        self.layer.borderWidth = 2
+        self.layer.borderColor = UIColor(named: "rollpe_main")?.cgColor
+        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
     }
 }
