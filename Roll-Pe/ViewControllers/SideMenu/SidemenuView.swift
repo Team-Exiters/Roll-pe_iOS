@@ -7,8 +7,12 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class SidemenuView: UIView {
+    let disposeBag = DisposeBag()
+    
     // 투명도
     private let ALPHA: CGFloat = 0.5
     
@@ -19,7 +23,7 @@ class SidemenuView: UIView {
     private let MENU_VIEW_WIDTH = UIScreen.main.bounds.width * 0.8
     
     // 뒷배경
-    private let background: UIView = UIView()
+    private let background: UIButton = UIButton()
     
     // 메뉴 배경
     private let menuView: UIView = UIView()
@@ -50,6 +54,12 @@ class SidemenuView: UIView {
             make.height.equalTo(UIScreen.main.bounds.height)
         }
         
+        background.rx.tap
+            .subscribe(onNext: {
+                self.closeMenu()
+            })
+            .disposed(by: disposeBag)
+        
         // MARK: - 메뉴 배경
         
         menuView.layer.backgroundColor = UIColor.rollpePrimary.cgColor
@@ -69,6 +79,7 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 닫기
+        let closeButton: UIButton = UIButton()
         
         let closeImageView: UIImageView = UIImageView()
         closeImageView.image = .iconX
@@ -77,13 +88,23 @@ class SidemenuView: UIView {
         closeImageView.tintColor = .rollpeSecondary
         closeImageView.isUserInteractionEnabled = true
         
-        menuView.addSubview(closeImageView)
+        closeButton.addSubview(closeImageView)
+        menuView.addSubview(closeButton)
         
-        closeImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(12)
+        closeButton.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(80)
             make.trailing.equalToSuperview().inset(28)
         }
+        
+        closeImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(12)
+        }
+        
+        closeButton.rx.tap
+            .subscribe(onNext: {
+                self.closeMenu()
+            })
+            .disposed(by: disposeBag)
         
         // MARK: - 메뉴 뷰
         
@@ -155,50 +176,39 @@ class SidemenuView: UIView {
         }
         
         // MARK: - 제스쳐
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
-        background.addGestureRecognizer(tapGesture)
-        closeImageView.addGestureRecognizer(tapGesture)
-        
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        let panGesture = UIPanGestureRecognizer()
         menuView.addGestureRecognizer(panGesture)
-    }
-    
-    // MARK: - 탭 제스쳐
-    
-    @objc private func handleTapGesture() {
-        closeMenu()
-    }
-    
-    // MARK: - 드래그 제스쳐
-    
-    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        // 제스처의 이동 거리
-        let translation = gesture.translation(in: self)
-        // 제스처의 속도
-        let velocity = gesture.velocity(in: self)
         
-        switch gesture.state {
-        case .changed:
-            // 사용자가 오른쪽으로 드래그하면 메뉴를 이동
-            if translation.x > 0 {
-                menuView.transform = CGAffineTransform(translationX: translation.x, y: 0)
-            }
-        case .ended:
-            let maximum = UIScreen.main.bounds.width * 0.4
-            
-            if translation.x > maximum || velocity.x > maximum {
-                // 드래그 거리나 속도가 기준 이상이면 메뉴 숨기기
-                closeMenu()
-            } else {
-                // 그렇지 않으면 위치 복원
-                UIView.animate(withDuration: ANIMATION_DURATION) {
-                    self.menuView.transform = .identity
+        panGesture.rx.event
+            .subscribe(onNext: { gesture in
+                // 제스처의 이동 거리
+                let translation = gesture.translation(in: self)
+                // 제스처의 속도
+                let velocity = gesture.velocity(in: self)
+                
+                switch gesture.state {
+                case .changed:
+                    // 사용자가 오른쪽으로 드래그하면 메뉴를 이동
+                    if translation.x > 0 {
+                        self.menuView.transform = CGAffineTransform(translationX: translation.x, y: 0)
+                    }
+                case .ended:
+                    let maximum = UIScreen.main.bounds.width * 0.4
+                    
+                    if translation.x > maximum || velocity.x > maximum {
+                        // 드래그 거리나 속도가 기준 이상이면 메뉴 숨기기
+                        self.closeMenu()
+                    } else {
+                        // 그렇지 않으면 위치 복원
+                        UIView.animate(withDuration: self.ANIMATION_DURATION) {
+                            self.menuView.transform = .identity
+                        }
+                    }
+                default:
+                    break
                 }
-            }
-        default:
-            break
-        }
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - 메뉴 닫기
