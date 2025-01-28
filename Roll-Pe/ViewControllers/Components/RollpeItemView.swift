@@ -13,7 +13,7 @@ class RollpeItemView: UIView {
     
     private let upperBackgroundView = UIView()
     private let lowerBackgroundView = UIView()
-    private let dDayLabel = UILabel()
+    private let dDayLabel = BadgeDDay()
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
@@ -35,15 +35,9 @@ class RollpeItemView: UIView {
         
         addSubview(upperBackgroundView)
         
-        lowerBackgroundView.backgroundColor = .white
+        lowerBackgroundView.backgroundColor = .rollpePrimary
         addSubview(lowerBackgroundView)
         
-        dDayLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
-        dDayLabel.textColor = .white
-        dDayLabel.textAlignment = .center
-        dDayLabel.backgroundColor = UIColor(named: "rollpe_main")
-        dDayLabel.layer.cornerRadius = 10
-        dDayLabel.layer.masksToBounds = true
         addSubview(dDayLabel)
         
         imageView.contentMode = .scaleAspectFit
@@ -51,12 +45,12 @@ class RollpeItemView: UIView {
         addSubview(imageView)
         
         titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-        titleLabel.textColor = UIColor(named: "rollpe_secondary")
+        titleLabel.textColor = .rollpeSecondary
         addSubview(titleLabel)
         
         
         subtitleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
-        subtitleLabel.textColor = .gray
+        subtitleLabel.textColor = .rollpeGray
         addSubview(subtitleLabel)
         
         setupConstraints()

@@ -22,6 +22,31 @@ func getImageRatio(image: UIImage) -> CGFloat {
     return image.size.width / image.size.height
 }
 
+// D-day 계산
+func dateToDDay(_ endDate: Date) -> String {
+    let today = Date()
+    let calendar = Calendar.current
+    
+    guard let daysDifference = calendar.dateComponents([.day], from: today, to: endDate).day else {
+        return "Error calculating D-Day"
+    }
+    
+    if daysDifference == 0 {
+        return "D-Day"
+    } else if daysDifference > 0 {
+        return "D-\(daysDifference)"
+    } else {
+        return "D+\(abs(daysDifference))"
+    }
+}
+
+// YYYY.M.D 계산
+func dateToYYYYMD(_ date: Date) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy.M.d"
+    return dateFormatter.string(from: date)
+}
+
 // 키보드 숨기기
 extension UIViewController {
     func hideKeyboardWhenTappedAround() {
