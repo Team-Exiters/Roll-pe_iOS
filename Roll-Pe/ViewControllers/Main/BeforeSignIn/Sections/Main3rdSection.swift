@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-func MainBeforeSignIn3rdSection() -> UIView {
+let MainBeforeSignIn3rdSection: UIView = {
     let view: UIView = UIView()
     
     view.backgroundColor = .rollpeSectionBackground
@@ -59,4 +59,4 @@ func MainBeforeSignIn3rdSection() -> UIView {
     }
     
     return view
-}
+}()
