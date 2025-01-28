@@ -7,6 +7,8 @@
 
 import Foundation
 
+
+// 절대 손대지말것 , 필요시 의논후 부탁
 class RollpeItemModel {
     var theme: String?
     var dDay: String?
