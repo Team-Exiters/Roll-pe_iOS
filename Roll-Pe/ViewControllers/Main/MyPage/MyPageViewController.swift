@@ -37,7 +37,7 @@ class MyPageViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 32) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -61,7 +61,7 @@ class MyPageViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 24) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -77,7 +77,7 @@ class MyPageViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 14) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -109,6 +109,7 @@ class MyPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         getData()
         setupScrollView()
         setupContentView()
@@ -124,6 +125,7 @@ class MyPageViewController: UIViewController {
     
     private func setupScrollView() {
         view.addSubview(scrollView)
+        scrollView.bounces = false
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top) // 상단 safeArea 유지
             make.leading.trailing.equalToSuperview()
@@ -382,7 +384,7 @@ class ListSectionButton: UIButton {
         self.setTitleColor(UIColor(named: "rollpe_secondary"), for: .normal)
         self.titleLabel?.numberOfLines = 1
         self.contentHorizontalAlignment = .left
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 20) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
             self.titleLabel?.font = customFont
             print("폰트로드완료")
         } else {

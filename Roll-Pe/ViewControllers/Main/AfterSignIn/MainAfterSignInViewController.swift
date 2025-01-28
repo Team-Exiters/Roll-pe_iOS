@@ -30,7 +30,7 @@ class MainAfterSignInViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 16) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -44,8 +44,8 @@ class MainAfterSignInViewController: UIViewController {
         label.text = "15번의 마음을 작성하셨어요"
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = .black
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 16) {
+        label.textColor = .rollpeSecondary
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -62,7 +62,7 @@ class MainAfterSignInViewController: UIViewController {
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 24) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
             print("폰트로드완료")
         } else {
@@ -128,7 +128,7 @@ class MainAfterSignInViewController: UIViewController {
     
 
     private func setupNickNameLabel() {
-        if let customFont = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 24) {
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             nickNameLabel.font = customFont
             print("폰트로드완료")
         } else {
