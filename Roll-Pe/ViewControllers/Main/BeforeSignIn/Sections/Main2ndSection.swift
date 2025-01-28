@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-func MainBeforeSignIn2ndSection() -> UIView {
+let MainBeforeSignIn2ndSection: UIView = {
     let view: UIView = UIView()
     
     view.backgroundColor = .rollpePrimary
@@ -20,6 +20,7 @@ func MainBeforeSignIn2ndSection() -> UIView {
     contentView.alignment = .leading
     contentView.backgroundColor = .rollpePrimary
     
+    contentView.isLayoutMarginsRelativeArrangement = true
     contentView.layoutMargins = UIEdgeInsets(top: 44, left: 0, bottom: 52, right: 0)
     
     view.addSubview(contentView)
@@ -27,7 +28,6 @@ func MainBeforeSignIn2ndSection() -> UIView {
     contentView.snp.makeConstraints { make in
         make.top.equalToSuperview()
         make.horizontalEdges.equalToSuperview().inset(40)
-        make.bottom.equalToSuperview()
     }
     
     // 제목
@@ -59,4 +59,4 @@ func MainBeforeSignIn2ndSection() -> UIView {
     }
     
     return view
-}
+}()

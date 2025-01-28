@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-func MainBeforeSignInTopSecionView() -> UIView {
+let MainBeforeSignInTopSecionView: UIView = {
     let view: UIView = UIView()
     view.translatesAutoresizingMaskIntoConstraints = false
     
@@ -120,4 +120,4 @@ func MainBeforeSignInTopSecionView() -> UIView {
     bottomView.addArrangedSubview(tryToScroll)
     
     return view
-}
+}()

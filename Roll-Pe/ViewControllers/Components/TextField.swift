@@ -36,7 +36,7 @@ class TextField: UITextField {
         self.contentVerticalAlignment = .center
         
         // 스타일
-        self.backgroundColor = UIColor(named: "rollpe_primary")
+        self.backgroundColor = .rollpePrimary
         self.textColor = UIColor.rollpeSecondary
         self.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         self.layer.masksToBounds = true
@@ -44,6 +44,8 @@ class TextField: UITextField {
         self.layer.cornerRadius = 16
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeGray.cgColor
+        
+        self.clearButtonMode = .never
         
         // focus에 따라 스타일 변화
         self.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
@@ -66,6 +68,6 @@ class TextField: UITextField {
     }
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 0))
+        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
     }
 }

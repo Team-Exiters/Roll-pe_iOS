@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-func MainBeforeSignIn4thSection() -> UIView {
+let MainBeforeSignIn4thSection: UIView = {
     let view: UIView = UIView()
     
     view.backgroundColor = .rollpePrimary
@@ -88,4 +88,4 @@ func MainBeforeSignIn4thSection() -> UIView {
     }
     
     return view
-}
+}()

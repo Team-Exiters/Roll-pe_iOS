@@ -15,7 +15,7 @@ class RollpeItemView: UIView {
     
     private let upperBackgroundView = UIView()
     private let lowerBackgroundView = UIView()
-    private let dDayLabel = UILabel()
+    private let dDayLabel = BadgeDDay()
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
@@ -37,38 +37,21 @@ class RollpeItemView: UIView {
         
         addSubview(upperBackgroundView)
         
-        lowerBackgroundView.backgroundColor = .white
+        lowerBackgroundView.backgroundColor = .rollpePrimary
         addSubview(lowerBackgroundView)
         
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            dDayLabel.font = font
-        }
-        else{
-            dDayLabel.font = UIFont.systemFont(ofSize: 12)
-        }
-        dDayLabel.textColor = .white
-        dDayLabel.textAlignment = .center
-        dDayLabel.backgroundColor = UIColor(named: "rollpe_main")
-        dDayLabel.layer.cornerRadius = 10
-        dDayLabel.layer.masksToBounds = true
         addSubview(dDayLabel)
         
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .black
         addSubview(imageView)
-        
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        titleLabel.textColor = UIColor(named: "rollpe_secondary")
+
+        titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
+        titleLabel.textColor = .rollpeSecondary
         addSubview(titleLabel)
         
-        
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            subtitleLabel.font = font
-        }
-        else{
-            subtitleLabel.font = UIFont.systemFont(ofSize: 12)
-        }
-        subtitleLabel.textColor = .gray
+        subtitleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
+        subtitleLabel.textColor = .rollpeGray
         addSubview(subtitleLabel)
         
         setupConstraints()
