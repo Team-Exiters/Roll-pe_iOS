@@ -196,6 +196,7 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
         view.backgroundColor = .rollpePrimary
         
@@ -229,19 +230,30 @@ class SignInViewController: UIViewController {
         view.addSubview(back)
         
         back.snp.makeConstraints { make in
-            make.top.leading.equalTo(20)
+            make.top.equalTo(safeareaTop + 20)
+            make.leading.equalTo(20)
             make.width.equalTo(12)
             make.height.equalTo(back.snp.width).dividedBy(getImageRatio(image: backImage))
         }
         
         // MARK: - 내부 뷰
         
+        let scrollView: UIScrollView = UIScrollView()
+        scrollView.bounces = false
+        
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(safeareaTop)
+            make.horizontalEdges.bottom.equalToSuperview()
+        }
+        
         let contentView: UIStackView = UIStackView()
         contentView.axis = .vertical
         contentView.spacing = 0
         contentView.alignment = .center
         
-        view.addSubview(contentView)
+        scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(100)
