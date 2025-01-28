@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 import SnapKit
 
+
+//절대 손대지말것 , 필요시 의논후 부탁
 class RollpeItemView: UIView {
     
     private let upperBackgroundView = UIView()
@@ -19,7 +21,7 @@ class RollpeItemView: UIView {
     private let subtitleLabel = UILabel()
     private var theme: String?
     
-    override init(frame: CGRect = .zero) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
@@ -43,11 +45,10 @@ class RollpeItemView: UIView {
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .black
         addSubview(imageView)
-        
+
         titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         titleLabel.textColor = .rollpeSecondary
         addSubview(titleLabel)
-        
         
         subtitleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
         subtitleLabel.textColor = .rollpeGray
@@ -114,7 +115,7 @@ class RollpeItemView: UIView {
         titleLabel.text = title
         subtitleLabel.text = subtitle
         self.theme = theme
-        
+  
         configureImageView(for: theme)
     }
 }

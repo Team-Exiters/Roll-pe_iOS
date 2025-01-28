@@ -9,15 +9,16 @@ import UIKit
 import SwiftUI
 import SnapKit
 
+
+//절대 손대지말것 , 필요시 의논후 부탁
 class MainAfterSignInViewController: UIViewController {
     
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     private let grayContentView = UIView()
-    private let blackContentView = UIView()
     private let nickNameLabel : UILabel = {
         let label = UILabel()
-        label.text = "\("몽실이는몽몽")님은"
+        label.text = "몽실이는몽몽님은"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
@@ -25,7 +26,7 @@ class MainAfterSignInViewController: UIViewController {
     }()
     private let firstLabel : UILabel = {
         let label = UILabel()
-        label.text = "\(15)개의 롤페를 만드셨어요"
+        label.text = "15개의 롤페를 만드셨어요"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = UIColor(named: "rollpe_secondary")
@@ -40,7 +41,7 @@ class MainAfterSignInViewController: UIViewController {
     }()
     private let secondLabel : UILabel = {
         let label = UILabel()
-        label.text = "\(15)번의 마음을 작성하셨어요"
+        label.text = "15번의 마음을 작성하셨어요"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
@@ -84,7 +85,6 @@ class MainAfterSignInViewController: UIViewController {
         setupPrimaryButton()
         setupSecondaryButton()
         setupGrayContentView()
-        setupBlackContentView()
         setupThirdLabel()
         setupRollpeItems()
         setupFooter()
@@ -126,21 +126,6 @@ class MainAfterSignInViewController: UIViewController {
         ])
     }
     
-    
-    
-    private func setupBlackContentView(){
-        contentView.addSubview(blackContentView)
-        blackContentView.translatesAutoresizingMaskIntoConstraints = false
-        blackContentView.backgroundColor = UIColor(red: 85/255, green: 85/255, blue: 85/255, alpha: 1.0)
-        NSLayoutConstraint.activate([
-            blackContentView.topAnchor.constraint(equalTo: grayContentView.bottomAnchor),
-            blackContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            blackContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            blackContentView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            blackContentView.heightAnchor.constraint(equalToConstant: 130),
-            blackContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-    }
 
     private func setupNickNameLabel() {
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
@@ -250,9 +235,14 @@ class MainAfterSignInViewController: UIViewController {
     }
     
     private func setupFooter(){
-        blackContentView.addSubview(Footer())
+        let footer = Footer()
+        contentView.addSubview(footer)
+        footer.snp.makeConstraints{make in
+            make.top.equalTo(grayContentView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
-
     
     private func getData(){
         //여기서 데이터값 뷰모델로 받아오기, 밑에꺼는 임시용
