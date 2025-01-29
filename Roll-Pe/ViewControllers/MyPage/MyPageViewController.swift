@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import SnapKit
+import RxSwift
 
 
 //절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 말해서 동혁이가 직접 수정하도록 유도
@@ -23,19 +24,9 @@ class MyPageViewController: UIViewController {
     
     private let contentView = UIView()
     
-    private let sideMenuContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = .rollpePrimary
-        return view
-    }()
-
-    private let sideMenu: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "icon_hamburger")
-        imageView.contentMode = .scaleAspectFit // 비율 유지
-        imageView.tintColor = .rollpeSecondary
-        return imageView
-    }()
+    private let sideMenuView = SidemenuView(menuIndex: 4)
+    let sideMenuButton = UIButton.makeSideMenuButton()
+    let disposeBag = DisposeBag()
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -115,7 +106,8 @@ class MyPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .rollpePrimary
+        getData()
         setupScrollView()
         setupContentView()
         setupSideMenu()
@@ -148,23 +140,23 @@ class MyPageViewController: UIViewController {
 
     
     private func setupSideMenu() {
-        contentView.addSubview(sideMenuContainer)
-        sideMenuContainer.addSubview(sideMenu)
-        sideMenuContainer.snp.makeConstraints { make in
+        contentView.addSubview(sideMenuButton)
+        sideMenuButton.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(30)
-            make.trailing.equalToSuperview().offset(-20)
-            make.width.height.equalTo(32)
+            make.trailing.equalToSuperview().inset(20)
         }
-        sideMenu.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(28)
-        }
+        sideMenuButton.rx.tap
+            .subscribe(onNext: {
+                self.view.addSubview(self.sideMenuView)
+                self.sideMenuView.showMenu()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupTitleLabel(){
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{ make in
-            make.top.equalTo(sideMenu).offset(28)
+            make.top.equalTo(sideMenuButton).offset(28)
             make.centerX.equalToSuperview()
         }
     }
@@ -292,8 +284,7 @@ class MyPageViewController: UIViewController {
         }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    private func getData() {
         // 나중에 api값연동, 이하는 임의
         userData = UserDataModel(nickname: "몽실씨",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
         nicknameLabel.text = userData?.nickname
@@ -423,5 +414,26 @@ class ListSectionButton: UIButton {
 
 
 
-
-
+extension UIButton {
+    static func makeSideMenuButton() -> UIButton {
+        let button = UIButton()
+        button.backgroundColor = .rollpePrimary
+        button.layer.cornerRadius = 4
+        
+        let icon = UIImageView()
+        let image = UIImage.iconHamburger
+        icon.image = image
+        icon.contentMode = .scaleAspectFit
+        icon.tintColor = .rollpeSecondary
+        
+        button.addSubview(icon)
+        
+        icon.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalTo(16)
+            make.height.equalTo(icon.snp.width).dividedBy(getImageRatio(image: image))
+        }
+        
+        return button
+    }
+}

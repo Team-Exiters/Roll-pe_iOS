@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import RxSwift
 
 class InvitedRollpeViewController: UIViewController {
 
@@ -30,13 +31,9 @@ class InvitedRollpeViewController: UIViewController {
         return image
     }()
     
-    private let sideMenu : UIButton = {
-        let button = UIButton()
-        let image = UIImage(named: "icon_hamburger")
-        button.setImage(image, for: .normal)
-        button.tintColor = .rollpeSecondary
-        return button
-    }()
+    private let sideMenuView = SidemenuView(menuIndex: 4)
+    let sideMenuButton = UIButton.makeSideMenuButton()
+    let disposeBag = DisposeBag()
 
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -121,12 +118,17 @@ class InvitedRollpeViewController: UIViewController {
             make.width.equalTo(48)
             make.height.equalTo(24)
         }
-        contentView.addSubview(sideMenu)
-        sideMenu.addTarget(self, action: #selector(sideMenuTapped), for: .touchUpInside)
-        sideMenu.snp.makeConstraints{ make in
-            make.top.equalToSuperview().offset(30)
-            make.trailing.equalToSuperview().offset(-20)
+        contentView.addSubview(sideMenuButton)
+        sideMenuButton.snp.makeConstraints { make in
+            make.centerY.equalTo(logo)
+            make.trailing.equalToSuperview().inset(20)
         }
+        sideMenuButton.rx.tap
+            .subscribe(onNext: {
+                self.view.addSubview(self.sideMenuView)
+                self.sideMenuView.showMenu()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupTitleLabel() {
@@ -186,10 +188,6 @@ class InvitedRollpeViewController: UIViewController {
 
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func sideMenuTapped(_ sender: UIButton) {
-        print("사이드메뉴 탭됨")
     }
     
     override func viewWillAppear(_ animated: Bool) {
