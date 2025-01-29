@@ -44,7 +44,7 @@ class SearchViewController: UIViewController {
         
         // 사이드 메뉴
         let sideMenuView = SidemenuView(menuIndex: 1)
-        let buttonSideMenu: UIButton = ButtonSideMenu
+        let buttonSideMenu: UIButton = ButtonSideMenu()
         
         view.addSubview(buttonSideMenu)
         
