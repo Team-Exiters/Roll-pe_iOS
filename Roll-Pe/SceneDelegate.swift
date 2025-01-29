@@ -15,8 +15,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let rootViewController = MainBeforeSignInViewController()
-        window?.rootViewController = rootViewController
+        let vc = MyPageViewController()
+        let navigationController = UINavigationController(rootViewController: vc)
+        
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
     
