@@ -43,7 +43,7 @@ class RollpeItemView: UIView {
         addSubview(dDayLabel)
         
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .black
+        imageView.tintColor = .rollpeSecondary
         addSubview(imageView)
 
         titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)

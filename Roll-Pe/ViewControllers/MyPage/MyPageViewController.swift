@@ -9,9 +9,15 @@ import UIKit
 import SwiftUI
 import SnapKit
 
+
+//절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 말해서 동혁이가 직접 수정하도록 유도
 class MyPageViewController: UIViewController {
     
     private var userData : UserDataModel? = nil
+    
+    private var myRollpeListData : [RollpeListItemModel]? = nil
+    
+    private var invitedRollpeListData : [RollpeListItemModel]? = nil
     
     private let scrollView = UIScrollView()
     
@@ -19,7 +25,7 @@ class MyPageViewController: UIViewController {
     
     private let sideMenuContainer: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "rollpe_primary")
+        view.backgroundColor = .rollpePrimary
         return view
     }()
 
@@ -27,7 +33,7 @@ class MyPageViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "icon_hamburger")
         imageView.contentMode = .scaleAspectFit // 비율 유지
-        imageView.tintColor = UIColor(named: "rollpe_secondary")
+        imageView.tintColor = .rollpeSecondary
         return imageView
     }()
     
@@ -60,7 +66,7 @@ class MyPageViewController: UIViewController {
         label.text = ""
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
+        label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
             print("폰트로드완료")
@@ -110,7 +116,6 @@ class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        getData()
         setupScrollView()
         setupContentView()
         setupSideMenu()
@@ -146,7 +151,7 @@ class MyPageViewController: UIViewController {
         contentView.addSubview(sideMenuContainer)
         sideMenuContainer.addSubview(sideMenu)
         sideMenuContainer.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(80)
+            make.top.equalToSuperview().offset(30)
             make.trailing.equalToSuperview().offset(-20)
             make.width.height.equalTo(32)
         }
@@ -159,7 +164,7 @@ class MyPageViewController: UIViewController {
     private func setupTitleLabel(){
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{ make in
-            make.top.equalToSuperview().offset(132)
+            make.top.equalTo(sideMenu).offset(28)
             make.centerX.equalToSuperview()
         }
     }
@@ -260,9 +265,15 @@ class MyPageViewController: UIViewController {
     }
     private func myRollpeTapped() {
         print("내 롤페 버튼 눌림")
+        let myRollpeVC = MyRollpeViewController()
+        myRollpeVC.rollpeListData = myRollpeListData ?? []
+        navigationController?.pushViewController(myRollpeVC, animated: true)
     }
     private func invitedRollpeTapped() {
         print("초대받은 롤페 버튼 눌림")
+        let invitedRollpeVC = InvitedRollpeViewController()
+        invitedRollpeVC.rollpeListData = invitedRollpeListData ?? []
+        navigationController?.pushViewController(invitedRollpeVC, animated: true)
     }
     private func logoutTapped() {
         print("로그아웃 버튼 눌림")
@@ -281,11 +292,26 @@ class MyPageViewController: UIViewController {
         }
     }
     
-    private func getData() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         // 나중에 api값연동, 이하는 임의
         userData = UserDataModel(nickname: "몽실씨",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
         nicknameLabel.text = userData?.nickname
         userUIDLabel.text = userData?.userUID
+        myRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        ]
+        invitedRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        ]
     }
 }
 
@@ -346,11 +372,11 @@ class LoginBadgeView: UIView {
     private func configureBackground(for login: String) {
         switch login.lowercased() {
         case "kakao":
-            self.backgroundColor = UIColor(named: "kakao")
+            self.backgroundColor = .kakao
         case "google":
-            self.backgroundColor = UIColor(named: "rollpe_primary")
+            self.backgroundColor = .rollpePrimary
         case "apple":
-            self.backgroundColor = UIColor(named: "rollpe_secondary")
+            self.backgroundColor = .rollpeSecondary
         default:
            print("로그인데이터 없음")
         }
@@ -393,6 +419,8 @@ class ListSectionButton: UIButton {
         }
     }
 }
+//절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 의논후 동혁이가 직접 수정하도록 유도
+
 
 
 
