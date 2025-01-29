@@ -8,8 +8,12 @@
 import UIKit
 import SnapKit
 import SwiftUI
+import RxSwift
+import RxCocoa
 
 class SearchViewController: UIViewController {
+    let disposeBag = DisposeBag()
+    
     let dummyDatas: [RollpeListItemModel] = [
         RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
         RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
@@ -21,6 +25,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTappedAround()
         
         view.backgroundColor = .rollpePrimary
         
@@ -32,9 +37,28 @@ class SearchViewController: UIViewController {
         scrollView.backgroundColor = .rollpePrimary
         
         scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().inset(safeareaTop)
+            make.horizontalEdges.bottom.equalToSuperview()
             make.width.equalToSuperview()
         }
+        
+        // 사이드 메뉴
+        let sideMenuView = SidemenuView(menuIndex: 1)
+        let buttonSideMenu: UIButton = ButtonSideMenu
+        
+        view.addSubview(buttonSideMenu)
+        
+        buttonSideMenu.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(80)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        
+        buttonSideMenu.rx.tap
+            .subscribe(onNext: {
+                self.view.addSubview(sideMenuView)
+                sideMenuView.showMenu()
+            })
+            .disposed(by: disposeBag)
         
         // 스크롤 내부 뷰
         let contentView: UIView = UIView()
