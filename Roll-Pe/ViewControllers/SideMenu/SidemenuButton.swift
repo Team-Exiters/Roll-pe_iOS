@@ -48,7 +48,7 @@ class ButtonSideMenu: UIButton {
  ButtonSideMenu 사용 방법
  
  let sideMenuView = SidemenuView(menuIndex: index)
- let buttonSideMenu: UIButton = ButtonSideMenu
+ let buttonSideMenu: UIButton = ButtonSideMenu()
  
  view.addSubview(buttonSideMenu)
  

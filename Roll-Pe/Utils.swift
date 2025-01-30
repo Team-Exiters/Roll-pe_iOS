@@ -74,3 +74,20 @@ struct UIViewControllerPreview: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
+
+extension UIButton {
+    func removeConfigurationPadding() {
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+        self.configuration = config
+    }
+    
+    // removeConfigurationPadding를 사용하는 경우 font 적용
+    func setFont(_ font: UIFont) {
+        self.configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = font
+            return outgoing
+        }
+    }
+}

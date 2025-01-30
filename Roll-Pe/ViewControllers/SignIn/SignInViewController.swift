@@ -324,7 +324,7 @@ class SignInViewController: UIViewController {
 struct SignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            SignInViewController() // UIKit ViewController 연결
+            SignInViewController()
         }
     }
 }
