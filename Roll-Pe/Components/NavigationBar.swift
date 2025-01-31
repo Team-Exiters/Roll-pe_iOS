@@ -117,8 +117,14 @@ class NavigationBar: UIView {
  let navigationBar = NavigationBar()
  // menuIndex 먼저 쓰기
  navigation.menuIndex = 2
+ // 만약 side-menu 비활성시 false 혹은 미작성
  navigationBar.showSideMenu = true
  navigationBar.parentViewController = self
  view.addSubview(navigationBar)
+ 
+ navigationBar.snp.makeConstraints { make in
+     make.top.equalToSuperview().offset(safeareaTop)
+     make.horizontalEdges.equalToSuperview().inset(20)
+ }
  
 */
