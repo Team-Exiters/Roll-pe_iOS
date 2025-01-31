@@ -254,6 +254,8 @@ class MyPageViewController: UIViewController {
     }
     private func changePasswordTapped() {
         print("비밀번호 변경 버튼 눌림")
+        let changePasswordVC = ChangePasswordViewController()
+        navigationController?.pushViewController(changePasswordVC, animated: true)
     }
     private func myRollpeTapped() {
         print("내 롤페 버튼 눌림")
