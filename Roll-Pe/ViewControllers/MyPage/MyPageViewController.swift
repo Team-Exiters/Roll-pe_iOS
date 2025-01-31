@@ -254,6 +254,9 @@ class MyPageViewController: UIViewController {
     }
     private func changePasswordTapped() {
         print("비밀번호 변경 버튼 눌림")
+        let changePasswordVC = ChangePasswordViewController()
+        changePasswordVC.currentPassword = userData?.password
+        navigationController?.pushViewController(changePasswordVC, animated: true)
     }
     private func myRollpeTapped() {
         print("내 롤페 버튼 눌림")
@@ -286,7 +289,7 @@ class MyPageViewController: UIViewController {
     
     private func getData() {
         // 나중에 api값연동, 이하는 임의
-        userData = UserDataModel(nickname: "몽실씨",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
+        userData = UserDataModel(password:"a12",nickname: "몽실씨",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
         nicknameLabel.text = userData?.nickname
         userUIDLabel.text = userData?.userUID
         myRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),

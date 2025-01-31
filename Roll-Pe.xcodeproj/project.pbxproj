@@ -7,11 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E24421A32D49428000144CB2 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24421A12D49428000144CB2 /* Pretendard-Regular.otf */; };
-		E24421A42D49428000144CB2 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24421A02D49428000144CB2 /* Pretendard-Medium.otf */; };
-		E24421A52D49428000144CB2 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24421A22D49428000144CB2 /* Pretendard-SemiBold.otf */; };
-		E24421A62D49428000144CB2 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */ = {isa = PBXBuildFile; fileRef = E244219E2D49428000144CB2 /* Hakgyoansim-Dunggeunmiso-R.otf */; };
-		E24421A72D49428000144CB2 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E244219F2D49428000144CB2 /* Pretendard-Bold.otf */; };
 		E24421A92D495DD700144CB2 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E24421A82D495DD700144CB2 /* RxCocoa */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
@@ -50,11 +45,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E244219E2D49428000144CB2 /* Hakgyoansim-Dunggeunmiso-R.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hakgyoansim-Dunggeunmiso-R.otf"; sourceTree = "<group>"; };
-		E244219F2D49428000144CB2 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		E24421A02D49428000144CB2 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		E24421A12D49428000144CB2 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		E24421A22D49428000144CB2 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,11 +115,6 @@
 			isa = PBXGroup;
 			children = (
 				E24D4CA52D3F841C00C9ABA5 /* LICENSE.txt */,
-				E244219E2D49428000144CB2 /* Hakgyoansim-Dunggeunmiso-R.otf */,
-				E244219F2D49428000144CB2 /* Pretendard-Bold.otf */,
-				E24421A02D49428000144CB2 /* Pretendard-Medium.otf */,
-				E24421A12D49428000144CB2 /* Pretendard-Regular.otf */,
-				E24421A22D49428000144CB2 /* Pretendard-SemiBold.otf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -293,11 +278,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E24D4CA62D3F841C00C9ABA5 /* LICENSE.txt in Resources */,
-				E24421A32D49428000144CB2 /* Pretendard-Regular.otf in Resources */,
-				E24421A42D49428000144CB2 /* Pretendard-Medium.otf in Resources */,
-				E24421A52D49428000144CB2 /* Pretendard-SemiBold.otf in Resources */,
-				E24421A62D49428000144CB2 /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */,
-				E24421A72D49428000144CB2 /* Pretendard-Bold.otf in Resources */,
 				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -363,7 +343,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42NW282TDP;
+				DEVELOPMENT_TEAM = DR8VUQPNSR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
@@ -398,7 +378,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 42NW282TDP;
+				DEVELOPMENT_TEAM = DR8VUQPNSR;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
