@@ -86,7 +86,7 @@ class SidemenuView: UIView {
         closeImageView.contentMode = .scaleAspectFit
         closeImageView.clipsToBounds = true
         closeImageView.tintColor = .rollpeSecondary
-        closeImageView.isUserInteractionEnabled = true
+        closeImageView.isUserInteractionEnabled = false
         
         closeButton.addSubview(closeImageView)
         menuView.addSubview(closeButton)

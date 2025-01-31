@@ -32,6 +32,7 @@ class ButtonSideMenu: UIButton {
         icon.image = image
         icon.contentMode = .scaleAspectFit
         icon.tintColor = .rollpeSecondary
+        icon.isUserInteractionEnabled = false
         
         self.addSubview(icon)
         
