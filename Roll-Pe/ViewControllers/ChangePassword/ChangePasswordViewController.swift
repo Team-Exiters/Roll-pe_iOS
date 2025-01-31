@@ -11,7 +11,7 @@ import RxSwift
 
 class ChangePasswordViewController: UIViewController {
     
-    var currentPassword : String? = nil
+    private var equalToCurrentPassword : Bool = false
     
     private let backButton : UIButton = {
         let button = UIButton()
@@ -146,12 +146,7 @@ class ChangePasswordViewController: UIViewController {
     }
     
     @objc private func changeConfirmButtonTapped() {
-        guard let currentPassword = currentPassword else {
-            let alert = UIAlertController(title: "오류", message: "오류가 발생하였습니다.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            return
-        }
+       //서버에 changePasswordTextField.text값 보내서 현재 비밀번호와 비교시켜 같은지 아닌지 bool값으로 ViewModel함수로 반환시킨후 equalToCurrentPassword 변수에 저장시키는 로직
         
         if let changePassword = changePasswordTextField.text {
             if (changePassword != ""){
@@ -167,7 +162,7 @@ class ChangePasswordViewController: UIViewController {
                             self.present(alert, animated: true, completion: nil)
                         }
                         else{
-                            if (currentPassword == changePassword) {
+                            if (equalToCurrentPassword) {
                                 let alert = UIAlertController(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.", preferredStyle: .alert)
                                 alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
                                 self.present(alert, animated: true, completion: nil)
