@@ -50,3 +50,25 @@ class SecondaryButton: UIButton {
         self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
     }
 }
+
+class BackButton: UIButton {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setup() {
+        let image: UIImage = .iconChevronLeft
+        self.tintColor = .rollpeSecondary
+        self.setImage(image, for: .normal)
+        
+        self.snp.makeConstraints { make in
+            make.width.equalTo(12)
+            make.height.equalTo(self.snp.width).dividedBy(getImageRatio(image: image))
+        }
+    }
+}
