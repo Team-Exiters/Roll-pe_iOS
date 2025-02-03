@@ -13,25 +13,12 @@ class ChangePasswordViewController: UIViewController {
     
     private var equalToCurrentPassword : Bool = false
     
-    private let backButton : UIButton = {
-        let button = UIButton()
-        let backImage = UIImage(named: "icon_chevron_left")
-        button.setImage(backImage, for: .normal)
-        button.tintColor = .rollpeSecondary
-        return button
+    private let navigationBar : NavigationBar = {
+        let navigationBar = NavigationBar()
+        navigationBar.menuIndex = 4
+        navigationBar.showSideMenu = true
+        return navigationBar
     }()
-    
-    private let logo : UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "img_logo")
-        return image
-    }()
-    
-    private let sideMenuView = SidemenuView(menuIndex: 4)
-    
-    let sideMenuButton = UIButton.makeSideMenuButton()
-    
-    let disposeBag = DisposeBag()
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -71,45 +58,27 @@ class ChangePasswordViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         view.backgroundColor = .rollpePrimary
-        setupTopNavigationBar()
+        setupNavigationBar()
         setupTitleLabel()
         setupChangePasswordTextField()
         setupConfirmPasswordTextField()
         setupChangeConfirmButton()
     }
     
-    private func setupTopNavigationBar() {
-        view.addSubview(backButton)
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        backButton.snp.makeConstraints{ make in
-            make.top.equalToSuperview().offset(130)
-            make.leading.equalToSuperview().offset(20)
-        }
-        view.addSubview(logo)
-        logo.snp.makeConstraints{make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(130)
-            make.width.equalTo(48)
-            make.height.equalTo(24)
-        }
-        view.addSubview(sideMenuButton)
-        sideMenuButton.snp.makeConstraints { make in
-            make.centerY.equalTo(logo)
-            make.trailing.equalToSuperview().inset(20)
-        }
-        sideMenuButton.rx.tap
-            .subscribe(onNext: {
-                self.view.addSubview(self.sideMenuView)
-                self.sideMenuView.showMenu()
-            })
-            .disposed(by: disposeBag)
+    private func setupNavigationBar() {
+        view.addSubview(navigationBar)
+        navigationBar.parentViewController = self
+            navigationBar.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(20)
+                make.top.equalToSuperview().offset(120)
+            }
     }
     
     private func setupTitleLabel() {
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(logo.snp.bottom).offset(28)
+            make.top.equalTo(navigationBar.snp.bottom).offset(28)
         }
     }
     
@@ -147,7 +116,6 @@ class ChangePasswordViewController: UIViewController {
     
     @objc private func changeConfirmButtonTapped() {
        //서버에 changePasswordTextField.text값 보내서 현재 비밀번호와 비교시켜 같은지 아닌지 bool값으로 ViewModel함수로 반환시킨후 equalToCurrentPassword 변수에 저장시키는 로직
-        
         if let changePassword = changePasswordTextField.text {
             if (changePassword != ""){
                     if (changePassword != confirmPasswordTextField.text) {
@@ -187,9 +155,7 @@ class ChangePasswordViewController: UIViewController {
             alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
-     
     }
-
 }
 
 struct ChangePasswordViewControllerPreview: PreviewProvider {

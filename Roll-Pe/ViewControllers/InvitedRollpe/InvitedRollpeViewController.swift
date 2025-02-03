@@ -17,24 +17,13 @@ class InvitedRollpeViewController: UIViewController {
     
     private let contentView = UIView()
     
-    private let backButton : UIButton = {
-        let button = UIButton()
-        let backImage = UIImage(named: "icon_chevron_left")
-        button.setImage(backImage, for: .normal)
-        button.tintColor = .rollpeSecondary
-        return button
+    private let navigationBar : NavigationBar = {
+        let navigationBar = NavigationBar()
+        navigationBar.menuIndex = 4
+        navigationBar.showSideMenu = true
+        return navigationBar
     }()
     
-    private let logo : UIImageView = {
-        let image = UIImageView()
-        image.image = UIImage(named: "img_logo")
-        return image
-    }()
-    
-    private let sideMenuView = SidemenuView(menuIndex: 4)
-    let sideMenuButton = UIButton.makeSideMenuButton()
-    let disposeBag = DisposeBag()
-
     private let titleLabel : UILabel = {
         let label = UILabel()
         label.text = "초대받은 롤페"
@@ -80,7 +69,7 @@ class InvitedRollpeViewController: UIViewController {
         view.backgroundColor = .rollpePrimary
         setupScrollView()
         setupContentView()
-        setupTopNavigationBar()
+        setupNavigationBar()
         setupTitleLabel()
         setupRollpeCountLabel()
         setupListStackView()
@@ -104,38 +93,20 @@ class InvitedRollpeViewController: UIViewController {
         }
     }
     
-    private func setupTopNavigationBar() {
-        contentView.addSubview(backButton)
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        backButton.snp.makeConstraints{ make in
-            make.top.equalToSuperview().offset(30)
-            make.leading.equalToSuperview().offset(20)
-        }
-        contentView.addSubview(logo)
-        logo.snp.makeConstraints{make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(30)
-            make.width.equalTo(48)
-            make.height.equalTo(24)
-        }
-        contentView.addSubview(sideMenuButton)
-        sideMenuButton.snp.makeConstraints { make in
-            make.centerY.equalTo(logo)
-            make.trailing.equalToSuperview().inset(20)
-        }
-        sideMenuButton.rx.tap
-            .subscribe(onNext: {
-                self.view.addSubview(self.sideMenuView)
-                self.sideMenuView.showMenu()
-            })
-            .disposed(by: disposeBag)
+    private func setupNavigationBar() {
+        contentView.addSubview(navigationBar)
+        navigationBar.parentViewController = self
+            navigationBar.snp.makeConstraints { make in
+                make.top.equalToSuperview().offset(safeareaTop)
+                make.horizontalEdges.equalToSuperview().inset(20)
+            }
     }
     
     private func setupTitleLabel() {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(logo.snp.bottom).offset(28)
+            make.top.equalTo(navigationBar.snp.bottom).offset(28)
         }
     }
     
