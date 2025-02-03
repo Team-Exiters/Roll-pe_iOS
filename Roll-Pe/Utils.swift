@@ -47,6 +47,14 @@ func dateToYYYYMD(_ date: Date) -> String {
     return dateFormatter.string(from: date)
 }
 
+// YYYY년 MM월 DD일 A HH:mm
+func dateToYYYYMdahhmm(_ date: Date) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.dateFormat = "yyyy년 M월 d일 a hh:mm"
+    return dateFormatter.string(from: date)
+}
+
 // 키보드 숨기기
 extension UIViewController {
     func hideKeyboardWhenTappedAround() {
@@ -60,21 +68,43 @@ extension UIViewController {
     }
 }
 
+// textfield 키보드 위치에 따른 뷰 높이 변화
+extension UIViewController {
+    func changePositionWhenKeyboardUp() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    }
+    
+    @objc func keyboard(notification:Notification) {
+        guard let keyboardReact = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        
+        if notification.name == UIResponder.keyboardWillShowNotification || notification.name == UIResponder.keyboardWillChangeFrameNotification {
+            self.view.frame.origin.y = -keyboardReact.height
+        } else{
+            self.view.frame.origin.y = 0
+        }
+    }
+}
+
 // 미리보기
 struct UIViewControllerPreview: UIViewControllerRepresentable {
     let viewController: () -> UIViewController
-
+    
     init(_ viewController: @escaping () -> UIViewController) {
         self.viewController = viewController
     }
-
+    
     func makeUIViewController(context: Context) -> UIViewController {
         return viewController()
     }
-
+    
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
+// 버튼 여백 수정
 extension UIButton {
     func removeConfigurationPadding() {
         var config = UIButton.Configuration.plain()

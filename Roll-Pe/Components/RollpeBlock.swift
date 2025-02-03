@@ -17,7 +17,7 @@ func RollpeBlock(image: String, titleText: String) -> UIView {
     
     view.snp.makeConstraints { make in
         make.width.equalTo(170)
-        make.height.equalTo(199 - (view.layer.borderWidth * 2))
+        make.height.equalTo(199)
     }
     
     let contentView: UIStackView = UIStackView()
