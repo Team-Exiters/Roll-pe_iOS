@@ -38,6 +38,7 @@ class RollpeDetailNotSignedInViewController: UIViewController {
         combinedView.snp.makeConstraints{make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
         }
     }
 }
@@ -52,6 +53,7 @@ struct RollpeDetailNotSignedInViewControllerPreview: PreviewProvider {
 }
 
 class CombinedView : UIView {
+    
     override init(frame: CGRect) {
          super.init(frame: frame)
          setupContent()
@@ -61,6 +63,7 @@ class CombinedView : UIView {
          super.init(coder: coder)
          setupContent()
      }
+    
     private let logo: UIImageView = {
         let imageView = UIImageView()
         if let logoImage = UIImage(named: "img_logo") {
@@ -72,12 +75,13 @@ class CombinedView : UIView {
         return imageView
     }()
     
-    
-    private let emptyView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
+    private let stackView : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        return stackView
     }()
+    
     
     private let combinedLabel: UILabel = {
         let label = UILabel()
@@ -103,23 +107,17 @@ class CombinedView : UIView {
         return label
     }()
     private func setupContent() {
-        self.addSubview(logo)
-        self.addSubview(combinedLabel)
-        self.addSubview(emptyView)
-        logo.snp.makeConstraints{ make in
-            make.centerX.equalToSuperview()
-            make.width.equalTo(100)
-            make.height.equalTo(52)
-            make.bottom.equalTo(emptyView.snp.top)
-        }
-        emptyView.snp.makeConstraints{ make in
+        self.addSubview(stackView)
+        stackView.addArrangedSubview(logo)
+        stackView.addArrangedSubview(combinedLabel)
+        stackView.snp.makeConstraints{make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
-            make.height.equalTo(20)
+            make.horizontalEdges.equalToSuperview()
         }
-        combinedLabel.snp.makeConstraints{make in
-            make.top.equalTo(emptyView.snp.bottom)
-            make.centerX.equalToSuperview()
-        }
+        logo.snp.makeConstraints { make in
+                   make.width.equalTo(100)
+                   make.height.equalTo(52)
+               }
     }
 }
