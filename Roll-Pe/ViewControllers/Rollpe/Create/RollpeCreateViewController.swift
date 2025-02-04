@@ -408,7 +408,7 @@ class RollpeCreateViewController: UIViewController {
         // MARK: - 미리보기
         
         let subjectPreview: UILabel = LabelSubject()
-        subjectPreview.text = "종료 시간을 지정해주세요"
+        subjectPreview.text = "종료일을 지정해주세요"
         
         contentView.addSubview(subjectPreview)
         
