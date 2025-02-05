@@ -345,6 +345,7 @@ class RollpeCreateViewController: UIViewController {
         
         // 공개 설정
         let controlPrivate = SegmentControl(items: ["공개", "비공개"])
+        controlPrivate.control.selectedSegmentIndex = 1
         
         contentView.addSubview(controlPrivate)
         
@@ -364,17 +365,6 @@ class RollpeCreateViewController: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        // 비밀번호 확인
-        let confirmPassword = TextField()
-        confirmPassword.placeholder = "비밀번호 확인"
-        
-        contentView.addSubview(confirmPassword)
-        
-        confirmPassword.snp.makeConstraints { make in
-            make.top.equalTo(password.snp.bottom).offset(8)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
         // MARK: - 종료 시간
         
         let subjectTimeLimit: UILabel = LabelSubject()
@@ -383,7 +373,7 @@ class RollpeCreateViewController: UIViewController {
         contentView.addSubview(subjectTimeLimit)
         
         subjectTimeLimit.snp.makeConstraints { make in
-            make.top.equalTo(confirmPassword.snp.bottom).offset(40)
+            make.top.equalTo(password.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -408,7 +398,7 @@ class RollpeCreateViewController: UIViewController {
         // MARK: - 미리보기
         
         let subjectPreview: UILabel = LabelSubject()
-        subjectPreview.text = "종료 시간을 지정해주세요"
+        subjectPreview.text = "종료일을 지정해주세요"
         
         contentView.addSubview(subjectPreview)
         

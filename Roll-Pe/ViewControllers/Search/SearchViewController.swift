@@ -26,6 +26,7 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
+        self.changePositionWhenKeyboardUp()
         
         view.backgroundColor = .rollpePrimary
         

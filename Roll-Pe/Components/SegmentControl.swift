@@ -80,12 +80,20 @@ class SegmentControl: UIView {
     
     private func changeSegmentedControlLinePosition(index: Int) {
         UIView.animate(withDuration: 0.25, animations: {
-            let segmentWidth = self.control.frame.width / CGFloat(self.items.count)
+            let segmentWidth = self.control.bounds.size.width / CGFloat(self.items.count)
             
             self.selectedSegment.snp.updateConstraints { make in
                 make.leading.equalTo(self.control.snp.leading).offset(segmentWidth * CGFloat(index))
             }
+            
             self.layoutIfNeeded()
         })
+    }
+    
+    // 초기 selectedSegmentIndex에 따른 위치 초기화
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        self.changeSegmentedControlLinePosition(index: control.selectedSegmentIndex)
     }
 }
