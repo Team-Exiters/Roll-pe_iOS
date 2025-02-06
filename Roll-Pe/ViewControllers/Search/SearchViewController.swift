@@ -14,13 +14,13 @@ import RxCocoa
 class SearchViewController: UIViewController {
     let disposeBag = DisposeBag()
     
-    let dummyDatas: [RollpeListItemModel] = [
-        RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+    let dummyDatas: [RollpeSearchListItemModel] = [
+        RollpeSearchListItemModel(id: 1, receiverDate: Date(), theme: "블랙", dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeSearchListItemModel(id: 2, receiverDate: Date(), theme: "생일", dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeSearchListItemModel(id: 3, receiverDate: Date(), theme: "생일", dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeSearchListItemModel(id: 4, receiverDate: Date(), theme: "생일", dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeSearchListItemModel(id: 5, receiverDate: Date(), theme: "생일", dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
+        RollpeSearchListItemModel(id: 6, receiverDate: Date(), theme: "생일", dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
     ]
     
     override func viewDidLoad() {
@@ -158,7 +158,7 @@ class SearchViewController: UIViewController {
         }
         
         for (index, data) in dummyDatas.enumerated() {
-            let itemView = RollpeListItem(data)
+            let itemView = RollpeSearchListItem(data)
             
             listView.addArrangedSubview(itemView)
             
