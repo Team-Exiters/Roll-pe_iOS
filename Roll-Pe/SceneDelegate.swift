@@ -15,7 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = RollpeDetailNotSignedInViewController()
+        let vc = SegmentTestViewController()
         let navigationController = UINavigationController(rootViewController: vc)
         
         window?.rootViewController = navigationController

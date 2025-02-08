@@ -124,9 +124,8 @@ class MyPageViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.bounces = false
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top) // 상단 safeArea 유지
             make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.top.bottom.equalToSuperview()
         }
     }
     
@@ -142,7 +141,7 @@ class MyPageViewController: UIViewController {
     private func setupSideMenu() {
         contentView.addSubview(sideMenuButton)
         sideMenuButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(30)
+            make.top.equalToSuperview()
             make.trailing.equalToSuperview().inset(20)
         }
         sideMenuButton.rx.tap
@@ -288,8 +287,8 @@ class MyPageViewController: UIViewController {
     
     private func getData() {
         // 나중에 api값연동, 이하는 임의
-        userData = UserDataModel(nickname: "몽실씨",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
-        nicknameLabel.text = userData?.nickname
+        userData = UserDataModel(nickname: "브라이언은몽실몽실해",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
+        nicknameLabel.text =  (userData?.nickname ?? "") + "님"
         userUIDLabel.text = userData?.userUID
         myRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
         RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
