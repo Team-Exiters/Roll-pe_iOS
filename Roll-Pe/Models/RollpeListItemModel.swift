@@ -8,10 +8,20 @@
 import Foundation
 
 struct RollpeListItemModel: Identifiable, Codable {
-    var id: Int
+    let id: Int
     let receiverDate: Date
     var theme: String
     let isPublic: Bool
+    let dDay: String
+    let title: String
+    let createdUser: String
+    let createdAt: Date
+}
+
+struct RollpeSearchListItemModel: Identifiable, Codable {
+    let id: Int
+    let receiverDate: Date
+    var theme: String
     let dDay: String
     let title: String
     let createdUser: String
