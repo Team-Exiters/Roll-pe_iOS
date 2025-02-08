@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import SnapKit
 import RxSwift
+import MarqueeLabel
 
 class RollpeHostViewController: UIViewController {
     
@@ -26,26 +27,18 @@ class RollpeHostViewController: UIViewController {
         return navigationBar
     }()
     
-    private let lockImage : UIImageView = {
-        let image = UIImageView()
-        image.image = .iconLock
-        image.tintColor = .rollpeSecondary
-        return image
-    }()
-    
-    private let titleLabel : UILabel = {
-        let label = UILabel()
+    private let titleLabel: MarqueeLabel = {
+        let label = MarqueeLabel(frame: .zero, duration: 8.0, fadeLength: 10.0)
         label.text = ""
         label.textAlignment = .center
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
+        label.type = .continuous
         return label
     }()
     
@@ -64,9 +57,7 @@ class RollpeHostViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         }
         return label
@@ -80,29 +71,36 @@ class RollpeHostViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         }
         return label
     }()
     
-    private let participantLabel : UILabel = {
-        let label = UILabel()
-        label.text = "참여자(0/100)"
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = .rollpeSecondary
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
-            label.font = customFont
-            print("폰트로드완료")
-        } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
-            label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        }
-        return label
+    private var writers : [UserDataModel] = []
+    
+    private let writerListStack : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
     }()
+    
+    private let participantListButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("참여자목록 ", for: .normal)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize:14 , weight: .bold)
+          button.setImage(UIImage(systemName: "chevron.right", withConfiguration: symbolConfig), for: .normal)
+        button.tintColor = .rollpeSecondary
+        button.semanticContentAttribute = .forceRightToLeft
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
+            button.titleLabel?.font = customFont
+        } else {
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        }
+        return button
+    }()
+
     
     private let buttonStackView : UIStackView = {
         let stackView = UIStackView()
@@ -121,6 +119,7 @@ class RollpeHostViewController: UIViewController {
         view.backgroundColor = .rollpePrimary
         bindViewModel()                      //뷰 불러올때 뷰모델에서 불러올 값 이렇게 먼저 바인딩 시키고
         rollpeHostViewModel.fetchRollpeData() //그 다음에 이렇게 데이터 불러올것 (패턴이니까 그냥 외워서 사용할것)
+        addWritersToList()
         setupScrollView()
         setupContentView()
         setupNavigationBar()
@@ -128,7 +127,8 @@ class RollpeHostViewController: UIViewController {
         setupPresentImage()
         setupExplainationLabel()
         setupWriterLabel()
-        setupParticipantLabel()
+        setupWriterList()
+        setupParticipantListButton()
         setupButtonStackView()
     }
     
@@ -159,14 +159,11 @@ class RollpeHostViewController: UIViewController {
     
     private func setupTitle() {
         contentView.addSubview(titleLabel)
-        contentView.addSubview(lockImage)
         titleLabel.snp.makeConstraints{make in
             make.top.equalTo(navigationBar.snp.bottom).offset(40)
             make.centerX.equalToSuperview()
-        }
-        lockImage.snp.makeConstraints{make in
-            make.trailing.equalTo(titleLabel.snp.leading).offset(-12)
-            make.centerY.equalTo(titleLabel)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
         }
     }
     
@@ -194,10 +191,35 @@ class RollpeHostViewController: UIViewController {
         }
     }
     
-    private func setupParticipantLabel(){
-        contentView.addSubview(participantLabel)
-        participantLabel.snp.makeConstraints{make in
-            make.top.equalTo(writerLabel.snp.bottom).offset(120)
+    private func setupWriterList(){
+        contentView.addSubview(writerListStack)
+        writerListStack.snp.makeConstraints{make in
+            make.top.equalTo(writerLabel.snp.bottom).offset(20)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+    }
+    
+    private func addWritersToList(){
+        for item in writers{
+            let label = UILabel()
+            label.text = item.nickname
+            if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
+                label.font = customFont
+            } else {
+                label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+            }
+            label.textColor = .rollpeSecondary
+            label.textAlignment = .left
+            writerListStack.addArrangedSubview(label)
+        }
+    }
+    
+    private func setupParticipantListButton(){
+        contentView.addSubview(participantListButton)
+        participantListButton.addTarget(self, action: #selector(participantListButtonTapped), for: .touchUpInside)
+        participantListButton.snp.makeConstraints{make in
+            make.top.equalTo(writerListStack.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
         }
     }
@@ -209,7 +231,7 @@ class RollpeHostViewController: UIViewController {
         shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
         editButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
         buttonStackView.snp.makeConstraints{make in
-            make.top.equalTo(participantLabel.snp.bottom).offset(180)
+            make.top.equalTo(participantListButton.snp.bottom).offset(44)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.bottom.equalToSuperview()
@@ -218,20 +240,25 @@ class RollpeHostViewController: UIViewController {
     
     //뷰모델의 rollpeModel값 바인딩시키는 함수임
     private func bindViewModel() {
-        rollpeHostViewModel.rollpeHostModel
-            .observe(on: MainScheduler.instance) // UI 작업은 메인 스레드에서
+        rollpeHostViewModel.rollpeModel
+            .observe(on: MainScheduler.instance) // UI작업은 메인 스레드에서
              .compactMap { $0 }                // nil이 아닌 값만 처리
-             .subscribe(onNext: { [weak self] model in //뷰컨트롤러 꺼져도 메모리에 데이터 남아있어도 되는구조인지 몰라서 일단 안전하게 약한참조 시킴
+             .subscribe(onNext: { [weak self] model in
                  guard let self = self else { return }
-                 self.titleLabel.text = "\(model.host)님의 롤페"
+                 self.titleLabel.text = model.title
                  self.writerLabel.text = "작성자(\(model.writers.count)/13)"
-                 self.participantLabel.text = "참여자(\(model.participants.count)/100)"
+                 self.writers = model.writers
              })
              .disposed(by: disposeBag)
     }
     
+    @objc private func participantListButtonTapped(){
+        let participantlistVC = ParticipantListViewController(rollpeHostViewModel: rollpeHostViewModel)
+        navigationController?.pushViewController(participantlistVC, animated: true)
+    }
+    
     @objc private func shareButtonTapped() {
-        let urlToShare = URL(string: "여기에 공유 url추가하면 됩니둥")!
+        let urlToShare = "https://youtube.com/shorts/U-klwYEpc8k?si=eNVWZ8l5y5dZboPx"
         let items: [Any] = [urlToShare]
         let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
         if let popoverController = activityVC.popoverPresentationController {
@@ -255,3 +282,4 @@ struct RollpeHostViewControllerPreview: PreviewProvider {
         }
     }
 }
+

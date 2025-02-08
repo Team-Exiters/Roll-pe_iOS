@@ -412,9 +412,6 @@ class ListSectionButton: UIButton {
     }
 }
 //절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 의논후 동혁이가 직접 수정하도록 유도
-
-
-
 extension UIButton {
     static func makeSideMenuButton() -> UIButton {
         let button = UIButton()

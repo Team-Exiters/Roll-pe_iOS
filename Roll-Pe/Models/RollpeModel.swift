@@ -11,10 +11,11 @@ import Foundation
 struct RollpeModel {
     let host : String
     let title : String
-    var writers : [String]
-    var participants : [String]
+    var writers : [UserDataModel]
+    var participants : [UserDataModel]
     var isPublic : Bool
     var date : Date
+    var password : String?
 }
 
 
