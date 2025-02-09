@@ -29,10 +29,11 @@ class RollpeHostViewModel {
                                 UserDataModel(nickname: "사쿠라",login: ["kakao"],userUID: "abc1ewa23",rollpeCount: 8, heartCount: 10),
                                 UserDataModel(nickname: "냥냥맨",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10)],
                  isPublic: false,
-                 date: Date(),
+                 date: Calendar.current.date(from: DateComponents(year: 2025, month: 2, day: 10, hour: 14, minute: 20))!,
                  password: "1234"
              )
-        
+           
+                 
                  observer.onNext(dummyData)
                  observer.onCompleted()
             

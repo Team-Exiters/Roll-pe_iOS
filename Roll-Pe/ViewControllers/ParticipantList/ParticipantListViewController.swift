@@ -56,7 +56,6 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
      func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
          let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
          cell.textLabel?.text = participants[indexPath.row].nickname
-         
       
          let blockButton = UIButton(type: .system)
          if let originalImage = UIImage(named: "icon_deny"),
@@ -64,7 +63,7 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
              blockButton.setImage(resizedImage, for: .normal)
          }
          blockButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
-         blockButton.tintColor = .rollpeMain
+         blockButton.tintColor = .rollpeStatusDanger
          blockButton.addTarget(self, action: #selector(blockButtonTapped), for: .touchUpInside)
          
         let reportButton = UIButton(type: .system)
@@ -82,7 +81,6 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
          stackView.alignment = .center
           stackView.distribution = .fill
          stackView.frame = CGRect(x: 0, y: 0, width: 54, height: 94)
-         
          cell.accessoryView = stackView
          
          if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
@@ -101,7 +99,6 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
     
     private let tableView: UITableView = {
         let tv = UITableView()
-        tv.backgroundColor = .rollpePrimary
         tv.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tv.layer.borderWidth = 2.0
         tv.layer.borderColor = UIColor.rollpeSecondary.cgColor
@@ -213,7 +210,7 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
 }
 
 
-struct WriterListViewControllerPreview: PreviewProvider {
+struct ParticipantListViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
             ParticipantListViewController(rollpeHostViewModel: RollpeHostViewModel())

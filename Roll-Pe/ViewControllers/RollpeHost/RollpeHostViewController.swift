@@ -11,7 +11,16 @@ import SnapKit
 import RxSwift
 import MarqueeLabel
 
+enum DateStatus  {
+    case usual
+    case beforeEnd
+    case afterEnd
+}
+
 class RollpeHostViewController: UIViewController {
+    private var date : Date? = nil
+    
+    private var currentDateStatus : DateStatus = .usual
     
     private let rollpeHostViewModel = RollpeHostViewModel()
     
@@ -102,17 +111,27 @@ class RollpeHostViewController: UIViewController {
     }()
 
     
-    private let buttonStackView : UIStackView = {
+    private var buttonHStackView : UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.spacing = 8
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+    
+    private let buttonVStackView : UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 4
         stackView.distribution = .fillEqually
         return stackView
     }()
     
     private let shareButton = PrimaryButton(title: "공유하기")
+    private let editPrimaryButton = PrimaryButton(title: "수정하기")
+    private let editSecondaryButton = SecondaryButton(title: "수정하기")
+    private let sendHeartButton = SecondaryButton(title: "마음 전달하기")
+    private let imageSaveButton = SecondaryButton(title: "이미지 저장")
     
-    private let editButton = SecondaryButton(title: "수정하기")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -129,7 +148,6 @@ class RollpeHostViewController: UIViewController {
         setupWriterLabel()
         setupWriterList()
         setupParticipantListButton()
-        setupButtonStackView()
     }
     
     private func setupScrollView() {
@@ -225,16 +243,47 @@ class RollpeHostViewController: UIViewController {
     }
     
     private func setupButtonStackView(){
-        contentView.addSubview(buttonStackView)
-        buttonStackView.addArrangedSubview(shareButton)
-        buttonStackView.addArrangedSubview(editButton)
-        shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
-        editButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
-        buttonStackView.snp.makeConstraints{make in
-            make.top.equalTo(participantListButton.snp.bottom).offset(44)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.bottom.equalToSuperview()
+        print(currentDateStatus)
+        if(currentDateStatus == .usual){
+            buttonHStackView.spacing = 8
+            contentView.addSubview(buttonHStackView)
+            buttonHStackView.addArrangedSubview(shareButton)
+            buttonHStackView.addArrangedSubview(editSecondaryButton)
+            shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+            editSecondaryButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+            buttonHStackView.snp.makeConstraints{make in
+                make.top.equalTo(participantListButton.snp.bottom).offset(44)
+                make.leading.equalToSuperview().offset(20)
+                make.trailing.equalToSuperview().offset(-20)
+                make.bottom.equalToSuperview().offset(-40)
+            }
+        }
+        else if(currentDateStatus == .beforeEnd){
+            buttonHStackView.spacing = 4
+            contentView.addSubview(buttonVStackView)
+            buttonVStackView.addArrangedSubview(buttonHStackView)
+            buttonVStackView.addArrangedSubview(sendHeartButton)
+            buttonHStackView.addArrangedSubview(shareButton)
+            buttonHStackView.addArrangedSubview(editPrimaryButton)
+            shareButton.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+            editPrimaryButton.addTarget(self, action: #selector(editButtonTapped), for: .touchUpInside)
+            sendHeartButton.addTarget(self, action: #selector(sendHeartButtonTapped), for: .touchUpInside)
+            buttonVStackView.snp.makeConstraints{make in
+                make.top.equalTo(participantListButton.snp.bottom).offset(44)
+                make.leading.equalToSuperview().offset(20)
+                make.trailing.equalToSuperview().offset(-20)
+                make.bottom.equalToSuperview().offset(-40)
+            }
+        }
+        else{
+            contentView.addSubview(imageSaveButton)
+            imageSaveButton.addTarget(self, action: #selector(imageSaveButtonTapped), for: .touchUpInside)
+            imageSaveButton.snp.makeConstraints{make in
+                make.top.equalTo(participantListButton.snp.bottom).offset(44)
+                make.leading.equalToSuperview().offset(20)
+                make.trailing.equalToSuperview().offset(-20)
+                make.bottom.equalToSuperview().offset(-40)
+            }
         }
     }
     
@@ -248,10 +297,56 @@ class RollpeHostViewController: UIViewController {
                  self.titleLabel.text = model.title
                  self.writerLabel.text = "작성자(\(model.writers.count)/13)"
                  self.writers = model.writers
+                 self.date = model.date
+                 updateDateStatus()
              })
              .disposed(by: disposeBag)
     }
     
+    private func updateDateStatus() {
+        guard let endDate = date else {
+            currentDateStatus = .usual
+            return
+        }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        
+      
+        let targetDayStart = calendar.startOfDay(for: endDate)
+      
+        guard let beforeEndThreshold = calendar.date(byAdding: .day, value: -1, to: targetDayStart) else {
+            currentDateStatus = .usual
+            return
+        }
+        
+        if now >= endDate {
+            
+            currentDateStatus = .afterEnd
+        } else if now >= beforeEndThreshold {
+         
+            currentDateStatus = .beforeEnd
+        } else {
+        
+            currentDateStatus = .usual
+        }
+        
+        print(currentDateStatus)
+    }
+
+
+    
+    override func viewWillAppear(_ animated: Bool) {
+          super.viewWillAppear(animated)
+        buttonHStackView.removeFromSuperview()
+        buttonVStackView.removeFromSuperview()
+        editPrimaryButton.removeFromSuperview()
+        editSecondaryButton.removeFromSuperview()
+        shareButton.removeFromSuperview()
+        sendHeartButton.removeFromSuperview()
+        setupButtonStackView()
+      }
+
     @objc private func participantListButtonTapped(){
         let participantlistVC = ParticipantListViewController(rollpeHostViewModel: rollpeHostViewModel)
         navigationController?.pushViewController(participantlistVC, animated: true)
@@ -268,9 +363,16 @@ class RollpeHostViewController: UIViewController {
     }
     
     @objc private func editButtonTapped() {
-        print("수정")
         let rollpeEditVC = RollpeEditViewController(rollpeHostViewModel: rollpeHostViewModel)
         navigationController?.pushViewController(rollpeEditVC, animated: true)
+    }
+    
+    @objc private func sendHeartButtonTapped(){
+        print("마음 전달")
+    }
+    
+    @objc private func imageSaveButtonTapped(){
+        print("이미지 저장")
     }
 }
 
