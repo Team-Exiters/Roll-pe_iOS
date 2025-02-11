@@ -70,7 +70,7 @@ class ChangePasswordViewController: UIViewController {
         navigationBar.parentViewController = self
             navigationBar.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview().inset(20)
-                make.top.equalToSuperview().offset(120)
+                make.top.equalTo(safeareaTop + 40)
             }
     }
     
