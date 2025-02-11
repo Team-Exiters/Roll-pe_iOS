@@ -9,7 +9,9 @@ import Foundation
 
 
 struct RollpeModel {
-    let host : String
+    // api값 저장만하고 화면에 뿌려주는 용도라 id추가 필요없음
+    // 변수들 작명,타입은 임의, 추후에 최종수정
+    let host : String //host는 임의로 넣어둠
     let title : String
     var writers : [UserDataModel]
     var participants : [UserDataModel]

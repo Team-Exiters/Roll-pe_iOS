@@ -13,6 +13,7 @@ class RollpeHostViewModel {
     
     private var disposeBag = DisposeBag()
     var rollpeModel = BehaviorSubject<RollpeModel?>(value: nil)
+    var searchedUsers = BehaviorSubject<[UserDataModel]?>(value: nil)
     
     func fetchRollpeData() {
          let dataObservable = Observable<RollpeModel>.create { observer in
@@ -55,5 +56,33 @@ class RollpeHostViewModel {
     func deleteRollpeData() {
         //롤페 종료 로직
         print("롤페 종료로직")
+    }
+    
+    func searchUser(nickname:String){
+        //nickname파라미터를 가진 유저들을 불러오기
+        //api호출로 비동기작업, 이하는 임의
+        let dataObservable = Observable<[UserDataModel]>.create { observer in
+            let dummyData = [UserDataModel(nickname: "김제법1",login: ["google"],userUID: "a124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법2",login: ["google"],userUID: "b14",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법3",login: ["google"],userUID: "asugeuf124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법4",login: ["google"],userUID: "kreyuigfi124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법5",login: ["google"],userUID: "oweuyfbc124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법6",login: ["google"],userUID: "gudqe124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법7",login: ["google"],userUID: "vnksoqw124",rollpeCount: 5,heartCount: 6),
+                             UserDataModel(nickname: "김제법8",login: ["google"],userUID: "ouqwegdvgj24",rollpeCount: 5,heartCount: 6)]
+            observer.onNext(dummyData)
+            observer.onCompleted()
+       
+        return Disposables.create()
+        }
+        dataObservable
+            .subscribe(onNext: { [weak self] model in
+                self?.searchedUsers.onNext(model)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func sendRollpe(selectedUser:UserDataModel){
+        
     }
 }

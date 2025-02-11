@@ -57,6 +57,7 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
          let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
          cell.textLabel?.text = participants[indexPath.row].nickname
       
+         //버튼들의 한셀당 각자의 객체로 들어가야해서 여기에 모두작성. 외부에서 객체선언하여 사용하면 셀에 안 보임
          let blockButton = UIButton(type: .system)
          if let originalImage = UIImage(named: "icon_deny"),
             let resizedImage = originalImage.resizedImage(to: CGSize(width: 20, height: 20)) {
@@ -66,14 +67,18 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
          blockButton.tintColor = .rollpeStatusDanger
          blockButton.addTarget(self, action: #selector(blockButtonTapped), for: .touchUpInside)
          
-        let reportButton = UIButton(type: .system)
-         if let originalImage = UIImage(named: "icon_siren")?.withRenderingMode(.alwaysOriginal),
-            let resizedImage = originalImage.resizedImage(to: CGSize(width: 22, height: 22))?.withRenderingMode(.alwaysOriginal) {
-             reportButton.setImage(resizedImage, for: .normal)
-         }
-         reportButton.frame = CGRect(x: 0, y: 0, width: 22, height: 22)
-         reportButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 2, right: 0)
-         reportButton.addTarget(self, action: #selector(reportButtonTapped), for: .touchUpInside)
+         var config = UIButton.Configuration.plain()
+          if let originalImage = UIImage(named: "icon_siren")?
+              .withRenderingMode(.alwaysOriginal),
+             let resizedImage = originalImage
+              .resizedImage(to: CGSize(width: 22, height: 22))?
+              .withRenderingMode(.alwaysOriginal) {
+              config.image = resizedImage
+          }
+          config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0)
+          let reportButton = UIButton(configuration: config, primaryAction: nil)
+          reportButton.frame = CGRect(x: 0, y: 0, width: 22, height: 22)
+          reportButton.addTarget(self, action: #selector(reportButtonTapped), for: .touchUpInside)
          
          let stackView = UIStackView(arrangedSubviews: [blockButton, reportButton])
          stackView.axis = .horizontal
@@ -104,7 +109,7 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
         tv.layer.borderColor = UIColor.rollpeSecondary.cgColor
         tv.layer.cornerRadius = 16.0
         tv.layer.masksToBounds = true
-        tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         tv.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         tv.separatorColor = .rollpeGray
         return tv
@@ -113,6 +118,12 @@ class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
     private var participants : [UserDataModel] = [UserDataModel(nickname: "ㅏㅏㅑ",login: ["kakao"],userUID: "ab12jc123",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㅇㄴ",login: ["kakao"],userUID: "abc1sc23",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㄴㅇ",login: ["kakao"],userUID: "abc1ewa23",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
+                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10)]
     
     private let disposeBag = DisposeBag()

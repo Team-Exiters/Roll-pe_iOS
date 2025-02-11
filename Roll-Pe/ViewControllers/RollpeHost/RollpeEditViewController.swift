@@ -151,9 +151,7 @@ class EditView : UIView {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 28) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
         }
         return label
@@ -167,9 +165,7 @@ class EditView : UIView {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         }
         return label
@@ -192,9 +188,7 @@ class EditView : UIView {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         }
         return label
@@ -295,7 +289,7 @@ class EditView : UIView {
         }
     }
     
-    //Segment값 변화할때 실시간으로 rollpeData값 업데이트 하는 함수입니둥
+    //Segment값 변화할때 실시간으로 rollpeData값 업데이트 하는 함수
     private func updateSegmentData() {
           segmentControl.control.rx.selectedSegmentIndex
               .subscribe(onNext: { [weak self] index in
@@ -378,20 +372,11 @@ class EditView : UIView {
 }
 
 extension UIImage {
-    /// 지정한 크기로 이미지를 리사이즈하여 새로운 UIImage 반환
     func resized(to size: CGSize) -> UIImage? {
-        // 1) 비트맵 그래픽 컨텍스트 생성
         UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-        
-        // 2) 현재 이미지를 해당 size 영역에 맞춰 그리기
         self.draw(in: CGRect(origin: .zero, size: size))
-        
-        // 3) 새로 만들어진 이미지를 컨텍스트에서 꺼내오기
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        
-        // 4) 컨텍스트 종료
         UIGraphicsEndImageContext()
-        
         return newImage
     }
 }
