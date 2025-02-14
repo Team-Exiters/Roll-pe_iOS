@@ -7,11 +7,16 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class Checkbox: UIButton {
+    let disposeBag = DisposeBag()
+    
     var isChecked: Bool = false {
         didSet {
             updateCheckbox()
+            isCheckedSubject.accept(isChecked)
         }
     }
     
@@ -35,13 +40,13 @@ class Checkbox: UIButton {
             make.size.equalTo(20)
         }
         
-        self.addTarget(self, action: #selector(check), for: .touchUpInside)
+        self.rx.tap
+            .subscribe(onNext: {
+                self.isChecked.toggle()
+            })
+            .disposed(by: disposeBag)
         
         updateCheckbox()
-    }
-    
-    @objc func check(_ sender: UIGestureRecognizer) {
-        isChecked.toggle()
     }
     
     private func updateCheckbox() {
@@ -61,5 +66,13 @@ class Checkbox: UIButton {
         } else {
             self.subviews.filter { $0.tag == 2 }.forEach { $0.removeFromSuperview() }
         }
+    }
+    
+    let isCheckedSubject = BehaviorRelay<Bool>(value: false)
+}
+
+extension Reactive where Base: Checkbox {
+    var isChecked: Observable<Bool> {
+        return base.isCheckedSubject.asObservable()
     }
 }

@@ -26,7 +26,6 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
-        self.changePositionWhenKeyboardUp()
         
         view.backgroundColor = .rollpePrimary
         
@@ -38,7 +37,7 @@ class SearchViewController: UIViewController {
         scrollView.backgroundColor = .rollpePrimary
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.bottom.equalToSuperview()
             make.width.equalToSuperview()
         }

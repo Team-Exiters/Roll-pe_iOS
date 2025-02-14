@@ -7,12 +7,19 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 import SwiftUI
 
 class MainBeforeSignInViewController: UIViewController {
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        self.navigationController?.navigationBar.isHidden = true
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         view.backgroundColor = .rollpePrimary
         
@@ -45,7 +52,14 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 상단 섹션
         
-        let mainTopSection = MainBeforeSignInTopSecionView
+        let mainTopSection = MainBeforeSignInTopSecionView()
+        
+        mainTopSection.button.rx.tap
+            .subscribe(onNext: {
+                let vc = SignInViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
         
         contentView.addArrangedSubview(mainTopSection)
         
@@ -96,6 +110,7 @@ class MainBeforeSignInViewController: UIViewController {
     }
 }
 
+#if DEBUG
 struct MainBeforeSignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
@@ -103,3 +118,4 @@ struct MainBeforeSignInViewControllerPreview: PreviewProvider {
         }
     }
 }
+#endif
