@@ -248,7 +248,8 @@ class SignInViewController: UIViewController {
         contentView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.bottom.equalToSuperview().inset(40)
-            make.width.equalToSuperview().inset(20)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
         }
         

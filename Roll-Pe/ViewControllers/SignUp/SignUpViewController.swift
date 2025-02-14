@@ -180,7 +180,8 @@ class SignUpViewController: UIViewController {
         
         contentView.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.width.equalToSuperview().inset(20)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
         }
         
