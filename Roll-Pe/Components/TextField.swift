@@ -8,7 +8,13 @@
 import UIKit
 import SnapKit
 
-class TextField: UITextField {
+class TextField: UITextField, UITextFieldDelegate {
+    var maxLength = 50 {
+        didSet {
+            setup()
+        }
+    }
+    
     override var placeholder: String? {
         didSet {
             self.attributedPlaceholder = NSAttributedString(string: placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.rollpeGray])
@@ -23,10 +29,13 @@ class TextField: UITextField {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setup()
     }
     
     private func setup() {
+        self.delegate = self
+        
         // 입력 설정
         self.autocorrectionType = .no
         self.spellCheckingType = .no
@@ -79,6 +88,14 @@ class TextField: UITextField {
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
+    }
+    
+    // 글자수 제한
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentString = (textField.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: string)
+
+        return newString.count <= maxLength
     }
 }
 

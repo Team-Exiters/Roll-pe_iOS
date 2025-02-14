@@ -7,258 +7,248 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 import SwiftUI
+import SafariServices
 
 class SignInViewController: UIViewController {
-    // MARK: - Form
+    private let disposeBag = DisposeBag()
     
-    private func Form() -> UIStackView {
-        let form: UIStackView = UIStackView()
-        form.axis = .vertical
-        form.spacing = 0
-        form.alignment = .center
+    // 뷰모델
+    private let viewModel = SignInViewModel()
+    
+    // MARK: - 속성
+    
+    // 이메일
+    private let email: TextField = {
+        let textField = TextField()
+        textField.placeholder = "이메일"
+        textField.textContentType = .emailAddress
+        textField.keyboardType = .emailAddress
         
-        // MARK: - 이메일
+        return textField
+    }()
+    
+    // 비밀번호
+    private let password: TextField = {
+        let textField = TextField()
+        textField.placeholder = "비밀번호"
+        textField.textContentType = .password
+        textField.isSecureTextEntry = true
         
-        let email = TextField()
-        email.placeholder = "이메일"
-        email.textContentType = .emailAddress
-        email.keyboardType = .emailAddress
-        
-        form.addArrangedSubview(email)
-        
-        email.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-        }
-        
-        form.setCustomSpacing(12, after: email)
-        
-        // MARK: - 비밀번호
-        
-        let password = TextField()
-        password.placeholder = "비밀번호"
-        password.textContentType = .password
-        password.isSecureTextEntry = true
-        
-        form.addArrangedSubview(password)
-        
-        password.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-        }
-        
-        form.setCustomSpacing(16, after: password)
-        
-        // MARK: - 로그인 유지
-        
-        let keepSignInView: UIStackView = UIStackView()
-        keepSignInView.axis = .horizontal
-        keepSignInView.spacing = 8
-        keepSignInView.alignment = .center
-        
-        form.addArrangedSubview(keepSignInView)
-        
+        return textField
+    }()
+    
+    // 로그인 유지
+    private let keepSignIn: Checkbox = {
         let checkbox = Checkbox()
         checkbox.isChecked = true
         
-        keepSignInView.addArrangedSubview(checkbox)
+        return checkbox
+    }()
+    
+    // 로그인 버튼
+    private let signInButton = PrimaryButton(title: "로그인")
+    
+    // 메뉴들
+    private func menuText(_ text: String) -> UILabel {
+        let label: UILabel = UILabel()
+        label.textColor = .rollpeGray
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
+        label.text = text
         
-        let keepSignInViewText: UILabel = UILabel()
-        keepSignInViewText.textColor = .rollpeGray
-        keepSignInViewText.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        keepSignInViewText.text = "로그인 유지"
-        
-        keepSignInView.addArrangedSubview(keepSignInViewText)
-        
-        keepSignInView.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-        }
-        
-        form.setCustomSpacing(28, after: keepSignInView)
-        
-        // MARK: - 로그인 버튼
-        
-        let signInButton = PrimaryButton(title: "로그인")
-        
-        form.addArrangedSubview(signInButton)
-        
-        signInButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-        }
-        
-        return form
+        return label
     }
-    
-    // MARK: - 메뉴들
-    
-    private func Menus() -> UIStackView {
-        let text: (String) -> UILabel = {
-            let label: UILabel = UILabel()
-            label.textColor = .rollpeGray
-            label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-            label.text = $0
-            
-            return label
+        
+    // 소셜 로그인 - 카카오
+    private let kakao: UIButton = {
+        let view: UIButton = UIButton()
+        view.layer.cornerRadius = 24
+        view.layer.masksToBounds = true
+        view.backgroundColor = .kakao
+        
+        view.snp.makeConstraints { make in
+            make.size.equalTo(48)
         }
         
-        let view: UIStackView = UIStackView()
-        view.axis = .horizontal
-        view.spacing = 6
-        view.alignment = .center
+        let logo: UIImageView = UIImageView()
+        let logoImage = UIImage(named: "icon_kakao")
+        logo.image = logoImage
+        logo.contentMode = .scaleAspectFit
+        logo.clipsToBounds = true
         
-        view.addArrangedSubview(text("계정 찾기"))
-        view.addArrangedSubview(text("|"))
-        view.addArrangedSubview(text("비밀번호 찾기"))
-        view.addArrangedSubview(text("|"))
-        view.addArrangedSubview(text("회원가입"))
+        view.addSubview(logo)
+        
+        logo.snp.makeConstraints { make in
+            make.width.equalTo(20)
+            make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage!))
+            make.center.equalToSuperview()
+        }
         
         return view
-    }
+    }()
     
-    // MARK: - 소셜 로그인
-    
-    private func SocialSignIn() -> UIStackView {
-        let socialBlock: (String) -> UIView = {
-            let SIZE: CGFloat = 48
-            
-            let view: UIView = UIView()
-            view.layer.cornerRadius = SIZE / 2
-            view.layer.masksToBounds = true
-            
-            view.snp.makeConstraints { make in
-                make.size.equalTo(SIZE)
-            }
-            
-            let logo: UIImageView = UIImageView()
-            let logoImage = UIImage(named: $0)
-            logo.image = logoImage
-            logo.contentMode = .scaleAspectFit
-            logo.clipsToBounds = true
-            
-            view.addSubview(logo)
-            
-            logo.snp.makeConstraints { make in
-                make.width.equalTo(20)
-                make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage!))
-                make.center.equalToSuperview()
-            }
-            
-            return view
+    // 소셜 로그인 - 구글
+    private let google: UIButton = {
+        let view: UIButton = UIButton()
+        view.layer.cornerRadius = 24
+        view.layer.masksToBounds = true
+        view.backgroundColor = .rollpeWhite
+        view.layer.borderWidth = 1
+        view.layer.borderColor = UIColor.realBlack.cgColor
+        
+        view.snp.makeConstraints { make in
+            make.size.equalTo(48)
         }
         
-        let view: UIStackView = UIStackView()
-        view.axis = .horizontal
-        view.spacing = 16
-        view.alignment = .center
+        let logo: UIImageView = UIImageView()
+        let logoImage = UIImage(named: "icon_google")
+        logo.image = logoImage
+        logo.contentMode = .scaleAspectFit
+        logo.clipsToBounds = true
         
-        let kakao = socialBlock("icon_kakao")
-        kakao.backgroundColor = .kakao
+        view.addSubview(logo)
         
-        view.addArrangedSubview(kakao)
-        
-        let google = socialBlock("icon_google")
-        google.backgroundColor = .rollpeWhite
-        google.layer.borderWidth = 1
-        google.layer.borderColor = UIColor.realBlack.cgColor
-        
-        view.addArrangedSubview(google)
-        
-        let apple = socialBlock("icon_apple")
-        apple.backgroundColor = .realBlack
-        
-        view.addArrangedSubview(apple)
-        
-        return view
-    }
-    
-    // MARK: - 약관들
-    
-    private func Policies() -> UIStackView {
-        let text: (String) -> UILabel = {
-            let label: UILabel = UILabel()
-            label.textColor = .rollpeGray
-            label.font = UIFont(name: "Pretendard-Regular", size: 12)
-            label.text = $0
-            
-            return label
+        logo.snp.makeConstraints { make in
+            make.width.equalTo(20)
+            make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage!))
+            make.center.equalToSuperview()
         }
         
-        let view: UIStackView = UIStackView()
-        view.axis = .horizontal
-        view.spacing = 6
-        view.alignment = .center
+        return view
+    }()
+    
+    // 소셜 로그인 - 애플
+    private let apple: UIButton = {
+        let view: UIButton = UIButton()
+        view.layer.cornerRadius = 24
+        view.layer.masksToBounds = true
+        view.backgroundColor = .realBlack
         
-        view.addArrangedSubview(text("서비스 이용약관"))
-        view.addArrangedSubview(text("|"))
-        view.addArrangedSubview(text("개인정보처리방침"))
+        view.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
+        
+        let logo: UIImageView = UIImageView()
+        let logoImage = UIImage(named: "icon_apple")
+        logo.image = logoImage
+        logo.contentMode = .scaleAspectFit
+        logo.clipsToBounds = true
+        
+        view.addSubview(logo)
+        
+        logo.snp.makeConstraints { make in
+            make.width.equalTo(20)
+            make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage!))
+            make.center.equalToSuperview()
+        }
         
         return view
+    }()
+    
+    // 약관들
+    private func policyText(_ text: String) -> UILabel {
+        let label: UILabel = UILabel()
+        label.textColor = .rollpeGray
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
+        label.text = text
+        
+        let tapGesture = UITapGestureRecognizer()
+        label.addGestureRecognizer(tapGesture)
+        
+        return label
     }
+    
+    // 로딩 뷰
+    private let loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
+    }()
+    
+    // MARK: - viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.navigationBar.isHidden = true
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         self.hideKeyboardWhenTappedAround()
-        self.changePositionWhenKeyboardUp()
         
-        view.backgroundColor = .rollpePrimary
+        setUI()
+        bind()
+        addBack()
+        addLoadingView()
+    }
+    
+    // MARK: - UI 구성
+    
+    // 뒤로가기
+    private func addBack() {
+        let back = BackButton()
         
-        // MARK: - 배경 이미지
-        
-        let background: UIImageView = UIImageView()
-        background.image = UIImage.imgBackground
-        background.contentMode = .scaleAspectFill
-        background.clipsToBounds = true
-        background.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(background)
-        
-        background.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop * -1)
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(safeareaBottom * -1)
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
-        
-        // MARK: - 뒤로가기
-        
-        let back: UIImageView = UIImageView()
-        let backImage: UIImage = UIImage.iconChevronLeft
-        back.image = backImage
-        back.contentMode = .scaleAspectFit
-        back.clipsToBounds = true
-        back.tintColor = .rollpeSecondary
+        back.rx.tap
+            .subscribe(onNext: {
+                self.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
         
         view.addSubview(back)
         
         back.snp.makeConstraints { make in
-            make.top.equalTo(safeareaTop + 20)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             make.leading.equalTo(20)
-            make.width.equalTo(12)
-            make.height.equalTo(back.snp.width).dividedBy(getImageRatio(image: backImage))
+        }
+    }
+    
+    // 로딩 뷰
+    private func addLoadingView() {
+        view.addSubview(loadingView)
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    // 전체 UI
+    private func setUI() {
+        view.backgroundColor = .rollpePrimary
+        
+        // 배경 이미지
+        let background: UIImageView = UIImageView()
+        background.image = .imgBackground
+        background.contentMode = .scaleAspectFill
+        background.clipsToBounds = true
+        
+        view.addSubview(background)
+        
+        background.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalTo(UIScreen.main.bounds.height)
         }
         
-        // MARK: - 내부 뷰
-        
+        // 내부 뷰
         let scrollView: UIScrollView = UIScrollView()
         scrollView.bounces = false
         
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop)
-            make.horizontalEdges.bottom.equalToSuperview()
+            make.top.equalTo(safeareaTop)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
         
-        let contentView: UIStackView = UIStackView()
-        contentView.axis = .vertical
-        contentView.spacing = 0
-        contentView.alignment = .center
+        let contentView: UIView = UIView()
         
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(100)
-            make.horizontalEdges.equalToSuperview().inset(20)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(40)
+            make.width.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
         
@@ -269,14 +259,14 @@ class SignInViewController: UIViewController {
         logo.contentMode = .scaleAspectFit
         logo.clipsToBounds = true
         
-        contentView.addArrangedSubview(logo)
+        contentView.addSubview(logo)
         
         logo.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(100)
             make.width.equalToSuperview().multipliedBy(0.427)
             make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage))
+            make.centerX.equalToSuperview()
         }
-        
-        contentView.setCustomSpacing(20, after: logo)
         
         // 제목
         let title: UILabel = UILabel()
@@ -288,40 +278,198 @@ class SignInViewController: UIViewController {
         titleParagraphStyle.alignment = .center
         title.attributedText = NSMutableAttributedString(string: "다같이 한 마음으로\n사랑하는 사람에게 전달해보세요", attributes: [.paragraphStyle: titleParagraphStyle])
         
-        contentView.addArrangedSubview(title)
+        contentView.addSubview(title)
         
-        contentView.setCustomSpacing(60, after: title)
+        title.snp.makeConstraints { make in
+            make.top.equalTo(logo.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
         
         // Form
-        let form = Form()
+        // 이메일
+        contentView.addSubview(email)
         
-        contentView.addArrangedSubview(form)
-        
-        form.snp.makeConstraints { make in
+        email.snp.makeConstraints { make in
+            make.top.equalTo(title.snp.bottom).offset(60)
             make.horizontalEdges.equalToSuperview()
         }
         
-        contentView.setCustomSpacing(28, after: form)
+        // 비밀번호
+        contentView.addSubview(password)
+        
+        password.snp.makeConstraints { make in
+            make.top.equalTo(email.snp.bottom).offset(12)
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        // 로그인 유지
+        let keepSignInView: UIStackView = UIStackView()
+        keepSignInView.axis = .horizontal
+        keepSignInView.spacing = 8
+        keepSignInView.alignment = .center
+        
+        contentView.addSubview(keepSignInView)
+        
+        keepSignInView.addArrangedSubview(keepSignIn)
+        
+        let keepSignInViewText: UILabel = UILabel()
+        keepSignInViewText.textColor = .rollpeGray
+        keepSignInViewText.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
+        keepSignInViewText.text = "로그인 유지"
+        
+        keepSignInView.addArrangedSubview(keepSignInViewText)
+        
+        keepSignInView.snp.makeConstraints { make in
+            make.top.equalTo(password.snp.bottom).offset(16)
+            make.leading.equalToSuperview()
+        }
+        
+        // 로그인 버튼
+        contentView.addSubview(signInButton)
+        
+        signInButton.snp.makeConstraints { make in
+            make.top.equalTo(keepSignInView.snp.bottom).offset(28)
+            make.horizontalEdges.equalToSuperview()
+        }
         
         // 메뉴들
-        let menus = Menus()
+        let menus: UIStackView = UIStackView()
+        menus.axis = .horizontal
+        menus.spacing = 8
+        menus.alignment = .center
         
-        contentView.addArrangedSubview(menus)
-        contentView.setCustomSpacing(20, after: menus)
+        let findAccountButton = menuText("계정 찾기")
+        let findPasswordButton = menuText("비밀번호 찾기")
+        let signUpButton = menuText("회원가입")
+        
+        signUpButton.rx.tap
+            .subscribe(onNext: {
+                let vc = SignUpViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        menus.addArrangedSubview(findAccountButton)
+        menus.addArrangedSubview(menuText("|"))
+        menus.addArrangedSubview(findPasswordButton)
+        menus.addArrangedSubview(menuText("|"))
+        menus.addArrangedSubview(signUpButton)
+        
+        contentView.addSubview(menus)
+        
+        menus.snp.makeConstraints { make in
+            make.top.equalTo(signInButton.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
         
         // 소셜 로그인
-        let socialSignIn = SocialSignIn()
+        let socialSignInView: UIStackView = UIStackView()
+        socialSignInView.axis = .horizontal
+        socialSignInView.spacing = 16
+        socialSignInView.alignment = .center
         
-        contentView.addArrangedSubview(socialSignIn)
-        contentView.setCustomSpacing(64, after: socialSignIn)
+        socialSignInView.addArrangedSubview(kakao)
+        socialSignInView.addArrangedSubview(google)
+        socialSignInView.addArrangedSubview(apple)
+        
+        contentView.addSubview(socialSignInView)
+        
+        socialSignInView.snp.makeConstraints { make in
+            make.top.equalTo(menus.snp.bottom).offset(20)
+            make.centerX.equalToSuperview()
+        }
         
         // 약관들
-        let polices = Policies()
+        let policies: UIStackView = UIStackView()
+        policies.axis = .horizontal
+        policies.spacing = 6
+        policies.alignment = .center
         
-        contentView.addArrangedSubview(polices)
+        contentView.addSubview(policies)
+        
+        policies.snp.makeConstraints { make in
+            make.top.equalTo(socialSignInView.snp.bottom).offset(64)
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
+        
+        let termsOfServiceButton = policyText("서비스 이용약관")
+        
+        termsOfServiceButton.rx.tap
+            .subscribe(onNext: {
+                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
+                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
+                self.present(safariVc, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+        let privacyPolicy = policyText("개인정보처리방침")
+        
+        privacyPolicy.rx.tap
+            .subscribe(onNext: {
+                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
+                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
+                self.present(safariVc, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+        policies.addArrangedSubview(termsOfServiceButton)
+        policies.addArrangedSubview(policyText("|"))
+        policies.addArrangedSubview(privacyPolicy)
+    }
+    
+    // MARK: - Bind
+    
+    private func bind() {
+        let input = SignInViewModel.Input(
+            email: email.rx.text,
+            password: password.rx.text,
+            keepSignInChecked: keepSignIn.rx.isChecked,
+            signInButtonTapEvent: signInButton.rx.tap
+        )
+        
+        let output = viewModel.transform(input)
+        
+        output.isSignInEnabled
+            .drive() { isEnabled in
+                self.signInButton.disabled = !isEnabled
+            }
+            .disposed(by: disposeBag)
+        
+        output.signInResponse
+            .drive(onNext: { success in
+                if success {
+                    let vc = MainAfterSignInViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    self.showErrorAlert(message: "로그인에 실패하였습니다.")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(onNext: { isLoading in
+                self.loadingView.isHidden = !isLoading
+            })
+            .disposed(by: disposeBag)
+        
+        output.showAlert
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
     }
 }
 
+#if DEBUG
 struct SignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
@@ -329,3 +477,4 @@ struct SignInViewControllerPreview: PreviewProvider {
         }
     }
 }
+#endif
