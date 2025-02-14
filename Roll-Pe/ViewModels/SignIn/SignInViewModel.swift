@@ -31,15 +31,20 @@ class SignInViewModel {
     }
     
     func transform(_ input: Input) -> Output {
+        // 이메일 검증
         let isEmailValid = input.email.orEmpty.map { !$0.isEmpty }
+        
+        // 비밀번호 검증
         let isPasswordValid = input.password.orEmpty.map { !$0.isEmpty }
         
-        let isSignUpEnabled = Observable.combineLatest(
+        // 모두 검증이 될 때 로그인 버튼 활성화
+        let isSignInEnabled = Observable.combineLatest(
             isEmailValid,
             isPasswordValid
         ) { $0 && $1 }
             .asDriver(onErrorJustReturn: false)
         
+        // 버튼 tap event
         input.signInButtonTapEvent
             .withLatestFrom(Observable.combineLatest(
                 input.email.orEmpty,
@@ -60,13 +65,14 @@ class SignInViewModel {
             .disposed(by: disposeBag)
         
         return Output(
-            isSignInEnabled: isSignUpEnabled,
+            isSignInEnabled: isSignInEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
             showAlert: alertMessage.asDriver(onErrorJustReturn: nil),
             signInResponse: response.asDriver(onErrorJustReturn: false)
         )
     }
     
+    // API
     private func signIn(email: String, password: String, keepSignIn: Bool) {
         let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
         let keychain = Keychain()
@@ -95,9 +101,11 @@ class SignInViewModel {
                 case .success(let model):
                     let isSuccess = model.code == "SUCCESS"
                     
+                    // SUCCESS일 때 토큰 keychain에 저장
                     if isSuccess, let data = model.data {
                         keychain.create(key: "ACCESS_TOKEN", value: data.access)
                         
+                        // 로그인 유지 시
                         if keepSignIn {
                             keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
                         }

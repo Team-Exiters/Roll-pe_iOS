@@ -12,6 +12,7 @@ import Alamofire
 
 final class SignUpViewModel {
     private let disposeBag = DisposeBag()
+    
     private let isLoading = PublishSubject<Bool>()
     private let alertMessage = PublishSubject<String?>()
     private let response = PublishSubject<Bool>()
@@ -35,31 +36,37 @@ final class SignUpViewModel {
     }
     
     func transform(_ input: Input) -> Output {
+        // 이메일 검증
         let isEmailValid = input.email.orEmpty
             .map { email in
                 let regex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
                 return email.range(of: regex, options: .regularExpression) != nil
             }
         
+        // 닉네임 검증
         let isNameValid = input.name.orEmpty
             .map { $0.count >= 2 && $0.count <= 6 }
         
+        // 비밀번호 검증
         let isPasswordValid = input.password.orEmpty
             .map { password in
                 let regex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$"
                 return password.range(of: regex, options: .regularExpression) != nil
             }
         
+        // 비밀번호 확인 검증
         let isPasswordMatch = Observable
             .combineLatest(input.password.orEmpty, input.confirmPassword.orEmpty)
             .map { $0 == $1 && !$0.isEmpty }
         
+        // 약관 모두 동의 검증
         let isAllChecked = Observable.combineLatest(
             input.ageChecked,
             input.termsChecked,
             input.privacyChecked
         ) { $0 && $1 && $2 }
         
+        // 모두 검증이 될 때 가입 버튼 활성과
         let isSignUpEnabled = Observable.combineLatest(
             isEmailValid,
             isNameValid,
@@ -69,6 +76,7 @@ final class SignUpViewModel {
         ) { $0 && $1 && $2 && $3 && $4 }
             .asDriver(onErrorJustReturn: false)
         
+        // 버튼 tap event
         input.signUpButtonTapEvent
             .withLatestFrom(Observable.combineLatest(
                 input.email.orEmpty,
@@ -105,6 +113,7 @@ final class SignUpViewModel {
         )
     }
     
+    // API
     private func signUp(name: String, email: String, password: String) {
         let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
         
