@@ -113,7 +113,7 @@ final class SignUpViewModel {
         )
     }
     
-    // API
+    // 회원가입 API
     private func signUp(name: String, email: String, password: String) {
         let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
         
@@ -129,23 +129,36 @@ final class SignUpViewModel {
             "password": password
         ]
         
-        print(body)
-        
         isLoading.onNext(true)
         
         AF.request("\(ip)/api/user/signup", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
-            .responseData { response in
+            .responseDecodable(of: SignUpModel.self) { response in
                 switch response.result {
                 case .success(_):
                     print("회원가입 성공")
                     self.response.onNext(true)
                 case .failure(let error):
                     print("Error: \(error)")
-                    self.response.onNext(false)
+                    self.handleFailure(response.data)
                 }
                 
                 self.isLoading.onNext(false)
             }
+    }
+    
+    // 회원가입 오류
+    private func handleFailure(_ data: Data?) {
+        guard let data = data else {
+            response.onNext(false)
+            return
+        }
+        
+        do {
+            let model = try JSONDecoder().decode(SignUpModel.self, from: data)
+            self.alertMessage.onNext(model.message)
+        } catch {
+            response.onNext(false)
+        }
     }
 }

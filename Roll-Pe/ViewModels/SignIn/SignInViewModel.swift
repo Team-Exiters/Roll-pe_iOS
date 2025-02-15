@@ -11,6 +11,9 @@ import RxCocoa
 import Alamofire
 
 class SignInViewModel {
+    let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+    let keychain = Keychain()
+    
     private let disposeBag = DisposeBag()
     private let isLoading = PublishSubject<Bool>()
     private let response = PublishSubject<Bool>()
@@ -72,11 +75,8 @@ class SignInViewModel {
         )
     }
     
-    // API
+    // 로그인 API
     private func signIn(email: String, password: String, keepSignIn: Bool) {
-        let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
-        let keychain = Keychain()
-        
         // 헤더
         let headers: HTTPHeaders = [
             .contentType("application/json")
@@ -93,31 +93,86 @@ class SignInViewModel {
         AF.request("\(ip)/api/user/signin", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: SignInModel.self) { response in
+                switch response.result {
+                case .success(let model):
+                    self.handleSuccess(model, keepSignIn)
+                case .failure(let error):
+                    print("로그인 중 오류: \(error)")
+                    
+                    if response.response?.statusCode == 400 {
+                        self.handleAuthError(email, response.data)
+                    } else {
+                        self.response.onNext(false)
+                    }
+                }
+                
+                self.isLoading.onNext(false)
+            }
+    }
+    
+    // 로그인 성공
+    private func handleSuccess(_ model: SignInModel, _ keepSignIn: Bool) {
+        let isSuccess = model.code == "SUCCESS"
+        
+        // 토큰 저장
+        if isSuccess, let data = model.data {
+            keychain.create(key: "ACCESS_TOKEN", value: data.access)
+            
+            if keepSignIn {
+                keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
+            }
+        }
+        
+        response.onNext(isSuccess)
+    }
+    
+    // 인증 오류
+    private func handleAuthError(_ email: String, _ data: Data?) {
+        guard let data = data else {
+            response.onNext(false)
+            return
+        }
+        
+        do {
+            let model = try JSONDecoder().decode(SignInModel.self, from: data)
+            
+            if model.code == "NOT CERIFIED" {
+                self.alertMessage.onNext("이메일 인증되지 않은 계정입니다.\n인증 후 로그인해주세요.")
+                self.resendEmailAuthentication(email: email)
+            } else {
+                self.alertMessage.onNext(model.message)
+            }
+        } catch {
+            response.onNext(false)
+        }
+    }
+    
+    // 이메일 인증 재전송 API
+    private func resendEmailAuthentication(email: String) {
+        // 헤더
+        let headers: HTTPHeaders = [
+            .contentType("application/json")
+        ]
+        
+        // 바디
+        let body: [String: Any] = [
+            "email": email,
+            "pathCode": "email"
+        ]
+        
+        AF.request("\(ip)/api/user/verify-email", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
                 if let data = response.data, let dataString = String(data: data, encoding: .utf8) {
                     print(dataString)
                 }
                 
                 switch response.result {
-                case .success(let model):
-                    let isSuccess = model.code == "SUCCESS"
-                    
-                    // SUCCESS일 때 토큰 keychain에 저장
-                    if isSuccess, let data = model.data {
-                        keychain.create(key: "ACCESS_TOKEN", value: data.access)
-                        
-                        // 로그인 유지 시
-                        if keepSignIn {
-                            keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
-                        }
-                    }
-                    
-                    self.response.onNext(isSuccess)
+                case .success(_):
+                    print("이메일 인증 재전송 완료")
                 case .failure(let error):
-                    print("로그인 중 오류: \(error)")
-                    self.response.onNext(false)
+                    print("이메일 인증 재전송 중 오류: \(error)")
                 }
-                
-                self.isLoading.onNext(false)
             }
     }
 }
