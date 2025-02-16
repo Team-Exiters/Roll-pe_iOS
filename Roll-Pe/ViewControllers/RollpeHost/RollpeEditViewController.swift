@@ -33,6 +33,7 @@ class RollpeEditViewController: UIViewController {
         navigationItem.hidesBackButton = true
         setupEditView()
         bindEditViewData()
+        hideKeyboardWhenTappedAround()
     }
     
     private func setupEditView(){
@@ -126,7 +127,6 @@ class EditView : UIView {
         updatePasswordData()
         setupUI()
         setupDatePicker()
-        setupTapGesture()
     }
 
     required init?(coder: NSCoder) {
@@ -334,18 +334,6 @@ class EditView : UIView {
             self.rollpeData?.date = datePicker.date
         }
         self.dateTextField.resignFirstResponder()
-    }
-
-    
-    private func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        tapGesture.cancelsTouchesInView = false
-        self.addGestureRecognizer(tapGesture)
-    }
-
-    @objc private func handleTap() {
-        // 현재 뷰의 모든 서브뷰에서 키보드를 내리도록 처리
-        self.endEditing(true)
     }
     
     @objc private func backButtonTapped() {

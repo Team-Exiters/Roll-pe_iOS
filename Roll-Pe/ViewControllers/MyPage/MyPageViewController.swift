@@ -124,8 +124,8 @@ class MyPageViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.bounces = false
         scrollView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.verticalEdges.equalToSuperview()
         }
     }
     

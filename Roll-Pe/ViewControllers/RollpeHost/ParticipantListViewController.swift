@@ -16,7 +16,7 @@ class ParticipantListViewController: UIViewController {
     
     var rollpeHostViewModel : RollpeHostViewModel
     
-    private lazy var listView = ListView(rollpeHostViewModel: rollpeHostViewModel)
+    private lazy var participantListView = ParticipantListView(rollpeHostViewModel: rollpeHostViewModel)
     
     init(rollpeHostViewModel: RollpeHostViewModel) {
         self.rollpeHostViewModel = rollpeHostViewModel
@@ -35,10 +35,10 @@ class ParticipantListViewController: UIViewController {
     }
     
     private func setupListView(){
-        view.addSubview(listView)
-        listView.layer.cornerRadius = 16
-        listView.layer.masksToBounds = true
-        listView.snp.makeConstraints{make in
+        view.addSubview(participantListView)
+        participantListView.layer.cornerRadius = 16
+        participantListView.layer.masksToBounds = true
+        participantListView.snp.makeConstraints{make in
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalToSuperview()
@@ -47,7 +47,7 @@ class ParticipantListViewController: UIViewController {
     }
 }
 
-class ListView : UIView , UITableViewDataSource , UITableViewDelegate{
+class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
          return participants.count
