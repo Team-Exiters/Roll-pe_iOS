@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import Alamofire
+import RxAlamofire
 
 final class SignUpViewModel {
     private let disposeBag = DisposeBag()
@@ -131,20 +132,30 @@ final class SignUpViewModel {
         
         isLoading.onNext(true)
         
-        AF.request("\(ip)/api/user/signup", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: SignUpModel.self) { response in
-                switch response.result {
-                case .success(_):
-                    print("회원가입 성공")
-                    self.response.onNext(true)
-                case .failure(let error):
-                    print("Error: \(error)")
-                    self.handleFailure(response.data)
+        RxAlamofire.requestData(.post, "\(ip)/api/user/signup", parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { response, data in
+                if (200..<300).contains(response.statusCode) {
+                    do {
+                        let model = try JSONDecoder().decode(SignUpModel.self, from: data)
+                        self.response.onNext(true)
+                    } catch {
+                        print("SignUpModel JSON 디코딩 오류: \(error)")
+                        self.response.onNext(false)
+                    }
+                } else if response.statusCode == 400 {
+                    self.handleFailure(data)
+                } else {
+                    self.response.onNext(false)
                 }
                 
                 self.isLoading.onNext(false)
-            }
+            }, onError: { error in
+                print("회원가입 오류: \(error)")
+                self.response.onNext(false)
+                self.isLoading.onNext(false)
+            })
+            .disposed(by: disposeBag)
     }
     
     // 회원가입 오류

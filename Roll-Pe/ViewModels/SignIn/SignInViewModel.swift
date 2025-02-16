@@ -9,10 +9,11 @@ import Foundation
 import RxSwift
 import RxCocoa
 import Alamofire
+import RxAlamofire
 
 class SignInViewModel {
-    let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
-    let keychain = Keychain()
+    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+    private let keychain = Keychain()
     
     private let disposeBag = DisposeBag()
     private let isLoading = PublishSubject<Bool>()
@@ -49,6 +50,7 @@ class SignInViewModel {
         
         // 버튼 tap event
         input.signInButtonTapEvent
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(Observable.combineLatest(
                 input.email.orEmpty,
                 input.password.orEmpty,
@@ -90,24 +92,30 @@ class SignInViewModel {
         
         isLoading.onNext(true)
         
-        AF.request("\(ip)/api/user/signin", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: SignInModel.self) { response in
-                switch response.result {
-                case .success(let model):
-                    self.handleSuccess(model, keepSignIn)
-                case .failure(let error):
-                    print("로그인 중 오류: \(error)")
-                    
-                    if response.response?.statusCode == 400 {
-                        self.handleAuthError(email, response.data)
-                    } else {
+        RxAlamofire.requestData(.post, "\(ip)/api/user/signin", parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { response, data in
+                if (200..<300).contains(response.statusCode) {
+                    do {
+                        let model = try JSONDecoder().decode(SignInModel.self, from: data)
+                        self.handleSuccess(model, keepSignIn)
+                    } catch {
+                        print("SignInModel JSON 디코딩 오류: \(error)")
                         self.response.onNext(false)
                     }
+                } else if response.statusCode == 400 {
+                    self.handleAuthError(email, data)
+                } else {
+                    self.response.onNext(false)
                 }
                 
                 self.isLoading.onNext(false)
-            }
+            }, onError: { error in
+                print("로그인 중 오류: \(error)")
+                self.response.onNext(false)
+                self.isLoading.onNext(false)
+            })
+            .disposed(by: disposeBag)
     }
     
     // 로그인 성공
@@ -160,19 +168,19 @@ class SignInViewModel {
             "pathCode": "email"
         ]
         
-        AF.request("\(ip)/api/user/verify-email", method: .post, parameters: body, encoding: JSONEncoding.default, headers: headers)
-            .validate(statusCode: 200..<300)
-            .responseData { response in
-                if let data = response.data, let dataString = String(data: data, encoding: .utf8) {
-                    print(dataString)
+        RxAlamofire.requestData(.post, "\(ip)/api/user/verify-email", parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .map { response, data -> Data in
+                guard (200..<300).contains(response.statusCode) else {
+                    throw AFError.responseValidationFailed(reason: AFError.ResponseValidationFailureReason.unacceptableStatusCode(code: response.statusCode))
                 }
-                
-                switch response.result {
-                case .success(_):
-                    print("이메일 인증 재전송 완료")
-                case .failure(let error):
-                    print("이메일 인증 재전송 중 오류: \(error)")
-                }
+                return data
             }
+            .subscribe(onNext: { data in
+                print("이메일 인증 재전송 완료")
+                print(String(data: data, encoding: .utf8))
+            }, onError: { error in
+                print("이메일 인증 재전송 중 오류: \(error)")
+            })
+            .disposed(by: disposeBag)
     }
 }
