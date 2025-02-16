@@ -330,10 +330,7 @@ class EditView : UIView {
 
     @objc private func donePressed() {
         if let datePicker = self.dateTextField.inputView as? UIDatePicker {
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "ko_KR")
-            formatter.dateFormat = "yyyy년 M월 d일 a h시 mm분"
-            self.dateTextField.placeholder = formatter.string(from: datePicker.date)
+            self.dateTextField.placeholder = dateToYYYYMD(datePicker.date)
             self.rollpeData?.date = datePicker.date
         }
         self.dateTextField.resignFirstResponder()

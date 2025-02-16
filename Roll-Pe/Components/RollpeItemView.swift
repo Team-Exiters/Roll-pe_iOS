@@ -37,7 +37,7 @@ class RollpeItemView: UIView {
         
         addSubview(upperBackgroundView)
         
-        lowerBackgroundView.backgroundColor = .white
+        lowerBackgroundView.backgroundColor = .rollpePrimary
         addSubview(lowerBackgroundView)
         
         if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
@@ -54,7 +54,7 @@ class RollpeItemView: UIView {
         addSubview(dDayLabel)
         
         imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .black
+        imageView.tintColor = .rollpeSecondary
         addSubview(imageView)
         
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)

@@ -154,8 +154,24 @@ class SendView : UIView , UITableViewDataSource , UITableViewDelegate {
         tableView.dataSource = self
         tableView.delegate = self
         
-        sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
-        searchButton.addTarget(self, action: #selector(searchButtonTapped), for: .touchUpInside)
+        sendButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                if let selectedUser = selectedUser {
+                    rollpeHostViewModel.sendRollpe(selectedUser: selectedUser)
+                }
+                else{
+                    //유저를 골라달라는 alert
+                }
+            })
+            .disposed(by: disposeBag)
+        searchButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                selectedUser = nil
+                rollpeHostViewModel.searchUser(nickname: searchBar.text ?? "")
+            })
+            .disposed(by: disposeBag)
         
         backButton.snp.makeConstraints{make in
             make.top.equalToSuperview().offset(28)
@@ -193,20 +209,6 @@ class SendView : UIView , UITableViewDataSource , UITableViewDelegate {
                  tableView.reloadData()
              })
              .disposed(by: disposeBag)
-    }
-    
-    @objc private func searchButtonTapped(){
-        selectedUser = nil
-        rollpeHostViewModel.searchUser(nickname: searchBar.text ?? "")
-    }
-    
-    @objc private func sendButtonTapped(){
-        if let selectedUser = selectedUser {
-            rollpeHostViewModel.sendRollpe(selectedUser: selectedUser)
-        }
-        else{
-            //유저를 골라달라는 alert
-        }
     }
 }
 

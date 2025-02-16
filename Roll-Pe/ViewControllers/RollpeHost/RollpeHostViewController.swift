@@ -234,11 +234,18 @@ class RollpeHostViewController: UIViewController {
     
     private func setupParticipantListButton(){
         contentView.addSubview(participantListButton)
-        participantListButton.addTarget(self, action: #selector(participantListButtonTapped), for: .touchUpInside)
         participantListButton.snp.makeConstraints{make in
             make.top.equalTo(writerListStack.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
         }
+        
+        participantListButton.rx.tap
+                   .subscribe(onNext: { [weak self] in
+                       guard let self = self else { return }
+                       let participantListVC = ParticipantListViewController(rollpeHostViewModel: self.rollpeHostViewModel)
+                       self.navigationController?.pushViewController(participantListVC, animated: true)
+                   })
+                   .disposed(by: disposeBag)
     }
     
     private func setupButtonView(){
@@ -334,11 +341,6 @@ class RollpeHostViewController: UIViewController {
         sendHeartButton.removeFromSuperview()
         setupButtonView()
       }
-
-    @objc private func participantListButtonTapped(){
-        let participantlistVC = ParticipantListViewController(rollpeHostViewModel: rollpeHostViewModel)
-        navigationController?.pushViewController(participantlistVC, animated: true)
-    }
     
     @objc private func shareButtonTapped() {
         let urlToShare = "https://youtube.com/shorts/U-klwYEpc8k?si=eNVWZ8l5y5dZboPx"
