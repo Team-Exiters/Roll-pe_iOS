@@ -136,13 +136,7 @@ final class SignUpViewModel {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
-                    do {
-                        let model = try JSONDecoder().decode(SignUpModel.self, from: data)
-                        self.response.onNext(true)
-                    } catch {
-                        print("SignUpModel JSON 디코딩 오류: \(error)")
-                        self.response.onNext(false)
-                    }
+                    self.response.onNext(true)
                 } else if response.statusCode == 400 {
                     self.handleFailure(data)
                 } else {

@@ -144,9 +144,11 @@ class APIService {
     private func handleLogout() {
         keychain.delete(key: "ACCESS_TOKEN")
         keychain.delete(key: "REFRESH_TOKEN")
+        keychain.delete(key: "NAME")
+        keychain.delete(key: "EMAIL")
         
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "TOKEN_EXPIRED"), object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LOGOUT"), object: nil)
         }
     }
 }
