@@ -18,7 +18,6 @@ class MainBeforeSignInViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         view.backgroundColor = .rollpePrimary

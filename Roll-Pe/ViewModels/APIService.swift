@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import Alamofire
 import RxAlamofire
+import UIKit
 
 class APIService {
     static let shared = APIService()
@@ -148,7 +149,18 @@ class APIService {
         keychain.delete(key: "EMAIL")
         
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LOGOUT"), object: nil)
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            let window = windowScene?.windows.first
+            
+            if let rootVC = window?.rootViewController {
+                let alertController = UIAlertController(title: "오류", message: "재로그인이 필요합니다", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LOGOUT"), object: nil)
+                }))
+                
+                rootVC.present(alertController, animated: true, completion: nil)
+            }
         }
     }
 }
