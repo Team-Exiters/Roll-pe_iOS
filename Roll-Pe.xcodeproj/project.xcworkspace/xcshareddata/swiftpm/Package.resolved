@@ -107,8 +107,8 @@
       "state" : {
         "revision" : "9535b58695b91fb67f56d58d6fd0c76462d7743a",
         "version" : "6.1.2"
-  "originHash" : "bd2a51392f4b772a7a085f167fdf279ab95d04939ae10b4cd1fc17bbb5b00637",
-  "pins" : [
+      }
+    },
     {
       "identity" : "marqueelabel",
       "kind" : "remoteSourceControl",
