@@ -172,8 +172,7 @@ class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        self.hideKeyboardWhenTappedAround()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         setUI()
         bind()
@@ -235,9 +234,9 @@ class SignInViewController: UIViewController {
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
         let contentView: UIView = UIView()
@@ -246,9 +245,9 @@ class SignInViewController: UIViewController {
         
         contentView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(40)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
         }
         

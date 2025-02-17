@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let vc = MainAfterSignInViewController()
             let navVC = UINavigationController(rootViewController: vc)
             navVC.navigationBar.isHidden = true
+            navVC.hideKeyboardWhenTappedAround()
             
             window?.rootViewController = navVC
             window?.makeKeyAndVisible()
@@ -30,6 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let vc = MainBeforeSignInViewController()
             let navVC = UINavigationController(rootViewController: vc)
             navVC.navigationBar.isHidden = true
+            navVC.hideKeyboardWhenTappedAround()
             
             window?.rootViewController = navVC
             window?.makeKeyAndVisible()
@@ -81,6 +83,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vc = MainBeforeSignInViewController()
         let navVC = UINavigationController(rootViewController: vc)
         navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
         
         window?.rootViewController = navVC
         window?.makeKeyAndVisible()
