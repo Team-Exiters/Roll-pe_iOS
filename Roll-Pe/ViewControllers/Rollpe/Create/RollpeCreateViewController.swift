@@ -78,7 +78,6 @@ class RollpeCreateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTappedAround()
-        self.changePositionWhenKeyboardUp()
         
         view.backgroundColor = .rollpePrimary
         
@@ -450,16 +449,6 @@ class RollpeCreateViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // MARK: - 네비게이션 바
-        
-        let safeareaTopArea = UIView()
-        safeareaTopArea.backgroundColor = .rollpePrimary
-        view.addSubview(safeareaTopArea)
-        
-        safeareaTopArea.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(safeareaTop)
-        }
         
         let navigationBar = NavigationBar()
         view.addSubview(navigationBar)

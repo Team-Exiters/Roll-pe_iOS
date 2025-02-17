@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 import SwiftUI
+import RxSwift
+import RxCocoa
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
@@ -47,7 +49,7 @@ func dateToYYYYMD(_ date: Date) -> String {
     return dateFormatter.string(from: date)
 }
 
-// YYYY년 MM월 DD일 A HH:mm
+// YYYY년 MM월 DD일 A HH:mm 계산
 func dateToYYYYMdahhmm(_ date: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: "ko_KR")
@@ -65,27 +67,6 @@ extension UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
-    }
-}
-
-// textfield 키보드 위치에 따른 뷰 높이 변화
-extension UIViewController {
-    func changePositionWhenKeyboardUp() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboard(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-    }
-    
-    @objc func keyboard(notification:Notification) {
-        guard let keyboardReact = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
-        
-        if notification.name == UIResponder.keyboardWillShowNotification || notification.name == UIResponder.keyboardWillChangeFrameNotification {
-            self.view.frame.origin.y = -keyboardReact.height
-        } else{
-            self.view.frame.origin.y = 0
-        }
     }
 }
 
@@ -119,5 +100,19 @@ extension UIButton {
             outgoing.font = font
             return outgoing
         }
+    }
+}
+
+// UILabel rx.tap 추가
+extension Reactive where Base: UILabel {
+    var tap: Observable<Void> {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        
+        base.addGestureRecognizer(tapGestureRecognizer)
+        base.isUserInteractionEnabled = true
+
+        return tapGestureRecognizer.rx.event
+            .map { _ in () }
+            .asObservable()
     }
 }

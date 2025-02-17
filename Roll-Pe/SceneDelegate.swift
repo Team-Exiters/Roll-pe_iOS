@@ -5,21 +5,42 @@
 //  Created by 김태은 on 11/30/24.
 //
 
+import Foundation
 import UIKit
+import RxKakaoSDKAuth
+import KakaoSDKAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        let keychain = Keychain()
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = RollpeParticipantViewController()
-        let navigationController = UINavigationController(rootViewController: vc)
-        
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
+        if keychain.read(key: "REFRESH_TOKEN") != nil {
+            let vc = MainAfterSignInViewController()
+            let navigationController = UINavigationController(rootViewController: vc)
+            
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+        } else {
+            let vc = MainBeforeSignInViewController()
+            let navigationController = UINavigationController(rootViewController: vc)
+            
+            window?.rootViewController = navigationController
+            window?.makeKeyAndVisible()
+        }
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            // 카카오 로그인
+            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                _ = AuthController.rx.handleOpenUrl(url: url)
+            }
+        }
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
