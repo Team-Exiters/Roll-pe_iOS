@@ -693,6 +693,8 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 8.0.0;
+			};
+		};
 		8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/cbpowell/MarqueeLabel";
@@ -737,6 +739,7 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
 		8B93961E2D57A34A00BF847F /* MarqueeLabel */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
