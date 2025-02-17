@@ -32,6 +32,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.rootViewController = navigationController
             window?.makeKeyAndVisible()
         }
+        
+        // 토큰 만료시
+        NotificationCenter.default.addObserver(self, selector: #selector(moveToMainBeforeSignInView), name: Notification.Name(rawValue: "TOKEN_EXPIRED"), object: nil)
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -71,6 +74,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
     
+    // 로그인 전 메인 뷰로 이동
+    @objc private func moveToMainBeforeSignInView() {
+        let vc = MainBeforeSignInViewController()
+        let navController = UINavigationController(rootViewController: vc)
+        
+        // ✅ 로그인 성공 시 메인 화면으로 변경
+        window?.rootViewController = navController
+        window?.makeKeyAndVisible()
+    }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 

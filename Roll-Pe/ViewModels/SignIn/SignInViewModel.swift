@@ -168,16 +168,12 @@ class SignInViewModel {
             "pathCode": "email"
         ]
         
-        RxAlamofire.requestData(.post, "\(ip)/api/user/verify-email", parameters: body, encoding: JSONEncoding.default, headers: headers)
-            .map { response, data -> Data in
-                guard (200..<300).contains(response.statusCode) else {
-                    throw AFError.responseValidationFailed(reason: AFError.ResponseValidationFailureReason.unacceptableStatusCode(code: response.statusCode))
-                }
-                return data
-            }
-            .subscribe(onNext: { data in
+        RxAlamofire.request(.post, "\(ip)/api/user/verify-email", parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .observe(on: MainScheduler.instance)
+            .validate(statusCode: 200..<300)
+            .responseData()
+            .subscribe(onNext: { response, data in
                 print("이메일 인증 재전송 완료")
-                print(String(data: data, encoding: .utf8))
             }, onError: { error in
                 print("이메일 인증 재전송 중 오류: \(error)")
             })

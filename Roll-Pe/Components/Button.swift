@@ -54,7 +54,7 @@ class PrimaryButton: UIButton {
 }
 
 extension Reactive where Base: PrimaryButton {
-    var isChecked: Observable<Bool> {
+    var disabled: Observable<Bool> {
         return base.disabledSubject.asObservable()
     }
 }

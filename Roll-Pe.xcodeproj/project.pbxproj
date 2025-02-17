@@ -7,16 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B93961F2D57A34A00BF847F /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 8B93961E2D57A34A00BF847F /* MarqueeLabel */; };
 		E20492DE2D5F9C220035E61A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DD2D5F9C220035E61A /* GoogleSignIn */; };
 		E20492E02D5F9C220035E61A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DF2D5F9C220035E61A /* GoogleSignInSwift */; };
-		8B93961F2D57A34A00BF847F /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 8B93961E2D57A34A00BF847F /* MarqueeLabel */; };
 		E24421A92D495DD700144CB2 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E24421A82D495DD700144CB2 /* RxCocoa */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
 		E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C892D3C260400C9ABA5 /* .gitignore */; };
 		E24E29B02D5323F900916E78 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = E24E29A72D5323F900916E78 /* LICENSE.txt */; };
-		E24E29B12D5323F900916E78 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24E29AB2D5323F900916E78 /* Pretendard-SemiBold.otf */; };
-		E24E29B22D5323F900916E78 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E24E29A82D5323F900916E78 /* Pretendard-Bold.otf */; };
 		E24E29B72D5488E600916E78 /* RxKakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29B62D5488E600916E78 /* RxKakaoSDK */; };
 		E24E29B92D5488E600916E78 /* RxKakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29B82D5488E600916E78 /* RxKakaoSDKAuth */; };
 		E24E29BB2D5488E600916E78 /* RxKakaoSDKCert in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29BA2D5488E600916E78 /* RxKakaoSDKCert */; };
@@ -60,10 +58,6 @@
 /* Begin PBXFileReference section */
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E24E29A72D5323F900916E78 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		E24E29A82D5323F900916E78 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		E24E29A92D5323F900916E78 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		E24E29AA2D5323F900916E78 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		E24E29AB2D5323F900916E78 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		E24E29C62D548E0200916E78 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -388,7 +382,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DR8VUQPNSR;
+				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
@@ -424,7 +418,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DR8VUQPNSR;
+				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
@@ -687,20 +681,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 8.0.0;
-			};
-		};
 		8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/cbpowell/MarqueeLabel";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.5.0;
+			};
+		};
+		E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
 			};
 		};
 		E24D4C7C2D3BD52300C9ABA5 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
@@ -730,6 +724,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B93961E2D57A34A00BF847F /* MarqueeLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
+			productName = MarqueeLabel;
+		};
 		E20492DD2D5F9C220035E61A /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
@@ -739,11 +738,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
-		};
-		8B93961E2D57A34A00BF847F /* MarqueeLabel */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
-			productName = MarqueeLabel;
 		};
 		E24421A82D495DD700144CB2 /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;
