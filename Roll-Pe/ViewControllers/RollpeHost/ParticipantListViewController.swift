@@ -65,7 +65,11 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
          }
          blockButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
          blockButton.tintColor = .rollpeStatusDanger
-         blockButton.addTarget(self, action: #selector(blockButtonTapped), for: .touchUpInside)
+         blockButton.rx.tap
+                 .subscribe(onNext: {
+                   print("차단")
+                 })
+                 .disposed(by: disposeBag)
          
          var config = UIButton.Configuration.plain()
           if let originalImage = UIImage(named: "icon_siren")?
@@ -78,7 +82,11 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
           config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0)
           let reportButton = UIButton(configuration: config, primaryAction: nil)
           reportButton.frame = CGRect(x: 0, y: 0, width: 22, height: 22)
-          reportButton.addTarget(self, action: #selector(reportButtonTapped), for: .touchUpInside)
+         reportButton.rx.tap
+                 .subscribe(onNext: {
+                   print("신고")
+                 })
+                 .disposed(by: disposeBag)
          
          let stackView = UIStackView(arrangedSubviews: [blockButton, reportButton])
          stackView.axis = .horizontal
@@ -93,11 +101,21 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
          } else {
              cell.textLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
          }
-         if indexPath.row == participants.count - 1 {
-                 cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: CGFloat.greatestFiniteMagnitude)
-             } else {
-                 cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+         if indexPath.row != participants.count - 1 {
+             let separator = UIView()
+             separator.backgroundColor = .rollpeGray
+             separator.layer.cornerRadius = 1
+             separator.layer.masksToBounds = true
+             cell.addSubview(separator)
+             
+             separator.snp.makeConstraints { make in
+                 make.leading.equalTo(cell.snp.leading).offset(16)
+                 make.trailing.equalTo(cell.snp.trailing).offset(-16)
+                 make.bottom.equalTo(cell.snp.bottom)
+                 make.height.equalTo(2)
              }
+
+         }
          cell.selectionStyle = .none
          return cell
      }
@@ -110,19 +128,12 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
         tv.layer.cornerRadius = 16.0
         tv.layer.masksToBounds = true
         tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        tv.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        tv.separatorColor = .rollpeGray
         return tv
     }()
     
     private var participants : [UserDataModel] = [UserDataModel(nickname: "ㅏㅏㅑ",login: ["kakao"],userUID: "ab12jc123",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㅇㄴ",login: ["kakao"],userUID: "abc1sc23",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㄴㅇ",login: ["kakao"],userUID: "abc1ewa23",rollpeCount: 8, heartCount: 10),
-                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
-                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
-                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
-                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
-                                                  UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10),
                                                   UserDataModel(nickname: "ㄴㅇㄴㄴ",login: ["kakao"],userUID: "abcgfn123",rollpeCount: 8, heartCount: 10)]
     
@@ -174,8 +185,14 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
         tableView.delegate = self
         tableView.dataSource = self
         
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        
+        backButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                print("백버튼")
+                if let navigationController = self?.window?.rootViewController as? UINavigationController {
+                    navigationController.popViewController(animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
         
         backButton.snp.makeConstraints{make in
             make.top.equalToSuperview().offset(28)
@@ -201,13 +218,6 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
                  participants = model.participants
              })
              .disposed(by: disposeBag)
-    }
-    
-    @objc private func backButtonTapped() {
-        print("백버튼")
-        if let navigationController = self.window?.rootViewController as? UINavigationController {
-            navigationController.popViewController(animated: true)
-        }
     }
     
     @objc private func blockButtonTapped() {

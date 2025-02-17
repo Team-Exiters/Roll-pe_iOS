@@ -201,6 +201,26 @@ class EditView : UIView {
         return textField
     }()
     
+    let datePicker: UIDatePicker = {
+       let picker = UIDatePicker()
+       picker.datePickerMode = .dateAndTime
+       picker.preferredDatePickerStyle = .wheels
+       picker.locale = Locale(identifier: "ko-KR")
+       
+       var components = DateComponents()
+       // 최소일
+       components.day = 1
+       let minDate = Calendar.autoupdatingCurrent.date(byAdding: components, to: Date())
+       // 최대일
+       components.day = 30
+       let maxDate = Calendar.autoupdatingCurrent.date(byAdding: components, to: Date())
+
+       picker.maximumDate = maxDate
+       picker.minimumDate = minDate
+       
+       return picker
+   }()
+    
     private let rollpeEndButton = SecondaryButton(title: "롤페 마무리하기")
     
     private let rollpeSaveButton = PrimaryButton(title: "변경사항 저장")
@@ -312,15 +332,7 @@ class EditView : UIView {
     }
     
     private func setupDatePicker() {
-        let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .dateAndTime
-        datePicker.locale = Locale(identifier: "ko_KR")
-        if #available(iOS 13.4, *) {
-            datePicker.preferredDatePickerStyle = .wheels
-        }
-   
         self.dateTextField.inputView = datePicker
-
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         let doneButton = UIBarButtonItem(title: "완료", style: .done, target: self, action: #selector(donePressed))
