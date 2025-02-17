@@ -15,7 +15,7 @@ class RollpeItemView: UIView {
     
     private let upperBackgroundView = UIView()
     private let lowerBackgroundView = UIView()
-    private let dDayLabel = BadgeDDay()
+    private let dDayLabel = PaddedLabel()
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
@@ -40,18 +40,35 @@ class RollpeItemView: UIView {
         lowerBackgroundView.backgroundColor = .rollpePrimary
         addSubview(lowerBackgroundView)
         
+        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
+            dDayLabel.font = font
+        }
+        else{
+            dDayLabel.font = UIFont.systemFont(ofSize: 12)
+        }
+        dDayLabel.textColor = .white
+        dDayLabel.textAlignment = .center
+        dDayLabel.backgroundColor = UIColor(named: "rollpe_main")
+        dDayLabel.layer.cornerRadius = 10
+        dDayLabel.layer.masksToBounds = true
         addSubview(dDayLabel)
         
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = .rollpeSecondary
         addSubview(imageView)
-
-        titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-        titleLabel.textColor = .rollpeSecondary
+        
+        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        titleLabel.textColor = UIColor(named: "rollpe_secondary")
         addSubview(titleLabel)
         
-        subtitleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
-        subtitleLabel.textColor = .rollpeGray
+        
+        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
+            subtitleLabel.font = font
+        }
+        else{
+            subtitleLabel.font = UIFont.systemFont(ofSize: 12)
+        }
+        subtitleLabel.textColor = .gray
         addSubview(subtitleLabel)
         
         setupConstraints()
@@ -72,8 +89,6 @@ class RollpeItemView: UIView {
         dDayLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview().offset(10)
-            make.width.equalTo(42)
-            make.height.equalTo(20)
         }
         
         imageView.snp.makeConstraints { make in
@@ -117,6 +132,21 @@ class RollpeItemView: UIView {
         self.theme = theme
   
         configureImageView(for: theme)
+    }
+}
+
+class PaddedLabel: UILabel {
+    private let padding = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
+
+    override func drawText(in rect: CGRect) {
+        let insets = padding
+        super.drawText(in: rect.inset(by: insets))
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let size = super.intrinsicContentSize
+        return CGSize(width: size.width + padding.left + padding.right,
+                      height: size.height + padding.top + padding.bottom)
     }
 }
 

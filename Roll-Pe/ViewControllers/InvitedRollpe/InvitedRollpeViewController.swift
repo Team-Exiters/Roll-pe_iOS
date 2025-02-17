@@ -97,7 +97,7 @@ class InvitedRollpeViewController: UIViewController {
         contentView.addSubview(navigationBar)
         navigationBar.parentViewController = self
             navigationBar.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(safeareaTop)
+                make.top.equalToSuperview()
                 make.horizontalEdges.equalToSuperview().inset(20)
             }
     }

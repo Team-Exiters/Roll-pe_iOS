@@ -79,7 +79,6 @@ class MyRollpeViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.bounces = false
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top) // 상단 safeArea 유지
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalToSuperview()
         }
@@ -97,7 +96,7 @@ class MyRollpeViewController: UIViewController {
         contentView.addSubview(navigationBar)
         navigationBar.parentViewController = self
             navigationBar.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(safeareaTop)
+                make.top.equalToSuperview()
                 make.horizontalEdges.equalToSuperview().inset(20)
             }
     }
