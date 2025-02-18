@@ -33,7 +33,7 @@ class APIService {
             .authorization(bearerToken: accessToken)
         ]
         
-        return RxAlamofire.request(
+        return RxAlamofire.requestData(
             method,
             "\(ip)\(url)",
             parameters: parameters,
@@ -41,8 +41,6 @@ class APIService {
             headers: headers
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
-        .responseData()
         .flatMap { response, data in
             // 액세스 토큰 만료일 때
             if response.statusCode == 401 {
@@ -77,7 +75,7 @@ class APIService {
             .authorization(bearerToken: accessToken)
         ]
         
-        return RxAlamofire.request(
+        return RxAlamofire.requestData(
             method,
             "\(ip)\(url)",
             parameters: parameters,
@@ -85,8 +83,6 @@ class APIService {
             headers: headers
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
-        .responseData()
         .flatMap { response, data in
             // 액세스 토큰 만료일 때
             if response.statusCode == 401 {
@@ -111,8 +107,10 @@ class APIService {
         }
     }
     
-    // 리프레시 토큰 재발급
+    // 액세스 토큰 재발급
     private func refreshAccessToken(_ refreshToken: String) -> Observable<String> {
+        print("액세스 토큰 재발급 시도")
+        
         return Observable.create { observer in
             let parameters: [String: Any] = ["refresh": refreshToken]
             
