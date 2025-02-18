@@ -19,7 +19,7 @@ class APIService {
     private let keychain = Keychain()
     
     // 요청
-    private func request(
+    func request(
         _ url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
@@ -62,7 +62,7 @@ class APIService {
     }
     
     // 요청과 Decode처리
-    private func requestDecodable<T: Decodable>(
+    func requestDecodable<T: Decodable>(
         _ url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
