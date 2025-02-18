@@ -230,6 +230,7 @@ class SignInViewController: UIViewController {
         // 내부 뷰
         let scrollView: UIScrollView = UIScrollView()
         scrollView.bounces = false
+        scrollView.showsVerticalScrollIndicator = false
         
         view.addSubview(scrollView)
         

@@ -163,6 +163,7 @@ class SignUpViewController: UIViewController {
         view.backgroundColor = .rollpePrimary
         
         let scrollView: UIScrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
         
         view.addSubview(scrollView)
         

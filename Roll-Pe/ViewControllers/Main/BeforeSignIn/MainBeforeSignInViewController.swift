@@ -29,6 +29,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         scrollView.backgroundColor = .rollpePrimary
         scrollView.bounces = false
+        scrollView.showsVerticalScrollIndicator = false
         
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
