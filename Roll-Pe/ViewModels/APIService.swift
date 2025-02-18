@@ -35,7 +35,7 @@ class APIService {
         
         return RxAlamofire.requestData(
             method,
-            "\(ip)\(url)",
+            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
             parameters: parameters,
             encoding: encoding,
             headers: headers
@@ -77,7 +77,7 @@ class APIService {
         
         return RxAlamofire.requestData(
             method,
-            "\(ip)\(url)",
+            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
             parameters: parameters,
             encoding: encoding,
             headers: headers
