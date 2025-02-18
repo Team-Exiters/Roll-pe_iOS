@@ -41,28 +41,7 @@ class SidemenuView: UIView {
     }
     
     private func setup(menuIndex: Int) {
-        // 메뉴 텍스트 컴포넌트
-        func menuText(menu: String, index: Int) -> UILabel {
-            let label: UILabel = UILabel()
-            label.textColor = menuIndex == index ? .rollpeMain : .rollpeSecondary
-            label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 40)
-            label.numberOfLines = 1
-            label.text = menu
-              
-            return label
-        }
-        
-        // 약관 텍스트 컴포넌트
-        func policyText(text: String) -> UILabel {
-            let label: UILabel = UILabel()
-            label.textColor = .rollpeGray
-            label.font = UIFont(name: "Pretendard-Regular", size: 12)
-            label.numberOfLines = 1
-            label.text = text
-            
-            return label
-        }
-        
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         // MARK: - 뒷배경
         
@@ -145,6 +124,28 @@ class SidemenuView: UIView {
             make.bottom.equalToSuperview().inset(24)
         }
         
+        // 메뉴 텍스트 컴포넌트
+        func menuText(menu: String, index: Int) -> UILabel {
+            let label: UILabel = UILabel()
+            label.textColor = menuIndex == index ? .rollpeMain : .rollpeSecondary
+            label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 40)
+            label.numberOfLines = 1
+            label.text = menu
+              
+            return label
+        }
+        
+        // 약관 텍스트 컴포넌트
+        func policyText(text: String) -> UILabel {
+            let label: UILabel = UILabel()
+            label.textColor = .rollpeGray
+            label.font = UIFont(name: "Pretendard-Regular", size: 12)
+            label.numberOfLines = 1
+            label.text = text
+            
+            return label
+        }
+            
         // 메뉴
         let menusView: UIStackView = UIStackView()
         menusView.translatesAutoresizingMaskIntoConstraints = false
