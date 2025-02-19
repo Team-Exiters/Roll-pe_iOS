@@ -32,9 +32,7 @@ class MyRollpeViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
         return label
@@ -47,9 +45,7 @@ class MyRollpeViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         }
         return label
@@ -67,6 +63,7 @@ class MyRollpeViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         view.backgroundColor = .rollpePrimary
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         setupScrollView()
         setupContentView()
         setupNavigationBar()
@@ -117,7 +114,6 @@ class MyRollpeViewController: UIViewController {
         }
     }
     
-    //태은짱 코드 개날먹 ㅅㅅ
     private func setupListStackView() {
         contentView.addSubview(listStackView)
         listStackView.snp.makeConstraints { make in

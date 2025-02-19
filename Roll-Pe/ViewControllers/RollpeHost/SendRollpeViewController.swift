@@ -18,6 +18,7 @@ class SendRollpeViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .rollpeGray
         navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         setupSendView()
     }
     
@@ -57,6 +58,22 @@ class SendView : UIView , UITableViewDataSource , UITableViewDelegate {
             }
         } else {
             cell.imageView?.image = nil
+        }
+        
+        if indexPath.row != searchedUsers.count - 1 {
+            let separator = UIView()
+            separator.backgroundColor = .rollpeGray
+            separator.layer.cornerRadius = 1
+            separator.layer.masksToBounds = true
+            cell.addSubview(separator)
+            
+            separator.snp.makeConstraints { make in
+                make.leading.equalTo(cell.snp.leading).offset(16)
+                make.trailing.equalTo(cell.snp.trailing).offset(-16)
+                make.bottom.equalTo(cell.snp.bottom)
+                make.height.equalTo(2)
+            }
+
         }
         return cell
     }

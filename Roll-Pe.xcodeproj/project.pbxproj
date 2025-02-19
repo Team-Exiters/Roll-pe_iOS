@@ -10,11 +10,6 @@
 		8B93961F2D57A34A00BF847F /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 8B93961E2D57A34A00BF847F /* MarqueeLabel */; };
 		E20492DE2D5F9C220035E61A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DD2D5F9C220035E61A /* GoogleSignIn */; };
 		E20492E02D5F9C220035E61A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DF2D5F9C220035E61A /* GoogleSignInSwift */; };
-		E20F1BCA2D6383950093FA1C /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E20F1BC62D6383950093FA1C /* Pretendard-Bold.otf */; };
-		E20F1BCB2D6383950093FA1C /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E20F1BC82D6383950093FA1C /* Pretendard-Regular.otf */; };
-		E20F1BCC2D6383950093FA1C /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */ = {isa = PBXBuildFile; fileRef = E20F1BC52D6383950093FA1C /* Hakgyoansim-Dunggeunmiso-R.otf */; };
-		E20F1BCD2D6383950093FA1C /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = E20F1BC92D6383950093FA1C /* Pretendard-SemiBold.otf */; };
-		E20F1BCE2D6383950093FA1C /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = E20F1BC72D6383950093FA1C /* Pretendard-Medium.otf */; };
 		E24421A92D495DD700144CB2 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E24421A82D495DD700144CB2 /* RxCocoa */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
@@ -61,14 +56,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E20F1BC52D6383950093FA1C /* Hakgyoansim-Dunggeunmiso-R.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hakgyoansim-Dunggeunmiso-R.otf"; sourceTree = "<group>"; };
-		E20F1BC62D6383950093FA1C /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		E20F1BC72D6383950093FA1C /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		E20F1BC82D6383950093FA1C /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		E20F1BC92D6383950093FA1C /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E24E29A72D5323F900916E78 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		E24E29C62D548E0200916E78 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F4742CFA437F002ED763 /* Roll-PeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,11 +143,6 @@
 		E24E29AC2D5323F900916E78 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				E20F1BC52D6383950093FA1C /* Hakgyoansim-Dunggeunmiso-R.otf */,
-				E20F1BC62D6383950093FA1C /* Pretendard-Bold.otf */,
-				E20F1BC72D6383950093FA1C /* Pretendard-Medium.otf */,
-				E20F1BC82D6383950093FA1C /* Pretendard-Regular.otf */,
-				E20F1BC92D6383950093FA1C /* Pretendard-SemiBold.otf */,
 				E24E29A72D5323F900916E78 /* LICENSE.txt */,
 			);
 			path = Fonts;
@@ -167,7 +151,6 @@
 		E264F44B2CFA437D002ED763 = {
 			isa = PBXGroup;
 			children = (
-				E24E29C62D548E0200916E78 /* Secrets.xcconfig */,
 				E24E29AC2D5323F900916E78 /* Fonts */,
 				E24D4C892D3C260400C9ABA5 /* .gitignore */,
 				E264F4562CFA437D002ED763 /* Roll-Pe */,
@@ -331,11 +314,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
-				E20F1BCA2D6383950093FA1C /* Pretendard-Bold.otf in Resources */,
-				E20F1BCB2D6383950093FA1C /* Pretendard-Regular.otf in Resources */,
-				E20F1BCC2D6383950093FA1C /* Hakgyoansim-Dunggeunmiso-R.otf in Resources */,
-				E20F1BCD2D6383950093FA1C /* Pretendard-SemiBold.otf in Resources */,
-				E20F1BCE2D6383950093FA1C /* Pretendard-Medium.otf in Resources */,
 				E24E29B02D5323F900916E78 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -396,7 +374,6 @@
 /* Begin XCBuildConfiguration section */
 		E264F47E2CFA437F002ED763 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E24E29C62D548E0200916E78 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -432,7 +409,6 @@
 		};
 		E264F47F2CFA437F002ED763 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E24E29C62D548E0200916E78 /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

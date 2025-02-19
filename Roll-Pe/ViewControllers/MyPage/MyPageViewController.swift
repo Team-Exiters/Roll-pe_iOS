@@ -36,9 +36,7 @@ class MyPageViewController: UIViewController {
         label.textColor = UIColor(named: "rollpe_secondary")
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
         return label
@@ -60,9 +58,7 @@ class MyPageViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         }
         return label
@@ -76,9 +72,7 @@ class MyPageViewController: UIViewController {
         label.textColor = UIColor(named: "rollpe_secondary")
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         }
         return label
@@ -107,6 +101,7 @@ class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .rollpePrimary
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         getData()
         setupScrollView()
         setupContentView()

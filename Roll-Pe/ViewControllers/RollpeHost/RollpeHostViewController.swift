@@ -135,6 +135,7 @@ class RollpeHostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .rollpePrimary
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         bindViewModel()                      //뷰 불러올때 뷰모델에서 불러올 값 이렇게 먼저 바인딩 시키고
         rollpeHostViewModel.fetchRollpeData() //그 다음에 이렇게 데이터 불러올것 (패턴이니까 그냥 외워서 사용할것)
         addWritersToList()
