@@ -100,6 +100,7 @@ class EndedRollpeHostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .rollpePrimary
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         bindViewModel()
         rollpeHostViewModel.fetchRollpeData()
         addWritersToList()

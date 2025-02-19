@@ -32,9 +32,7 @@ class InvitedRollpeViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
         return label
@@ -47,9 +45,7 @@ class InvitedRollpeViewController: UIViewController {
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         }
         return label
@@ -66,6 +62,7 @@ class InvitedRollpeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
         setupScrollView()
         setupContentView()

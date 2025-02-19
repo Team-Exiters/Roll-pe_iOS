@@ -31,6 +31,7 @@ class ParticipantListViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .rollpeGray
         navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         setupListView()
     }
     
@@ -116,6 +117,7 @@ class ParticipantListView : UIView , UITableViewDataSource , UITableViewDelegate
              }
 
          }
+         tableView.separatorStyle = .none
          cell.selectionStyle = .none
          return cell
      }

@@ -31,6 +31,7 @@ class RollpeEditViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .rollpeGray
         navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         setupEditView()
         bindEditViewData()
         hideKeyboardWhenTappedAround()
