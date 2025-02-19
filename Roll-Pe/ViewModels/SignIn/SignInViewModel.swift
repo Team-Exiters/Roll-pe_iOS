@@ -122,9 +122,12 @@ class SignInViewModel {
     private func handleSuccess(_ model: SignInModel, _ keepSignIn: Bool) {
         let isSuccess = model.code == "SUCCESS"
         
-        // 토큰 저장
-        if isSuccess, let data = model.data {
+        // 정보 저장
+        if isSuccess, let data = model.data, let userData = model.data?.user {
             keychain.create(key: "ACCESS_TOKEN", value: data.access)
+            
+            keychain.create(key: "NAME", value: userData.name)
+            keychain.create(key: "EMAIL", value: userData.email)
             
             if keepSignIn {
                 keychain.create(key: "REFRESH_TOKEN", value: data.refresh)

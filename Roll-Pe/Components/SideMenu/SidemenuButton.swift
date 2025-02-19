@@ -43,26 +43,3 @@ class ButtonSideMenu: UIButton {
         }
     }
 }
-
-/*
- 
- ButtonSideMenu 사용 방법
- 
- let sideMenuView = SidemenuView(menuIndex: index)
- let buttonSideMenu: UIButton = ButtonSideMenu()
- 
- view.addSubview(buttonSideMenu)
- 
- buttonSideMenu.snp.makeConstraints { make in
-     make.top.equalToSuperview().offset(80)
-     make.trailing.equalToSuperview().inset(20)
- }
- 
- buttonSideMenu.rx.tap
-     .subscribe(onNext: {
-         self.view.addSubview(sideMenuView)
-         sideMenuView.showMenu()
-     })
-     .disposed(by: disposeBag)
- 
-*/

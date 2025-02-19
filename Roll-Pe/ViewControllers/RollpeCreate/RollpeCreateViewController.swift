@@ -77,7 +77,6 @@ class RollpeCreateViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.hideKeyboardWhenTappedAround()
         
         view.backgroundColor = .rollpePrimary
         
@@ -92,8 +91,8 @@ class RollpeCreateViewController: UIViewController {
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop)
-            make.horizontalEdges.bottom.equalToSuperview()
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
         }
         
         let contentView: UIView = UIView()

@@ -18,7 +18,6 @@ class MainBeforeSignInViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        self.navigationController?.navigationBar.isHidden = true
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         view.backgroundColor = .rollpePrimary
@@ -30,6 +29,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         scrollView.backgroundColor = .rollpePrimary
         scrollView.bounces = false
+        scrollView.showsVerticalScrollIndicator = false
         
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

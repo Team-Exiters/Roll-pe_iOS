@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import Alamofire
 import RxAlamofire
+import UIKit
 
 class APIService {
     static let shared = APIService()
@@ -18,7 +19,7 @@ class APIService {
     private let keychain = Keychain()
     
     // 요청
-    private func request(
+    func request(
         _ url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
@@ -32,16 +33,14 @@ class APIService {
             .authorization(bearerToken: accessToken)
         ]
         
-        return RxAlamofire.request(
+        return RxAlamofire.requestData(
             method,
-            "\(ip)\(url)",
+            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
             parameters: parameters,
             encoding: encoding,
             headers: headers
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
-        .responseData()
         .flatMap { response, data in
             // 액세스 토큰 만료일 때
             if response.statusCode == 401 {
@@ -61,7 +60,7 @@ class APIService {
     }
     
     // 요청과 Decode처리
-    private func requestDecodable<T: Decodable>(
+    func requestDecodable<T: Decodable>(
         _ url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
@@ -76,16 +75,14 @@ class APIService {
             .authorization(bearerToken: accessToken)
         ]
         
-        return RxAlamofire.request(
+        return RxAlamofire.requestData(
             method,
-            "\(ip)\(url)",
+            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
             parameters: parameters,
             encoding: encoding,
             headers: headers
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
-        .responseData()
         .flatMap { response, data in
             // 액세스 토큰 만료일 때
             if response.statusCode == 401 {
@@ -110,8 +107,10 @@ class APIService {
         }
     }
     
-    // 리프레시 토큰 재발급
+    // 액세스 토큰 재발급
     private func refreshAccessToken(_ refreshToken: String) -> Observable<String> {
+        print("액세스 토큰 재발급 시도")
+        
         return Observable.create { observer in
             let parameters: [String: Any] = ["refresh": refreshToken]
             
@@ -144,9 +143,22 @@ class APIService {
     private func handleLogout() {
         keychain.delete(key: "ACCESS_TOKEN")
         keychain.delete(key: "REFRESH_TOKEN")
+        keychain.delete(key: "NAME")
+        keychain.delete(key: "EMAIL")
         
         DispatchQueue.main.async {
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "TOKEN_EXPIRED"), object: nil)
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes.first as? UIWindowScene
+            let window = windowScene?.windows.first
+            
+            if let rootVC = window?.rootViewController {
+                let alertController = UIAlertController(title: "오류", message: "재로그인이 필요합니다", preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LOGOUT"), object: nil)
+                }))
+                
+                rootVC.present(alertController, animated: true, completion: nil)
+            }
         }
     }
 }

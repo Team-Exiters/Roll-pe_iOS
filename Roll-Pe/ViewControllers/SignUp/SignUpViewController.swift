@@ -121,9 +121,7 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = true
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        self.hideKeyboardWhenTappedAround()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         setUI()
         bind()
@@ -165,13 +163,14 @@ class SignUpViewController: UIViewController {
         view.backgroundColor = .rollpePrimary
         
         let scrollView: UIScrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
         
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(safeareaTop)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
         let contentView: UIView = UIView()

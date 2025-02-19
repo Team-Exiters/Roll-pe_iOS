@@ -9,9 +9,11 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import SafariServices
 
 class SidemenuView: UIView {
     let disposeBag = DisposeBag()
+    weak var parentViewController: UIViewController?
     
     // 투명도
     private let ALPHA: CGFloat = 0.5
@@ -122,37 +124,6 @@ class SidemenuView: UIView {
             make.bottom.equalToSuperview().inset(24)
         }
         
-        // 메뉴
-        let menusView: UIStackView = UIStackView()
-        menusView.translatesAutoresizingMaskIntoConstraints = false
-        menusView.axis = .vertical
-        menusView.spacing = 40
-        
-        contentView.addArrangedSubview(menusView)
-        
-        // 메뉴 구성
-        let menus: [String] = ["홈", "검색", "공지사항", "1:1 문의", "마이페이지"]
-        
-        for (index, menu) in menus.enumerated() {
-            menusView.addArrangedSubview(menuText(menu: menu, index: index))
-        }
-        
-        // 약관
-        let policiesView: UIStackView = UIStackView()
-        policiesView.translatesAutoresizingMaskIntoConstraints = false
-        policiesView.axis = .vertical
-        policiesView.spacing = 8
-        
-        contentView.addArrangedSubview(policiesView)
-        
-        let policies: [String] = ["서비스 이용약관", "개인정보처리방침"]
-        
-        for policy in policies {
-            policiesView.addArrangedSubview(policyText(text: policy))
-        }
-        
-        // MARK: - 컴포넌트
-        
         // 메뉴 텍스트 컴포넌트
         func menuText(menu: String, index: Int) -> UILabel {
             let label: UILabel = UILabel()
@@ -160,7 +131,7 @@ class SidemenuView: UIView {
             label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 40)
             label.numberOfLines = 1
             label.text = menu
-            
+              
             return label
         }
         
@@ -174,6 +145,108 @@ class SidemenuView: UIView {
             
             return label
         }
+            
+        // 메뉴
+        let menusView: UIStackView = UIStackView()
+        menusView.translatesAutoresizingMaskIntoConstraints = false
+        menusView.axis = .vertical
+        menusView.spacing = 40
+        
+        contentView.addArrangedSubview(menusView)
+        
+        // 홈
+        let home = menuText(menu: "홈", index: 0)
+        menusView.addArrangedSubview(home)
+        
+        home.rx.tap
+            .subscribe(onNext: {
+                if menuIndex != 0, let vc = self.parentViewController {
+                    self.closeMenu()
+                    vc.navigationController?.pushViewController(MainAfterSignInViewController(), animated: false)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 검색
+        let search = menuText(menu: "검색", index: 1)
+        menusView.addArrangedSubview(search)
+        
+        search.rx.tap
+            .subscribe(onNext: {
+                if menuIndex != 1, let vc = self.parentViewController {
+                    self.closeMenu()
+                    vc.navigationController?.pushViewController(SearchViewController(), animated: false)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 공지사항
+        let notice = menuText(menu: "공지사항", index: 2)
+        menusView.addArrangedSubview(notice)
+        
+        // 1:1 문의
+        let inquiry = menuText(menu: "1:1 문의", index: 3)
+        menusView.addArrangedSubview(inquiry)
+        
+        inquiry.rx.tap
+            .subscribe(onNext: {
+                guard let url = URL(string: "https://forms.gle/WGC7ibNBgTnomRgZ7") else {
+                    return
+                }
+                
+                UIApplication.shared.open(url)
+            })
+            .disposed(by: disposeBag)
+        
+        // 마이페이지
+        let mypage = menuText(menu: "마이페이지", index: 4)
+        menusView.addArrangedSubview(mypage)
+        
+        mypage.rx.tap
+            .subscribe(onNext: {
+                if menuIndex != 4, let vc = self.parentViewController {
+                    self.closeMenu()
+                    vc.navigationController?.pushViewController(MyPageViewController(), animated: false)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        
+        // 약관
+        let policiesView: UIStackView = UIStackView()
+        policiesView.translatesAutoresizingMaskIntoConstraints = false
+        policiesView.axis = .vertical
+        policiesView.spacing = 8
+        
+        contentView.addArrangedSubview(policiesView)
+        
+        // 서비스 이용약관
+        let termsOfService = policyText(text: "서비스 이용약관")
+        policiesView.addArrangedSubview(termsOfService)
+        
+        termsOfService.rx.tap
+            .subscribe(onNext: {
+                if let vc = self.parentViewController {
+                    let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
+                    let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
+                    vc.present(safariVc, animated: true, completion: nil)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 개인정보처리방침
+        let privacyPolicy = policyText(text: "개인정보처리방침")
+        policiesView.addArrangedSubview(privacyPolicy)
+        
+        privacyPolicy.rx.tap
+            .subscribe(onNext: {
+                if let vc = self.parentViewController {
+                    let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
+                    let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
+                    vc.present(safariVc, animated: true, completion: nil)
+                }
+            })
+            .disposed(by: disposeBag)
         
         // MARK: - 제스쳐
         let panGesture = UIPanGestureRecognizer()
