@@ -10,12 +10,17 @@ import RxSwift
 import RxCocoa
 import Alamofire
 import RxAlamofire
+import KakaoSDKUser
+import RxKakaoSDKUser
 
-class SignInViewModel {
-    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
-    private let keychain = Keychain()
-    
+import AuthenticationServices
+import CryptoKit
+
+class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
     private let disposeBag = DisposeBag()
+    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+    private let keychain = Keychain.shared
+    
     private let isLoading = PublishSubject<Bool>()
     private let response = PublishSubject<Bool>()
     private let alertMessage = PublishSubject<String?>()
@@ -25,6 +30,9 @@ class SignInViewModel {
         let password: ControlProperty<String?>
         let keepSignInChecked: Observable<Bool>
         let signInButtonTapEvent: ControlEvent<Void>
+        let kakaoButtonTapEvent: ControlEvent<Void>
+        let googleButtonTapEvent: ControlEvent<Void>
+        let appleButtonTapEvent: ControlEvent<Void>
     }
     
     struct Output {
@@ -69,6 +77,22 @@ class SignInViewModel {
             })
             .disposed(by: disposeBag)
         
+        // 카카오 로그인 tap event
+        input.kakaoButtonTapEvent
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+                self.signInWithKakao()
+            })
+            .disposed(by: disposeBag)
+        
+        // 애플 로그인 tap event
+        input.appleButtonTapEvent
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+                self.signInWithApple()
+            })
+            .disposed(by: disposeBag)
+        
         return Output(
             isSignInEnabled: isSignInEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
@@ -77,7 +101,9 @@ class SignInViewModel {
         )
     }
     
-    // 로그인 API
+    // MARK: - 이메일 로그인
+    
+    // 이메일 로그인
     private func signIn(email: String, password: String, keepSignIn: Bool) {
         // 헤더
         let headers: HTTPHeaders = [
@@ -119,15 +145,17 @@ class SignInViewModel {
     }
     
     // 로그인 성공
-    private func handleSuccess(_ model: SignInModel, _ keepSignIn: Bool) {
+    private func handleSuccess(_ model: SignInModel, _ keepSignIn: Bool = true) {
         let isSuccess = model.code == "SUCCESS"
         
         // 정보 저장
         if isSuccess, let data = model.data, let userData = model.data?.user {
             keychain.create(key: "ACCESS_TOKEN", value: data.access)
+            print(data.access)
             
             keychain.create(key: "NAME", value: userData.name)
             keychain.create(key: "EMAIL", value: userData.email)
+            keychain.create(key: "IDENTIFY_CODE", value: userData.identifyCode)
             
             if keepSignIn {
                 keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
@@ -181,5 +209,140 @@ class SignInViewModel {
                 print("이메일 인증 재전송 중 오류: \(error)")
             })
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - 소셜 로그인
+    
+    // 소셜에서 발급받은 토큰 전송
+    private func sendTokenToServer(token: String, social: String) {
+        // 헤더
+        let headers: HTTPHeaders = [
+            .contentType("application/json")
+        ]
+        
+        // 바디
+        let body: [String: Any] = [
+            "accessToken": token
+        ]
+        
+        isLoading.onNext(true)
+        
+        RxAlamofire.requestData(.post, "\(ip)/api/user/social/login/\(social)", parameters: body, encoding: JSONEncoding.default, headers: headers)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { response, data in
+                if (200..<300).contains(response.statusCode) {
+                    do {
+                        let model = try JSONDecoder().decode(SignInModel.self, from: data)
+                        self.handleSuccess(model)
+                    } catch {
+                        print("SignInModel JSON 디코딩 오류: \(error)")
+                        self.response.onNext(false)
+                    }
+                } else {
+                    print(response.statusCode)
+                    print(String(data: data, encoding: .utf8) ?? "데이터 없음")
+                }
+                
+                self.isLoading.onNext(false)
+            }, onError: { error in
+                print("로그인 중 오류: \(error)")
+                self.response.onNext(false)
+                self.isLoading.onNext(false)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 카카오 로그인
+    private func signInWithKakao() {
+        if (UserApi.isKakaoTalkLoginAvailable()) {
+            UserApi.shared.rx.loginWithKakaoTalk()
+                .subscribe(onNext:{ (oauthToken) in
+                    print("loginWithKakaoTalk() success.")
+                    
+                    let token = oauthToken.accessToken
+                    self.sendTokenToServer(token: token, social: "kakao")
+                }, onError: {error in
+                    print(error)
+                })
+                .disposed(by: disposeBag)
+        } else {
+            UserApi.shared.rx.loginWithKakaoAccount()
+                .subscribe(onNext:{ (oauthToken) in
+                    print("loginWithKakaoAccount() success.")
+                    
+                    let token = oauthToken.accessToken
+                    self.sendTokenToServer(token: token, social: "kakao")
+                }, onError: {error in
+                    print(error)
+                })
+                .disposed(by: disposeBag)
+        }
+    }
+    
+    // 구글 로그인
+    private func signInWithGoogle() {
+        
+    }
+    
+    // 애플 로그인
+    // 난수 생성
+    private func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        var randomBytes = [UInt8](repeating: 0, count: length)
+        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+        if errorCode != errSecSuccess {
+            fatalError(
+                "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
+            )
+        }
+        
+        let charset: [Character] =
+        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        
+        let nonce = randomBytes.map { byte in
+            // Pick a random character from the set, wrapping around if needed.
+            charset[Int(byte) % charset.count]
+        }
+        
+        return String(nonce)
+    }
+    
+    // SHA256 암호화
+    private func sha256(_ input: String) -> String {
+        let inputData = Data(input.utf8)
+        let hashedData = SHA256.hash(data: inputData)
+        let hashString = hashedData.compactMap {
+            String(format: "%02x", $0)
+        }.joined()
+        
+        return hashString
+    }
+    
+    private func signInWithApple() {
+        let nonce = randomNonceString()
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.email, .fullName]
+        request.nonce = sha256(nonce)
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.performRequests()
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            guard let appleIDToken = appleIDCredential.identityToken else {
+                print("Unable to fetch identity token")
+                return
+            }
+            
+            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
+                return
+            }
+            
+            sendTokenToServer(token: idTokenString, social: "apple")
+        }
     }
 }
