@@ -13,7 +13,6 @@ import SafariServices
 
 class SidemenuView: UIView {
     let disposeBag = DisposeBag()
-    weak var parentViewController: UIViewController?
     
     // 투명도
     private let ALPHA: CGFloat = 0.5
@@ -131,7 +130,7 @@ class SidemenuView: UIView {
             label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 40)
             label.numberOfLines = 1
             label.text = menu
-              
+            
             return label
         }
         
@@ -145,7 +144,7 @@ class SidemenuView: UIView {
             
             return label
         }
-            
+        
         // 메뉴
         let menusView: UIStackView = UIStackView()
         menusView.translatesAutoresizingMaskIntoConstraints = false
@@ -160,9 +159,9 @@ class SidemenuView: UIView {
         
         home.rx.tap
             .subscribe(onNext: {
-                if menuIndex != 0, let vc = self.parentViewController {
+                if menuIndex != 0 {
                     self.closeMenu()
-                    vc.navigationController?.pushViewController(MainAfterSignInViewController(), animated: false)
+                    self.switchViewController(vc: MainAfterSignInViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -173,9 +172,9 @@ class SidemenuView: UIView {
         
         search.rx.tap
             .subscribe(onNext: {
-                if menuIndex != 1, let vc = self.parentViewController {
+                if menuIndex != 1 {
                     self.closeMenu()
-                    vc.navigationController?.pushViewController(SearchViewController(), animated: false)
+                    self.switchViewController(vc: SearchViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -204,9 +203,9 @@ class SidemenuView: UIView {
         
         mypage.rx.tap
             .subscribe(onNext: {
-                if menuIndex != 4, let vc = self.parentViewController {
+                if menuIndex != 4 {
                     self.closeMenu()
-                    vc.navigationController?.pushViewController(MyPageViewController(), animated: false)
+                    self.switchViewController(vc: MyPageViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -226,11 +225,11 @@ class SidemenuView: UIView {
         
         termsOfService.rx.tap
             .subscribe(onNext: {
-                if let vc = self.parentViewController {
-                    let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
-                    let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                    vc.present(safariVc, animated: true, completion: nil)
+                guard let url = URL(string: "https://haren-dev2.defcon.or.kr/terms-of-service") else {
+                    return
                 }
+                
+                UIApplication.shared.open(url)
             })
             .disposed(by: disposeBag)
         
@@ -240,11 +239,11 @@ class SidemenuView: UIView {
         
         privacyPolicy.rx.tap
             .subscribe(onNext: {
-                if let vc = self.parentViewController {
-                    let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
-                    let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                    vc.present(safariVc, animated: true, completion: nil)
+                guard let url = URL(string: "https://haren-dev2.defcon.or.kr/privacy-policy") else {
+                    return
                 }
+                
+                UIApplication.shared.open(url)
             })
             .disposed(by: disposeBag)
         
@@ -282,6 +281,21 @@ class SidemenuView: UIView {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - 뷰 컨트롤러 전환
+    
+    private func switchViewController(vc: UIViewController) {
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+            return
+        }
+        
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
+        
+        sceneDelegate.window?.rootViewController = navVC
+        sceneDelegate.window?.makeKeyAndVisible()
     }
     
     // MARK: - 메뉴 닫기

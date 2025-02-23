@@ -22,7 +22,12 @@ class BadgeDDay: UILabel {
     }
     
     private func setup() {
-        self.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
+        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12) {
+            self.font = font
+        }
+        else{
+            self.font = UIFont.systemFont(ofSize: 12)
+        }
         self.textColor = .rollpePrimary
         self.textAlignment = .center
         self.backgroundColor = .rollpeMain

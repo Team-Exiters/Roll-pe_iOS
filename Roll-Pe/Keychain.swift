@@ -7,7 +7,11 @@
 
 import Foundation
 
-class Keychain: ObservableObject {
+class Keychain {
+    static let shared = Keychain()
+    
+    private init() {}
+    
     // Keychain 생성
     func create(key: String, value: String) {
         // Data 타입으로 변환

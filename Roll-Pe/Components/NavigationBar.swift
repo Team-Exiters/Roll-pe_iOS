@@ -75,8 +75,6 @@ class NavigationBar: UIView {
         // 사이드 메뉴
         if showSideMenu {
             let sideMenuView = SidemenuView(menuIndex: menuIndex)
-            sideMenuView.parentViewController = parentViewController
-            
             let buttonSideMenu: UIButton = ButtonSideMenu()
             
             self.addSubview(buttonSideMenu)
