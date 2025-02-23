@@ -14,48 +14,31 @@ import UIKit
 class APIService {
     static let shared = APIService()
     
+    private init() {}
+    
     private let disposeBag = DisposeBag()
     private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
-    private let keychain = Keychain()
     
     // 요청
     func request(
         _ url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
-        encoding: ParameterEncoding = JSONEncoding.default
+        encoding: ParameterEncoding = JSONEncoding.default,
+        isDomainInclude: Bool = false
     ) -> Observable<Data> {
-        guard let accessToken = keychain.read(key: "ACCESS_TOKEN") else {
-            return Observable.error(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰이 없음"]))
-        }
-        
-        let headers: HTTPHeaders = [
-            .authorization(bearerToken: accessToken)
-        ]
-        
-        return RxAlamofire.requestData(
+        return RxAlamofire.request(
             method,
-            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
+            "\(isDomainInclude ? "" : ip)\(url)",
             parameters: parameters,
             encoding: encoding,
-            headers: headers
+            interceptor: AuthInterceptor.shared
         )
         .observe(on: MainScheduler.instance)
+        .validate(statusCode: 200..<300)
+        .responseData()
         .flatMap { response, data in
-            // 액세스 토큰 만료일 때
-            if response.statusCode == 401 {
-                guard let refreshToken = self.keychain.read(key: "REFRESH_TOKEN") else {
-                    return Observable.error(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "리프레시 토큰이 없음"])) as Observable<Data>
-                }
-                
-                return self.refreshAccessToken(refreshToken)
-                    .flatMap { at in
-                        self.keychain.create(key: "ACCESS_TOKEN", value: at)
-                        return self.request(url, method: method, parameters: parameters, encoding: encoding)
-                    }
-            } else {
-                return Observable.just(data)
-            }
+            return Observable.just(data)
         }
     }
     
@@ -65,100 +48,107 @@ class APIService {
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
         encoding: ParameterEncoding = JSONEncoding.default,
-        decodeType: T.Type
+        decodeType: T.Type,
+        isDomainInclude: Bool = false
     ) -> Observable<T> {
-        guard let accessToken = keychain.read(key: "ACCESS_TOKEN") else {
-            return Observable.error(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰이 없음"]))
-        }
-        
-        let headers: HTTPHeaders = [
-            .authorization(bearerToken: accessToken)
-        ]
-        
-        return RxAlamofire.requestData(
+        return RxAlamofire.request(
             method,
-            "\(ip)\(url.replacingOccurrences(of: ip, with: ""))",
+            "\(isDomainInclude ? "" : ip)\(url)",
             parameters: parameters,
             encoding: encoding,
-            headers: headers
+            interceptor: AuthInterceptor.shared
         )
         .observe(on: MainScheduler.instance)
+        .validate(statusCode: 200..<300)
+        .responseData()
         .flatMap { response, data in
-            // 액세스 토큰 만료일 때
-            if response.statusCode == 401 {
-                guard let refreshToken = self.keychain.read(key: "REFRESH_TOKEN") else {
-                    return Observable.error(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "리프레시 토큰이 없음"])) as Observable<T>
-                }
-                
-                return self.refreshAccessToken(refreshToken)
-                    .flatMap { at in
-                        self.keychain.create(key: "ACCESS_TOKEN", value: at)
-                        return self.requestDecodable(url, method: method, parameters: parameters, encoding: encoding, decodeType: decodeType)
-                    }
+            do {
+                let decoder = JSONDecoder()
+                let decodedData = try decoder.decode(decodeType, from: data)
+                return Observable.just(decodedData)
+            } catch {
+                return Observable.error(error)
+            }
+        }
+    }
+}
+
+
+// MARK: - Interceptor
+
+final class AuthInterceptor: RequestInterceptor {
+    static let shared = AuthInterceptor()
+    
+    private init() {}
+    
+    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+    
+    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        let keychain = Keychain.shared
+        
+        guard let accessToken = keychain.read(key: "ACCESS_TOKEN") else {
+            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰이 없음"])))
+            return
+        }
+        
+        var urlRequest = urlRequest
+        urlRequest.headers.add(.authorization(bearerToken: accessToken))
+        
+        completion(.success(urlRequest))
+    }
+    
+    func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+        let userViewModel = UserViewModel()
+        
+        print("retry 진입")
+        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
+            print("401 오류가 아님")
+            completion(.doNotRetryWithError(error))
+            return
+        }
+        
+        refreshToken() { isSuccess in
+            if isSuccess {
+                print("재발급 완료")
+                completion(.retry)
             } else {
-                do {
-                    let decoder = JSONDecoder()
-                    let decodedData = try decoder.decode(decodeType, from: data)
-                    return Observable.just(decodedData)
-                } catch {
-                    return Observable.error(error)
+                print("리프레시 토큰 만료")
+                userViewModel.logout()
+                completion(.doNotRetry)
+            }
+        }
+    }
+    
+    private func refreshToken(completion: @escaping(Bool) -> Void) {
+        let keychain = Keychain.shared
+        
+        guard let refresh = keychain.read(key: "REFRESH_TOKEN") else {
+            print("리프레시 토큰 없음")
+            completion(false)
+            return
+        }
+        
+        let parameters: [String: Any] = ["refresh": refresh]
+        
+        AF.request("\(ip)/api/user/token/refresh", method: .post, parameters: parameters, encoding: JSONEncoding.default)
+            .validate(statusCode: 200..<300)
+            .responseData { response in
+                switch response.result {
+                case .success(let data):
+                    do {
+                        let model = try JSONDecoder().decode(RefreshModel.self, from: data)
+                        keychain.create(key: "ACCESS_TOKEN", value: model.access)
+                        
+                        completion(true)
+                    } catch {
+                        print("디코딩 실패: \(error)")
+                        completion(false)
+                    }
+                case .failure(let error):
+                    print("재발급 요청 실패: \(error)")
+                    completion(false)
                 }
             }
-        }
-    }
-    
-    // 액세스 토큰 재발급
-    private func refreshAccessToken(_ refreshToken: String) -> Observable<String> {
-        print("액세스 토큰 재발급 시도")
         
-        return Observable.create { observer in
-            let parameters: [String: Any] = ["refresh": refreshToken]
-            
-            let request = RxAlamofire.request(.post, "\(self.ip)/api/user/token/refresh", parameters: parameters)
-                .validate(statusCode: 200..<300)
-                .responseData()
-                .subscribe(onNext: { response, data in
-                    do {
-                        let json = try JSONDecoder().decode(RefreshModel.self, from: data)
-                        observer.onNext(json.access)
-                        observer.onCompleted()
-                    } catch {
-                        // 리프레시 토큰이 만료일 때
-                        observer.onError(NSError(domain: "APIService", code: 400, userInfo: [NSLocalizedDescriptionKey: "리프레시 토큰이 없음"]))
-                        self.handleLogout()
-                    }
-                }, onError: { error in
-                    // 리프레시 토큰이 만료일 때
-                    observer.onError(error)
-                    self.handleLogout()
-                })
-            
-            return Disposables.create {
-                request.dispose()
-            }
-        }
-    }
-    
-    // 로그아웃 처리
-    private func handleLogout() {
-        keychain.delete(key: "ACCESS_TOKEN")
-        keychain.delete(key: "REFRESH_TOKEN")
-        keychain.delete(key: "NAME")
-        keychain.delete(key: "EMAIL")
-        
-        DispatchQueue.main.async {
-            let scenes = UIApplication.shared.connectedScenes
-            let windowScene = scenes.first as? UIWindowScene
-            let window = windowScene?.windows.first
-            
-            if let rootVC = window?.rootViewController {
-                let alertController = UIAlertController(title: "오류", message: "재로그인이 필요합니다", preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "LOGOUT"), object: nil)
-                }))
-                
-                rootVC.present(alertController, animated: true, completion: nil)
-            }
-        }
     }
 }
