@@ -8,18 +8,57 @@
 import Foundation
 import UIKit
 import SnapKit
+import MarqueeLabel
 
-
-//절대 손대지말것 , 필요시 의논후 부탁
 class RollpeItemView: UIView {
+    private let topSection = UIView()
     
-    private let upperBackgroundView = UIView()
-    private let lowerBackgroundView = UIView()
-    private let dDayLabel = PaddedLabel()
-    private let imageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private var theme: String?
+    private let imageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        
+        return imageView
+    }()
+    
+    private let badgeDDay = BadgeDDay()
+    
+    private let bottomSection = {
+        let view = UIView()
+        view.backgroundColor = .rollpePrimary
+        
+        return view
+    }()
+    
+    private let titleLabel = {
+        let label = MarqueeLabel(frame: .zero, duration: 8.0, fadeLength: 10.0)
+        
+        if let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
+            label.font = font
+        } else {
+            label.font = UIFont.systemFont(ofSize: 16)
+        }
+        
+        label.numberOfLines = 1
+        label.textColor = .rollpeSecondary
+        
+        return label
+    }()
+    
+    private let nameLabel = {
+        let label = MarqueeLabel(frame: .zero, duration: 8.0, fadeLength: 10.0)
+        
+        if let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12) {
+            label.font = font
+        }
+        else{
+            label.font = UIFont.systemFont(ofSize: 12)
+        }
+        
+        label.numberOfLines = 1
+        label.textColor = .rollpeGray
+        
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,119 +74,69 @@ class RollpeItemView: UIView {
         layer.cornerRadius = 16
         layer.masksToBounds = true
         
-        addSubview(upperBackgroundView)
-        
-        lowerBackgroundView.backgroundColor = .rollpePrimary
-        addSubview(lowerBackgroundView)
-        
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            dDayLabel.font = font
-        }
-        else{
-            dDayLabel.font = UIFont.systemFont(ofSize: 12)
-        }
-        dDayLabel.textColor = .white
-        dDayLabel.textAlignment = .center
-        dDayLabel.backgroundColor = UIColor(named: "rollpe_main")
-        dDayLabel.layer.cornerRadius = 10
-        dDayLabel.layer.masksToBounds = true
-        addSubview(dDayLabel)
-        
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .rollpeSecondary
-        addSubview(imageView)
-        
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        titleLabel.textColor = UIColor(named: "rollpe_secondary")
-        addSubview(titleLabel)
-        
-        
-        if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12){
-            subtitleLabel.font = font
-        }
-        else{
-            subtitleLabel.font = UIFont.systemFont(ofSize: 12)
-        }
-        subtitleLabel.textColor = .gray
-        addSubview(subtitleLabel)
-        
-        setupConstraints()
-    }
-    
-    private func setupConstraints() {
-        upperBackgroundView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview()
+        // 윗 섹션
+        addSubview(topSection)
+        topSection.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(94)
         }
         
-        lowerBackgroundView.snp.makeConstraints { make in
-            make.top.equalTo(upperBackgroundView.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(53)
-        }
-        
-        dDayLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview().offset(10)
-        }
-        
+        topSection.addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalTo(upperBackgroundView)
+            make.center.equalToSuperview()
+            make.width.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(0.48)
         }
         
+        topSection.addSubview(badgeDDay)
+        badgeDDay.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(12)
+        }
+        
+        // 아래 섹션
+        addSubview(bottomSection)
+        bottomSection.snp.makeConstraints { make in
+            make.top.equalTo(topSection.snp.bottom)
+            make.horizontalEdges.bottom.equalToSuperview()
+        }
+        
+        // 제목
+        bottomSection.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(lowerBackgroundView.snp.top).inset(12)
-            make.leading.equalToSuperview().offset(10)
-            make.trailing.equalToSuperview().inset(10)
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(12)
+            make.trailing.equalToSuperview().offset(-12)
         }
         
-        subtitleLabel.snp.makeConstraints { make in
+        // 이름
+        bottomSection.addSubview(nameLabel)
+        nameLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(2)
             make.leading.equalToSuperview().offset(12)
-            make.bottom.equalTo(lowerBackgroundView.snp.bottom).inset(12)
+            make.trailing.equalToSuperview().offset(-12)
+            make.bottom.equalToSuperview().inset(12)
         }
     }
     
-    func configureImageView(for theme: String) {
+    func configureTopSection(_ theme: String?) {
         switch theme {
-        case "블랙":
-            imageView.image = UIImage(systemName: "pencil")
-            upperBackgroundView.backgroundColor = .red
         case "화이트":
-            imageView.image = UIImage(systemName: "person")
-            upperBackgroundView.backgroundColor = .blue
+            topSection.backgroundColor = .rollpeWhite
+        case "블랙":
+            topSection.backgroundColor = .rollpeBlack
         case "생일":
-            imageView.image = UIImage(systemName: "birthday.cake")
-            upperBackgroundView.backgroundColor = .green
+            topSection.backgroundColor = .rollpePink
+            imageView.image = .iconBirthdayCake
         default:
-            imageView.image = nil
+            topSection.backgroundColor = .rollpeWhite
         }
     }
     
-    func configure(theme: String, dDay: String, title: String, subtitle: String) {
-        dDayLabel.text = dDay
-        titleLabel.text = title
-        subtitleLabel.text = subtitle
-        self.theme = theme
-  
-        configureImageView(for: theme)
+    func configure(model: RollpeItemModel) {
+        configureTopSection(model.theme.name)
+        badgeDDay.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        titleLabel.text = model.title
+        nameLabel.text = model.hostName
     }
 }
-
-class PaddedLabel: UILabel {
-    private let padding = UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8)
-
-    override func drawText(in rect: CGRect) {
-        let insets = padding
-        super.drawText(in: rect.inset(by: insets))
-    }
-
-    override var intrinsicContentSize: CGSize {
-        let size = super.intrinsicContentSize
-        return CGSize(width: size.width + padding.left + padding.right,
-                      height: size.height + padding.top + padding.bottom)
-    }
-}
-
-

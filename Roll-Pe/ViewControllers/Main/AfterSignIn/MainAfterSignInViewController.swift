@@ -8,43 +8,54 @@
 import UIKit
 import SwiftUI
 import SnapKit
+import RxSwift
+import RxCocoa
 
-
-//절대 손대지말것 , 필요시 의논후 부탁
 class MainAfterSignInViewController: UIViewController {
+    let disposeBag = DisposeBag()
+    let viewModel = MainAfterSignInViewModel()
+    let userViewModel = UserViewModel()
+    let keychain = Keychain.shared
     
-    private let scrollView = UIScrollView()
+    // MARK: - 요소
+    
     private let contentView = UIView()
-    private let grayContentView = UIView()
-    private let nickNameLabel : UILabel = {
+    
+    private let hotContentView = UIView()
+    
+    private let nickNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "몽실이는몽몽님은"
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
-        return label
-    }()
-    private let firstLabel : UILabel = {
-        let label = UILabel()
-        label.text = "15개의 롤페를 만드셨어요"
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
-            label.font = customFont
-            print("폰트로드완료")
-        } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
-            label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        }
-        return label
-    }()
-    private let secondLabel : UILabel = {
-        let label = UILabel()
-        label.text = "15번의 마음을 작성하셨어요"
-        label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
+        
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
+            label.font = customFont
+            print("폰트로드완료")
+        } else {
+            print("커스텀 폰트를 로드하지 못했습니다.")
+            label.font = UIFont.systemFont(ofSize: 24)
+        }
+        return label
+    }()
+    
+    private let rollpesLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .rollpeSecondary
+        
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
+            label.font = customFont
+            print("폰트로드완료")
+        } else {
+            label.font = UIFont.systemFont(ofSize: 16)
+            print("커스텀 폰트를 로드하지 못했습니다.")
+        }
+        return label
+    }()
+    
+    private let heartsLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
             label.font = customFont
             print("폰트로드완료")
@@ -54,221 +65,295 @@ class MainAfterSignInViewController: UIViewController {
         }
         return label
     }()
+    
     private let primaryButton = PrimaryButton(title: "초대받은 롤페")
+    
     private let secondaryButton = SecondaryButton(title: "롤페 만들기")
-    private let thirdLabel : UILabel = {
+    
+    private let hotLabel: UILabel = {
         let label = UILabel()
         label.text = "지금 뜨고있는 롤페"
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
+        label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
             print("폰트로드완료")
         } else {
+            label.font = UIFont.systemFont(ofSize: 24)
             print("커스텀 폰트를 로드하지 못했습니다.")
-            label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         }
+        
         return label
     }()
     
-    private var rollpeItems : [RollpeItemModel] = []
-
+    private let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumInteritemSpacing = 12
+        layout.minimumLineSpacing = 16
+        
+        return UICollectionView(frame: .zero, collectionViewLayout: layout)
+    }()
+    
+    var collectionViewHeightConstraint: Constraint?
+    
+    // MARK: - 생명주기
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        getData()
-        view.backgroundColor = .white
-        setupScrollView()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
+        setUI()
+        bind()
+    }
+    
+    // MARK: - UI 구성
+    
+    private func setUI() {
+        view.backgroundColor = .rollpePrimary
+        
+        setupContentView()
         setupNickNameLabel()
-        setupFirstLabel()
-        setupSecondLabel()
+        setupRollpesLabel()
+        setupHeartsLabel()
         setupPrimaryButton()
         setupSecondaryButton()
-        setupGrayContentView()
-        setupThirdLabel()
+        setupHotContentView()
+        setupHotLabel()
         setupRollpeItems()
         setupFooter()
+        addSideMenuButton()
     }
-
-    private func setupScrollView() {
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+    
+    private func setupContentView() {
+        let scrollView = UIScrollView()
         scrollView.bounces = false
-        view.addSubview(scrollView)
         scrollView.showsVerticalScrollIndicator = false
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(contentView)
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        ])
-    }
-    
-    
-    private func setupGrayContentView(){
-        contentView.addSubview(grayContentView)
-        grayContentView.translatesAutoresizingMaskIntoConstraints = false
-        grayContentView.backgroundColor = UIColor(named: "rollpe_section_background")
-        NSLayoutConstraint.activate([
-            grayContentView.topAnchor.constraint(equalTo: secondaryButton.bottomAnchor,constant: 35),
-            grayContentView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            grayContentView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            grayContentView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
-            grayContentView.heightAnchor.constraint(equalToConstant: 626)
-        ])
-    }
-    
-
-    private func setupNickNameLabel() {
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
-            nickNameLabel.font = customFont
-            print("폰트로드완료")
-        } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
-            nickNameLabel.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.horizontalEdges.bottom.equalToSuperview()
+            make.width.equalToSuperview()
         }
-
-        nickNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.addSubview(contentView)
+        
+        contentView.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview().inset(safeareaBottom * -1)
+            make.width.equalToSuperview()
+        }
+    }
+    
+    private func setupNickNameLabel() {
+        let nickname = self.keychain.read(key: "NAME")
+        nickNameLabel.text = "\(nickname ?? "")님은"
+        
         contentView.addSubview(nickNameLabel)
-
-        NSLayoutConstraint.activate([
-            nickNameLabel.topAnchor.constraint(equalTo: contentView.topAnchor,constant: 100),
-            nickNameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-        ])
+        
+        nickNameLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(40)
+            make.leading.equalToSuperview().offset(20)
+        }
     }
-
-    private func setupFirstLabel(){
-        contentView.addSubview(firstLabel)
-        firstLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            firstLabel.topAnchor.constraint(equalTo: nickNameLabel.bottomAnchor,constant: 8),
-            firstLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor , constant: 20)
-        ])
+    
+    private func setupRollpesLabel(){
+        contentView.addSubview(rollpesLabel)
+        
+        rollpesLabel.snp.makeConstraints { make in
+            make.top.equalTo(nickNameLabel.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(20)
+        }
     }
-
-    private func setupSecondLabel(){
-        contentView.addSubview(secondLabel)
-        secondLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            secondLabel.topAnchor.constraint(equalTo: firstLabel.bottomAnchor,constant: 4),
-            secondLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor , constant: 20)
-        ])
+    
+    private func setupHeartsLabel(){
+        contentView.addSubview(heartsLabel)
+        
+        heartsLabel.snp.makeConstraints { make in
+            make.top.equalTo(rollpesLabel.snp.bottom).offset(4)
+            make.leading.equalToSuperview().offset(20)
+        }
     }
-
+    
     private func setupPrimaryButton(){
-        primaryButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(primaryButton)
-        NSLayoutConstraint.activate([
-            primaryButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            primaryButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            primaryButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            primaryButton.topAnchor.constraint(equalTo: secondLabel.bottomAnchor,constant: 40)
-        ])
-        primaryButton.addTarget(self, action: #selector(primaryButtonTapped), for: .touchUpInside)
+        
+        primaryButton.snp.makeConstraints { make in
+            make.top.equalTo(heartsLabel.snp.bottom).offset(40)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
+        }
+        
+        primaryButton.rx.tap
+            .subscribe(onNext: {
+                
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupSecondaryButton(){
-        secondaryButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(secondaryButton)
-        NSLayoutConstraint.activate([
-            secondaryButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            secondaryButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor,constant: 20),
-            secondaryButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: -20),
-            secondaryButton.topAnchor.constraint(equalTo: primaryButton.bottomAnchor, constant: 8)
-        ])
+        
+        secondaryButton.snp.makeConstraints { make in
+            make.top.equalTo(primaryButton.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
+        }
+        
+        secondaryButton.rx.tap
+            .subscribe(onNext: {
+                
+            })
+            .disposed(by: disposeBag)
     }
     
-    private func setupThirdLabel() {
-        grayContentView.addSubview(thirdLabel)
-        thirdLabel.snp.makeConstraints{ make in
-            make.leading.equalToSuperview().offset(20)
+    private func setupHotContentView(){
+        contentView.addSubview(hotContentView)
+        hotContentView.backgroundColor = .rollpeSectionBackground
+        
+        hotContentView.snp.makeConstraints { make in
+            make.top.equalTo(secondaryButton.snp.bottom).offset(36)
+            make.horizontalEdges.equalToSuperview()
+        }
+    }
+    
+    private func setupHotLabel() {
+        hotContentView.addSubview(hotLabel)
+        
+        hotLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(44)
+            make.leading.equalToSuperview().offset(20)
         }
     }
     
     private func setupRollpeItems() {
-        let columns = 2
-        let spacing: CGFloat = 20 //아이템간의 거리
-        let rowSpacing: CGFloat = 12
-        let itemWidth: CGFloat = (UIScreen.main.bounds.width - (CGFloat(columns + 1) * spacing)) / CGFloat(columns)
-        let itemHeight: CGFloat = 147 //뷰 높이
+        collectionView.backgroundColor = .clear
+        collectionView.delegate = self
+        collectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
         
-        for (index, model) in rollpeItems.enumerated() {
-            let row = index / columns
-            let column = index % columns
+        hotContentView.addSubview(collectionView)
+        
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(hotLabel.snp.bottom).offset(40)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().inset(44)
             
-            let rollpeItemView = RollpeItemView(frame: .zero)
-            rollpeItemView.configure(
-                theme: model.theme ?? "",
-                dDay: model.dDay ?? "",
-                title: model.title ?? "",
-                subtitle: model.subtitle ?? ""
-            )
-            
-            grayContentView.addSubview(rollpeItemView)
-            
-            rollpeItemView.snp.makeConstraints { make in
-                make.width.equalTo(itemWidth)
-                make.height.equalTo(itemHeight)
-                
-                if column == 0 {
-                    make.leading.equalToSuperview().offset(spacing)
-                } else {
-                    make.leading.equalTo(grayContentView.snp.leading).offset(spacing * CGFloat(column + 1) + itemWidth * CGFloat(column))
-                }
-                
-                if row == 0 {
-                    make.top.equalTo(thirdLabel.snp.bottom).offset(40)
-                } else {
-                    make.top.equalTo(thirdLabel.snp.bottom).offset(40 + (itemHeight * CGFloat(row)) + (rowSpacing * CGFloat(row)))
-                }
-            }
+            collectionViewHeightConstraint = make.height.equalTo(self.collectionView.contentSize.height).constraint
         }
     }
     
     private func setupFooter(){
         let footer = Footer()
         contentView.addSubview(footer)
+        
         footer.snp.makeConstraints{make in
-            make.top.equalTo(grayContentView.snp.bottom)
+            make.top.equalTo(hotContentView.snp.bottom)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
     }
     
-    private func getData(){
-        //여기서 데이터값 뷰모델로 받아오기, 밑에꺼는 임시용
-        rollpeItems = [
-            RollpeItemModel(theme: "블랙", dDay: "D-5", title: "1타이틀", subtitle: "첫번째입니둥"),
-            RollpeItemModel(theme: "화이트", dDay: "D-15", title: "2타이틀", subtitle: "두번째입니둥"),
-            RollpeItemModel(theme: "생일", dDay: "D-30", title: "3타이틀", subtitle: "세번째입니둥"),
-            RollpeItemModel(theme: "블랙", dDay: "D-7", title: "4타이틀", subtitle: "네번째입니둥"),
-            RollpeItemModel(theme: "화이트", dDay: "D-10", title: "5타이틀", subtitle: "다섯번째입니둥"),
-            RollpeItemModel(theme: "생일", dDay: "D-20", title: "6타이틀", subtitle: "여섯번째입니둥")
-        ]
+    private func addSideMenuButton() {
+        let sideMenuView = SidemenuView(menuIndex: 0)
+        let buttonSideMenu: UIButton = ButtonSideMenu()
+         
+        view.addSubview(buttonSideMenu)
+         
+        buttonSideMenu.snp.makeConstraints { make in
+             make.top.equalToSuperview().offset(80)
+             make.trailing.equalToSuperview().inset(20)
+         }
+         
+        buttonSideMenu.rx.tap
+             .subscribe(onNext: {
+                 self.view.addSubview(sideMenuView)
+                 sideMenuView.showMenu()
+             })
+             .disposed(by: disposeBag)
     }
     
-    @objc private func primaryButtonTapped() {
-         print("primaryButton 탭")
+    // MARK: - Bind
+    
+    private func bind() {
+        userViewModel.getMyStatus()
+        
+        // 내 상태
+        userViewModel.myStatus
+            .map { model in
+                return "\(model?.data.host ?? 0)번의 롤페를 만드셨어요."
+            }
+            .bind(to: rollpesLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        userViewModel.myStatus
+            .map { model in
+                return "\(model?.data.heart ?? 0)번의 마음을 작성하셨어요."
+            }
+            .bind(to: heartsLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        // 지금 뜨는 롤페
+        viewModel.hotRollpeList
+            .map { model in
+                return model?.data ?? []
+            }
+            .bind(to: collectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
+                cell.configure(model: model)
+            }
+            .disposed(by: disposeBag)
     }
-    @objc private func secondaryButtonTapped() {
-        print("secondaryButton 탭")
+    
+}
+
+extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.frame.width - 12) / 2
+        
+        // collectionView의 높이 설정
+        DispatchQueue.main.async {
+            self.collectionViewHeightConstraint?.update(offset: self.collectionView.contentSize.height)
+        }
+        
+        return CGSize(width: width, height: 148)
     }
 }
 
+// Grid Cell
+class MainAfterSignInGridCell: UICollectionViewCell {
+    private let rollpeItemView = RollpeItemView()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+    }
 
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    private func setup() {
+        contentView.addSubview(rollpeItemView)
+        
+        rollpeItemView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    func configure(model: RollpeItemModel) {
+        rollpeItemView.configure(model: model)
+    }
+}
+
+#if DEBUG
 struct MainAfterSignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-                    MainAfterSignInViewController()
-                }
+            MainAfterSignInViewController()
+        }
     }
 }
+#endif

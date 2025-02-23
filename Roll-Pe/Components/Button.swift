@@ -36,6 +36,7 @@ class PrimaryButton: UIButton {
         self.backgroundColor = .rollpeMain
         self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
         self.setTitleColor(.rollpePrimary, for: .normal)
+        self.setTitleColor(.rollpePrimary, for: .highlighted)
         self.setTitleColor(.rollpePrimary.withAlphaComponent(0.5), for: .disabled)
         
         // 여백 수정
@@ -73,11 +74,12 @@ class SecondaryButton: UIButton {
     
     private func setup() {
         self.layer.cornerRadius = 8
-        self.setTitleColor(.rollpeMain, for: .normal)
         self.backgroundColor = .rollpePrimary
+        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeMain.cgColor
-        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
+        self.setTitleColor(.rollpeMain, for: .normal)
+        self.setTitleColor(.rollpeMain, for: .highlighted)
         
         // 여백 수정
         var config = UIButton.Configuration.plain()

@@ -57,6 +57,15 @@ func dateToYYYYMdahhmm(_ date: Date) -> String {
     return dateFormatter.string(from: date)
 }
 
+// YYYY-MM-dd date로 변환
+func convertYYYYMMddToDate(_ string: String) -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    dateFormatter.locale = Locale(identifier: "ko_KR")
+    
+    return dateFormatter.date(from: string)!
+}
+
 // 키보드 숨기기
 extension UIViewController {
     func hideKeyboardWhenTappedAround() {
