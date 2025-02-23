@@ -20,6 +20,15 @@ class SignInViewController: UIViewController {
     
     // MARK: - 속성
     
+    // 내부 뷰
+    private let contentView: UIView = UIView()
+    
+    // 로고
+    private let logo: UIImageView = UIImageView()
+    
+    // 제목
+    private let titleLabel: UILabel = UILabel()
+    
     // 이메일
     private let email: TextField = {
         let textField = TextField()
@@ -41,6 +50,7 @@ class SignInViewController: UIViewController {
     }()
     
     // 로그인 유지
+    private let keepSignInView: UIStackView = UIStackView()
     private let keepSignIn: Checkbox = {
         let checkbox = Checkbox()
         checkbox.isChecked = true
@@ -52,6 +62,7 @@ class SignInViewController: UIViewController {
     private let signInButton = PrimaryButton(title: "로그인")
     
     // 메뉴들
+    private let menus: UIStackView = UIStackView()
     private func menuText(_ text: String) -> UILabel {
         let label: UILabel = UILabel()
         label.textColor = .rollpeGray
@@ -60,7 +71,10 @@ class SignInViewController: UIViewController {
         
         return label
     }
-        
+    
+    // 소셜 로그인
+    private let socialSignInView: UIStackView = UIStackView()
+    
     // 소셜 로그인 - 카카오
     private let kakao: UIButton = {
         let view: UIButton = UIButton()
@@ -168,7 +182,7 @@ class SignInViewController: UIViewController {
         return view
     }()
     
-    // MARK: - viewDidLoad
+    // MARK: - 생명주기
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -213,7 +227,21 @@ class SignInViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = .rollpePrimary
         
-        // 배경 이미지
+        setBackground()
+        setContentView()
+        setLogo()
+        setTitle()
+        setEmail()
+        setPassword()
+        setKeepSignIn()
+        setSignInButton()
+        setMenus()
+        setSocials()
+        setPolicies()
+    }
+    
+    // 배경
+    private func setBackground() {
         let background: UIImageView = UIImageView()
         background.image = .imgBackground
         background.contentMode = .scaleAspectFill
@@ -226,8 +254,10 @@ class SignInViewController: UIViewController {
             make.width.equalToSuperview()
             make.height.equalTo(UIScreen.main.bounds.height)
         }
-        
-        // 내부 뷰
+    }
+    
+    // 내부 뷰
+    private func setContentView() {
         let scrollView: UIScrollView = UIScrollView()
         scrollView.bounces = false
         scrollView.showsVerticalScrollIndicator = false
@@ -240,8 +270,6 @@ class SignInViewController: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
-        let contentView: UIView = UIView()
-        
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
@@ -251,9 +279,10 @@ class SignInViewController: UIViewController {
             make.bottom.equalToSuperview().inset(40)
             make.centerX.equalToSuperview()
         }
-        
-        // 로고
-        let logo: UIImageView = UIImageView()
+    }
+    
+    // 로고
+    private func setLogo() {
         let logoImage = UIImage.imgLogo
         logo.image = logoImage
         logo.contentMode = .scaleAspectFit
@@ -267,43 +296,48 @@ class SignInViewController: UIViewController {
             make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage))
             make.centerX.equalToSuperview()
         }
-        
-        // 제목
-        let title: UILabel = UILabel()
-        title.textColor = .rollpeSecondary
-        title.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        title.numberOfLines = 2
+    }
+    
+    // 제목
+    private func setTitle() {
+        titleLabel.textColor = .rollpeSecondary
+        titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        titleLabel.numberOfLines = 2
         let titleParagraphStyle = NSMutableParagraphStyle()
         titleParagraphStyle.lineHeightMultiple = 0.98
         titleParagraphStyle.alignment = .center
-        title.attributedText = NSMutableAttributedString(string: "다같이 한 마음으로\n사랑하는 사람에게 전달해보세요", attributes: [.paragraphStyle: titleParagraphStyle])
+        titleLabel.attributedText = NSMutableAttributedString(string: "다같이 한 마음으로\n사랑하는 사람에게 전달해보세요", attributes: [.paragraphStyle: titleParagraphStyle])
         
-        contentView.addSubview(title)
+        contentView.addSubview(titleLabel)
         
-        title.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.top.equalTo(logo.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
-        
-        // Form
-        // 이메일
+    }
+    
+    // 이메일
+    private func setEmail() {
         contentView.addSubview(email)
         
         email.snp.makeConstraints { make in
-            make.top.equalTo(title.snp.bottom).offset(60)
+            make.top.equalTo(titleLabel.snp.bottom).offset(60)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 비밀번호
+    }
+    
+    // 비밀번호
+    private func setPassword() {
         contentView.addSubview(password)
         
         password.snp.makeConstraints { make in
             make.top.equalTo(email.snp.bottom).offset(12)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 로그인 유지
-        let keepSignInView: UIStackView = UIStackView()
+    }
+    
+    // 로그인 유지
+    private func setKeepSignIn() {
         keepSignInView.axis = .horizontal
         keepSignInView.spacing = 8
         keepSignInView.alignment = .center
@@ -323,17 +357,20 @@ class SignInViewController: UIViewController {
             make.top.equalTo(password.snp.bottom).offset(16)
             make.leading.equalToSuperview()
         }
-        
-        // 로그인 버튼
+    }
+    
+    // 로그인 버튼
+    private func setSignInButton() {
         contentView.addSubview(signInButton)
         
         signInButton.snp.makeConstraints { make in
             make.top.equalTo(keepSignInView.snp.bottom).offset(28)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 메뉴들
-        let menus: UIStackView = UIStackView()
+    }
+    
+    // 메뉴들
+    private func setMenus() {
         menus.axis = .horizontal
         menus.spacing = 8
         menus.alignment = .center
@@ -361,9 +398,10 @@ class SignInViewController: UIViewController {
             make.top.equalTo(signInButton.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
-        
-        // 소셜 로그인
-        let socialSignInView: UIStackView = UIStackView()
+    }
+    
+    // 소셜 로그인
+    private func setSocials() {
         socialSignInView.axis = .horizontal
         socialSignInView.spacing = 16
         socialSignInView.alignment = .center
@@ -378,8 +416,10 @@ class SignInViewController: UIViewController {
             make.top.equalTo(menus.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
-        
-        // 약관들
+    }
+    
+    // 약관
+    private func setPolicies() {
         let policies: UIStackView = UIStackView()
         policies.axis = .horizontal
         policies.spacing = 6
@@ -425,7 +465,10 @@ class SignInViewController: UIViewController {
             email: email.rx.text,
             password: password.rx.text,
             keepSignInChecked: keepSignIn.rx.isChecked,
-            signInButtonTapEvent: signInButton.rx.tap
+            signInButtonTapEvent: signInButton.rx.tap,
+            kakaoButtonTapEvent: kakao.rx.tap,
+            googleButtonTapEvent: google.rx.tap,
+            appleButtonTapEvent: apple.rx.tap
         )
         
         let output = viewModel.transform(input)
@@ -440,7 +483,7 @@ class SignInViewController: UIViewController {
             .drive(onNext: { success in
                 if success {
                     let vc = MainAfterSignInViewController()
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    self.navigationController?.pushViewController(vc, animated: false)
                 } else {
                     self.showErrorAlert(message: "로그인에 실패하였습니다.")
                 }

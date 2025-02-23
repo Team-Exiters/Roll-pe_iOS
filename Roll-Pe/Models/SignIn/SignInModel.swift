@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SignInModel: Codable {
+struct SignInModel: Decodable {
     let status_code: Int
     let message: String
     let code: String
@@ -15,13 +15,14 @@ struct SignInModel: Codable {
     let data: SignInDataStructure?
 }
 
-struct SignInDataStructure: Codable {
+struct SignInDataStructure: Decodable {
     let refresh: String
     let access: String
     let user: SignIngDataUserStructure?
 }
 
-struct SignIngDataUserStructure: Codable {
+struct SignIngDataUserStructure: Decodable {
     let name: String
     let email: String
+    let identifyCode: String
 }
