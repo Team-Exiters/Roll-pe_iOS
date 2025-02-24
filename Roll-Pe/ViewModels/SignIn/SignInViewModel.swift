@@ -242,9 +242,6 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                         print("SignInModel JSON 디코딩 오류: \(error)")
                         self.response.onNext(false)
                     }
-                } else {
-                    print(response.statusCode)
-                    print(String(data: data, encoding: .utf8) ?? "데이터 없음")
                 }
                 
                 self.isLoading.onNext(false)
