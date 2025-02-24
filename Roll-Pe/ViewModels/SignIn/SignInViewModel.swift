@@ -214,16 +214,20 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
     // MARK: - 소셜 로그인
     
     // 소셜에서 발급받은 토큰 전송
-    private func sendTokenToServer(token: String, social: String) {
+    private func sendTokenToServer(token: String, social: String, name: String? = nil) {
         // 헤더
         let headers: HTTPHeaders = [
             .contentType("application/json")
         ]
         
         // 바디
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "accessToken": token
         ]
+        
+        if let name {
+            body.updateValue(name, forKey: "name")
+        }
         
         isLoading.onNext(true)
         
@@ -285,45 +289,10 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
     }
     
     // 애플 로그인
-    // 난수 생성
-    private func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        var randomBytes = [UInt8](repeating: 0, count: length)
-        let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        if errorCode != errSecSuccess {
-            fatalError(
-                "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
-            )
-        }
-        
-        let charset: [Character] =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        
-        let nonce = randomBytes.map { byte in
-            // Pick a random character from the set, wrapping around if needed.
-            charset[Int(byte) % charset.count]
-        }
-        
-        return String(nonce)
-    }
-    
-    // SHA256 암호화
-    private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            String(format: "%02x", $0)
-        }.joined()
-        
-        return hashString
-    }
-    
     private func signInWithApple() {
-        let nonce = randomNonceString()
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.email, .fullName]
-        request.nonce = sha256(nonce)
+        request.requestedScopes = [.fullName, .email]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -334,15 +303,22 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
             guard let appleIDToken = appleIDCredential.identityToken else {
                 print("Unable to fetch identity token")
+                self.response.onNext(false)
+                self.isLoading.onNext(false)
                 return
             }
             
-            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            guard let idTokenString = String(data: appleIDToken, encoding: .utf8),
+                  let familyName = appleIDCredential.fullName?.familyName,
+                  let givenName = appleIDCredential.fullName?.givenName else {
                 print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
+                self.response.onNext(false)
+                self.isLoading.onNext(false)
+                
                 return
             }
             
-            sendTokenToServer(token: idTokenString, social: "apple")
+            sendTokenToServer(token: idTokenString, social: "apple", name: "\(familyName)\(givenName)")
         }
     }
 }
