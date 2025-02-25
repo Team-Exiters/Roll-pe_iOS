@@ -305,9 +305,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 return
             }
             
-            guard let idTokenString = String(data: appleIDToken, encoding: .utf8),
-                  let familyName = appleIDCredential.fullName?.familyName,
-                  let givenName = appleIDCredential.fullName?.givenName else {
+            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
                 print("Unable to serialize token string from data: \(appleIDToken.debugDescription)")
                 self.response.onNext(false)
                 self.isLoading.onNext(false)
@@ -315,7 +313,13 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 return
             }
             
-            sendTokenToServer(token: idTokenString, social: "apple", name: "\(familyName)\(givenName)")
+            if let familyName = appleIDCredential.fullName?.familyName,
+               let givenName = appleIDCredential.fullName?.givenName {
+                sendTokenToServer(token: idTokenString, social: "apple", name: "\(familyName)\(givenName)")
+            } else {
+                sendTokenToServer(token: idTokenString, social: "apple")
+            }
+            
         }
     }
 }
