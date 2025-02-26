@@ -60,8 +60,8 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         input.signInButtonTapEvent
             .observe(on: MainScheduler.instance)
             .withLatestFrom(Observable.combineLatest(
-                input.email.orEmpty,
-                input.password.orEmpty,
+                input.email,
+                input.password,
                 input.keepSignInChecked,
                 isEmailValid,
                 isPasswordValid
@@ -72,7 +72,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 } else if !passwordValid {
                     alertMessage.onNext("비밀번호를 입력하세요.")
                 } else {
-                    signIn(email: email, password: password, keepSignIn: keepSignIn)
+                    signIn(email: email!, password: password!, keepSignIn: keepSignIn)
                 }
             })
             .disposed(by: disposeBag)
@@ -240,6 +240,13 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                         self.handleSuccess(model)
                     } catch {
                         print("SignInModel JSON 디코딩 오류: \(error)")
+                        self.response.onNext(false)
+                    }
+                } else {
+                    do {
+                        let model = try JSONDecoder().decode(ErrorModel.self, from: data)
+                        self.alertMessage.onNext(model.message)
+                    } catch {
                         self.response.onNext(false)
                     }
                 }
