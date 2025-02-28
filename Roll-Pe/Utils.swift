@@ -49,7 +49,7 @@ func dateToYYYYMD(_ date: Date) -> String {
     return dateFormatter.string(from: date)
 }
 
-// YYYY년 MM월 DD일 A HH:mm 계산
+// YYYY년 MM월 DD일 계산
 func dateToYYYYMd(_ date: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: "ko_KR")

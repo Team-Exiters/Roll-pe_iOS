@@ -342,7 +342,7 @@ class SearchUserModalTableViewCell: UITableViewCell {
     }
 }
 
-#if DEBUC
+#if DEBUG
 struct PreviewSearchUserModalViewController: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
