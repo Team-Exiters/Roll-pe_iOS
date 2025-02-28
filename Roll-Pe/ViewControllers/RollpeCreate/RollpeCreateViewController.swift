@@ -12,8 +12,72 @@ import RxCocoa
 import SwiftUI
 
 class RollpeCreateViewController: UIViewController {
-    let disposeBag: DisposeBag = DisposeBag()
+    private let disposeBag: DisposeBag = DisposeBag()
+    private let viewModel = RollpeCreateViewModel()
     
+    // MARK: - 요소
+    
+    private var ratioBlocks: [RollpeRatioBlock] = []
+    private var themeBlocks: [RollpeThemeBlock] = []
+    private var sizeBlocks: [RollpeSizeBlock] = []
+    
+    private let contentView: UIView = UIView()
+    
+    private let pageTitle = UILabel()
+    
+    private let textFieldTitle = {
+        let tf = TextField()
+        tf.placeholder = ""
+        tf.maxLength = 20
+        
+        return tf
+    }()
+    
+    private let scrollRatios: UIScrollView = UIScrollView()
+    
+    private let listRatios: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 20
+        
+        return sv
+    }()
+    
+    private let scrollThemes: UIScrollView = UIScrollView()
+    
+    private let listThemes: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 20
+        
+        return sv
+    }()
+    
+    private let scrollSizes: UIScrollView = UIScrollView()
+    
+    private let listSizes: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 20
+        
+        return sv
+    }()
+    
+    private let controlPrivate = SegmentControl(items: ["공개", "비공개"])
+    
+    private let password = TextField()
+    
+    private lazy var subjectSendDate: UILabel = LabelSubject()
+    
+    private let textFieldSendDate = TextFieldForPicker()
+    
+    private let pickerUser = Picker()
+    
+    private let imageViewPreview = UIImageView()
+    
+    private let createButton = PrimaryButton(title: "만들기")
+    
+    // 컴포넌트
     // 주제 텍스트
     private func LabelSubject() -> UILabel {
         let label: UILabel = UILabel()
@@ -32,32 +96,10 @@ class RollpeCreateViewController: UIViewController {
         return label
     }
     
-    // 테마 미리보기
-    private func ThemePreview() -> UIView {
-        let view: UIView = UIView()
-        view.layer.cornerRadius = 40
-        view.clipsToBounds = true
-        
-        view.snp.makeConstraints { make in
-            make.size.equalTo(80)
-        }
-        
-        return view
-    }
-    
-    // 테마 라벨
-    private func ThemeLabel() -> UILabel {
-        let label: UILabel = UILabel()
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-        label.textColor = .rollpeSecondary
-        
-        return label
-    }
-    
     // 날짜 선택
     private let datePicker: UIDatePicker = {
         let picker = UIDatePicker()
-        picker.datePickerMode = .dateAndTime
+        picker.datePickerMode = .date
         picker.preferredDatePickerStyle = .wheels
         picker.locale = Locale(identifier: "ko-KR")
         
@@ -68,34 +110,81 @@ class RollpeCreateViewController: UIViewController {
         // 최대일
         components.day = 30
         let maxDate = Calendar.autoupdatingCurrent.date(byAdding: components, to: Date())
-
+        
         picker.maximumDate = maxDate
         picker.minimumDate = minDate
         
         return picker
     }()
     
+    // 로딩 뷰
+    private let loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
+    }()
+    
+    // MARK: - 생명주기
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setUI()
+        bind()
+        addNavigationBar()
+        addLoadingView()
+    }
+    
+    // MARK: - UI 구성
+    
+    private func setUI() {
         view.backgroundColor = .rollpePrimary
         
-        // Spacer
-        let spacer = UIView()
-        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        setupContentView()
+        setupPageTitle()
+        setupTitle()
+        setupRatio()
+        setupThemes()
+        setupSize()
+        setupPrivate()
+        setupSendDate()
+        setupUser()
+        setupPreview()
+        setupCreateButton()
+    }
+    
+    // 네비게이션 바
+    private func addNavigationBar() {
+        let navigationBar = NavigationBar()
+        view.addSubview(navigationBar)
         
-        // MARK: - 내부 뷰
+        navigationBar.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(safeareaTop)
+            make.horizontalEdges.equalToSuperview().inset(20)
+        }
+    }
+    
+    // 로딩 뷰
+    private func addLoadingView() {
+        view.addSubview(loadingView)
         
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    // 내부 뷰
+    private func setupContentView() {
         let scrollView: UIScrollView = UIScrollView()
         
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
-        
-        let contentView: UIView = UIView()
         
         scrollView.addSubview(contentView)
         
@@ -104,8 +193,10 @@ class RollpeCreateViewController: UIViewController {
             make.bottom.equalToSuperview().inset(40)
             make.width.equalToSuperview()
         }
-        
-        let pageTitle = UILabel()
+    }
+    
+    // 페이지 제목
+    private func setupPageTitle() {
         pageTitle.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32)
         pageTitle.textColor = .rollpeSecondary
         pageTitle.text = "롤페 만들기"
@@ -116,9 +207,10 @@ class RollpeCreateViewController: UIViewController {
             make.top.equalToSuperview().inset(88)
             make.centerX.equalToSuperview()
         }
-        
-        // MARK: - 제목
-        
+    }
+    
+    // 롤페 제목 입력
+    private func setupTitle() {
         let subjectTitle: UILabel = LabelSubject()
         subjectTitle.text = "제목을 입력하세요"
         
@@ -129,18 +221,16 @@ class RollpeCreateViewController: UIViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        let textFieldTitle = TextField()
-        textFieldTitle.placeholder = ""
-        
         contentView.addSubview(textFieldTitle)
         
         textFieldTitle.snp.makeConstraints { make in
             make.top.equalTo(subjectTitle.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
-        
-        // MARK: - 비율 선택
-        
+    }
+    
+    // 비율 선택
+    private func setupRatio() {
         let subjectRatios: UILabel = LabelSubject()
         subjectRatios.text = "비율을 선택하세요"
         
@@ -150,12 +240,6 @@ class RollpeCreateViewController: UIViewController {
             make.top.equalTo(textFieldTitle.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
-        
-        let scrollRatios: UIScrollView = UIScrollView()
-        
-        let listRatios: UIStackView = UIStackView()
-        listRatios.axis = .horizontal
-        listRatios.spacing = 20
         
         contentView.addSubview(scrollRatios)
         scrollRatios.addSubview(listRatios)
@@ -171,31 +255,10 @@ class RollpeCreateViewController: UIViewController {
             make.top.equalTo(subjectRatios.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 가로
-        let paperHorizontal = RollpeRatioBlock()
-        paperHorizontal.image = "img_paper_horizontal"
-        paperHorizontal.text = "가로"
-        paperHorizontal.isSelected = true
-        
-        listRatios.addArrangedSubview(paperHorizontal)
-        
-        // 세로
-        let paperVertical = RollpeRatioBlock()
-        paperVertical.image = "img_paper_vertical"
-        paperVertical.text = "세로"
-        
-        listRatios.addArrangedSubview(paperVertical)
-        
-        // 정방형
-        let paperSquare = RollpeRatioBlock()
-        paperSquare.image = "img_paper_square"
-        paperSquare.text = "정방형"
-        
-        listRatios.addArrangedSubview(paperSquare)
-        
-        // MARK: - 테마
-        
+    }
+    
+    // 테마 선택
+    private func setupThemes() {
         let subjectThemes: UILabel = LabelSubject()
         subjectThemes.text = "테마를 선택하세요"
         
@@ -206,81 +269,24 @@ class RollpeCreateViewController: UIViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        let scrollThemes: UIScrollView = UIScrollView()
-        let listThemes: UIStackView = UIStackView()
-        listThemes.axis = .horizontal
-        listThemes.spacing = 20
-        
         contentView.addSubview(scrollThemes)
-        scrollThemes.addSubview(listThemes)
-        
-        listThemes.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().inset(20)
-            make.trailing.equalToSuperview().offset(20)
-            make.height.equalToSuperview()
-        }
         
         scrollThemes.snp.makeConstraints { make in
             make.top.equalTo(subjectThemes.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
-        // 화이트
-        let whiteThemeBlock = RollpeThemeBlock()
-        let whiteThemePreview = ThemePreview()
-        whiteThemePreview.backgroundColor = .rollpeWhite
-        whiteThemePreview.layer.borderColor = UIColor.rollpeBlack.cgColor
-        whiteThemePreview.layer.borderWidth = 2
-        let whiteLabel = ThemeLabel()
-        whiteLabel.text = "화이트"
+        scrollThemes.addSubview(listThemes)
         
-        whiteThemeBlock.view = whiteThemePreview
-        whiteThemeBlock.label = whiteLabel
-        whiteThemeBlock.isSelected = true
-        
-        listThemes.addArrangedSubview(whiteThemeBlock)
-        
-        // 블랙
-        let blackThemeBlock = RollpeThemeBlock()
-        let blackThemePreview = ThemePreview()
-        blackThemePreview.backgroundColor = .rollpeBlack
-        let blackLabel = ThemeLabel()
-        blackLabel.text = "블랙"
-        
-        blackThemeBlock.view = blackThemePreview
-        blackThemeBlock.label = blackLabel
-        
-        listThemes.addArrangedSubview(blackThemeBlock)
-        
-        // 생일
-        let birthdayThemeBlock = RollpeThemeBlock()
-        let birthdayThemePreview = ThemePreview()
-        birthdayThemePreview.backgroundColor = .rollpePink
-        let birthdayIcon: UIImageView = UIImageView()
-        let birthdayIconImage: UIImage = .iconBirthdayCake
-        
-        birthdayIcon.image = birthdayIconImage
-        birthdayIcon.contentMode = .scaleAspectFit
-        birthdayThemePreview.addSubview(birthdayIcon)
-        
-        birthdayIcon.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.575)
-            make.height.equalTo(birthdayIcon.snp.width).dividedBy(getImageRatio(image: birthdayIconImage))
+        listThemes.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().offset(20)
+            make.height.equalToSuperview()
         }
-        
-        let birthdayLabel = ThemeLabel()
-        birthdayLabel.text = "생일"
-        
-        birthdayThemeBlock.view = birthdayThemePreview
-        birthdayThemeBlock.label = birthdayLabel
-        birthdayThemeBlock.isSelected = false
-        
-        listThemes.addArrangedSubview(birthdayThemeBlock)
-        
-        // MARK: - 크기
-        
+    }
+    
+    // 크기 선택
+    private func setupSize() {
         let subjectSizes: UILabel = LabelSubject()
         subjectSizes.text = "크기를 선택하세요"
         
@@ -291,36 +297,24 @@ class RollpeCreateViewController: UIViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        let scrollSizes: UIScrollView = UIScrollView()
-        let listSizes: UIStackView = UIStackView()
-        listSizes.axis = .horizontal
-        listSizes.spacing = 20
-        
         contentView.addSubview(scrollSizes)
-        scrollSizes.addSubview(listSizes)
-        
-        listSizes.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().inset(20)
-            make.trailing.equalToSuperview().offset(20)
-            make.height.equalToSuperview()
-        }
         
         scrollSizes.snp.makeConstraints { make in
             make.top.equalTo(subjectSizes.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
-        // A4
-        let a4SizeBlock = RollpeSizeBlock()
-        a4SizeBlock.size = "A4"
-        a4SizeBlock.maximum = 13
-        a4SizeBlock.isSelected = true
+        scrollSizes.addSubview(listSizes)
         
-        listSizes.addArrangedSubview(a4SizeBlock)
-        
-        // MARK: - 공개 설정 여부
-        
+        listSizes.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().offset(20)
+            make.height.equalToSuperview()
+        }
+    }
+    
+    // 공개 여부 선택
+    private func setupPrivate() {
         let subjectPrivate: UILabel = LabelSubject()
         subjectPrivate.text = "공개 설정 여부"
         
@@ -342,7 +336,6 @@ class RollpeCreateViewController: UIViewController {
         }
         
         // 공개 설정
-        let controlPrivate = SegmentControl(items: ["공개", "비공개"])
         controlPrivate.control.selectedSegmentIndex = 1
         
         contentView.addSubview(controlPrivate)
@@ -353,55 +346,76 @@ class RollpeCreateViewController: UIViewController {
         }
         
         // 비밀번호
-        let password = TextField()
         password.placeholder = "비밀번호"
         
         contentView.addSubview(password)
+    }
+    
+    // 전달일 지정
+    private func setupSendDate() {
+        subjectSendDate.text = "전달일을 지정해주세요"
         
-        password.snp.makeConstraints { make in
-            make.top.equalTo(controlPrivate.snp.bottom).offset(12)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
+        contentView.addSubview(subjectSendDate)
         
-        // MARK: - 종료 시간
+        // 전달일 선택
+        textFieldSendDate.text = "\(dateToYYYYMd(datePicker.minimumDate!)) 오전 10시"
+        textFieldSendDate.inputView = datePicker
         
-        let subjectTimeLimit: UILabel = LabelSubject()
-        subjectTimeLimit.text = "종료 시간을 지정해주세요"
+        contentView.addSubview(textFieldSendDate)
         
-        contentView.addSubview(subjectTimeLimit)
-        
-        subjectTimeLimit.snp.makeConstraints { make in
-            make.top.equalTo(password.snp.bottom).offset(40)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-        
-        // 종료일 선택
-        let textFieldDate = TextFieldForPicker()
-        textFieldDate.text = dateToYYYYMdahhmm(datePicker.minimumDate!)
-        textFieldDate.inputView = datePicker
-        
-        contentView.addSubview(textFieldDate)
-        
-        textFieldDate.snp.makeConstraints { make in
-            make.top.equalTo(subjectTimeLimit.snp.bottom).offset(20)
+        textFieldSendDate.snp.makeConstraints { make in
+            make.top.equalTo(subjectSendDate.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
         datePicker.rx.date
             .subscribe(onNext: { date in
-                textFieldDate.text = dateToYYYYMdahhmm(date)
+                self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
             })
             .disposed(by: disposeBag)
+    }
+    
+    // 전달할 사람 지정
+    private func setupUser() {
+        let subjectUser: UILabel = LabelSubject()
+        subjectUser.text = "전달할 사람을 지정해주세요"
         
-        // MARK: - 미리보기
+        contentView.addSubview(subjectUser)
         
+        subjectUser.snp.makeConstraints { make in
+            make.top.equalTo(textFieldSendDate.snp.bottom).offset(40)
+            make.leading.equalToSuperview().inset(20)
+        }
+        
+        contentView.addSubview(pickerUser)
+        
+        pickerUser.snp.makeConstraints { make in
+            make.top.equalTo(subjectUser.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(20)
+        }
+        
+        pickerUser.rx.tap
+            .subscribe(onNext: { [weak self] in
+                let modalVC = SearchUserModalViewController()
+                modalVC.onUserSelected = { user in
+                    self?.viewModel.selectedUser.accept(user)
+                }
+                modalVC.modalPresentationStyle = .overFullScreen
+                modalVC.modalTransitionStyle = .crossDissolve
+                self?.present(modalVC, animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 미리보기
+    private func setupPreview() {
         let subjectPreview: UILabel = LabelSubject()
         subjectPreview.text = "종료일을 지정해주세요"
         
         contentView.addSubview(subjectPreview)
         
         subjectPreview.snp.makeConstraints { make in
-            make.top.equalTo(textFieldDate.snp.bottom).offset(40)
+            make.top.equalTo(pickerUser.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -415,7 +429,6 @@ class RollpeCreateViewController: UIViewController {
             make.leading.equalToSuperview().inset(20)
         }
         
-        let imageViewPreview = UIImageView()
         let imagePreview: UIImage = .imgPreviewWhiteHorizontal
         imageViewPreview.image = imagePreview
         imageViewPreview.contentMode = .scaleAspectFit
@@ -428,37 +441,220 @@ class RollpeCreateViewController: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(imageViewPreview.snp.width).dividedBy(getImageRatio(image: imagePreview))
         }
+    }
+    
+    // 만들기
+    private func setupCreateButton() {
+        contentView.addSubview(createButton)
         
-        // MARK: - 만들기
-        
-        let buttonCreate = PrimaryButton(title: "만들기")
-        
-        contentView.addSubview(buttonCreate)
-        
-        buttonCreate.snp.makeConstraints { make in
+        createButton.snp.makeConstraints { make in
             make.top.equalTo(imageViewPreview.snp.bottom).offset(52)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
         }
+    }
+    
+    // MARK: - Bind
+    
+    private func bind() {
+        viewModel.getRatioIndexes()
+        viewModel.getThemeIndexes()
+        viewModel.getSizeIndexes()
         
-        buttonCreate.rx.tap
-            .subscribe(onNext: { _ in
+        let input = RollpeCreateViewModel.Input(
+            title: textFieldTitle.rx.text,
+            privacyIndex: controlPrivate.control.rx.selectedSegmentIndex,
+            password: password.rx.text,
+            sendDate: textFieldSendDate.rx.text,
+            createButtonTapEvent: createButton.rx.tap
+        )
+        
+        let output = viewModel.transform(input)
+        
+        // 비율
+        output.ratios
+            .drive(onNext: { [weak self] models in
+                guard let self = self else { return }
                 
+                models.forEach { model in
+                    let ratioBlock = RollpeRatioBlock()
+                    ratioBlock.model = model
+                    
+                    // select tap event
+                    ratioBlock.rx.tap
+                        .subscribe(onNext: { [weak self] in
+                            guard let self = self else { return }
+                            
+                            self.viewModel.selectedRatio.accept(model)
+                        })
+                        .disposed(by: self.disposeBag)
+                    
+                    self.listRatios.addArrangedSubview(ratioBlock)
+                    self.ratioBlocks.append(ratioBlock)
+                }
             })
             .disposed(by: disposeBag)
         
-        // MARK: - 네비게이션 바
+        output.selectedRatio
+            .drive(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.ratioBlocks.forEach { block in
+                    block.isSelected = (model == block.model)
+                }
+            })
+            .disposed(by: disposeBag)
         
-        let navigationBar = NavigationBar()
-        view.addSubview(navigationBar)
+        // 테마
+        output.themes
+            .drive(onNext: { [weak self] models in
+                guard let self = self else { return }
+                
+                models.forEach { model in
+                    let themeBlock = RollpeThemeBlock()
+                    themeBlock.model = model
+                    
+                    // select tap event
+                    themeBlock.rx.tap
+                        .subscribe(onNext: { [weak self] in
+                            guard let self = self else { return }
+                            
+                            self.viewModel.selectedTheme.accept(model)
+                        })
+                        .disposed(by: self.disposeBag)
+                    
+                    self.listThemes.addArrangedSubview(themeBlock)
+                    self.themeBlocks.append(themeBlock)
+                }
+            })
+            .disposed(by: disposeBag)
         
-        navigationBar.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
+        output.selectedTheme
+            .drive(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.themeBlocks.forEach { block in
+                    block.isSelected = (model == block.model)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 크기
+        output.sizes
+            .drive(onNext: { [weak self] models in
+                guard let self = self else { return }
+                
+                models.forEach { model in
+                    let sizeBlock = RollpeSizeBlock()
+                    sizeBlock.model = model
+                    
+                    // select tap event
+                    sizeBlock.rx.tap
+                        .subscribe(onNext: { [weak self] in
+                            guard let self = self else { return }
+                            
+                            self.viewModel.selectedSize.accept(model)
+                        })
+                        .disposed(by: self.disposeBag)
+                    
+                    self.listSizes.addArrangedSubview(sizeBlock)
+                    self.sizeBlocks.append(sizeBlock)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.selectedSize
+            .drive(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.sizeBlocks.forEach { block in
+                    block.isSelected = (model == block.model)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isPasswordVisible
+            .drive(onNext: { [weak self] visible in
+                guard let self = self else { return }
+                
+                self.password.isHidden = !visible
+                
+                if visible {
+                    self.password.snp.remakeConstraints { make in
+                        make.top.equalTo(self.controlPrivate.snp.bottom).offset(12)
+                        make.horizontalEdges.equalToSuperview().inset(20)
+                    }
+                    
+                    self.subjectSendDate.snp.remakeConstraints { make in
+                        make.top.equalTo(self.password.snp.bottom).offset(40)
+                        make.horizontalEdges.equalToSuperview().inset(20)
+                    }
+                } else {
+                    self.subjectSendDate.snp.remakeConstraints { make in
+                        make.top.equalTo(self.controlPrivate.snp.bottom).offset(40)
+                        make.horizontalEdges.equalToSuperview().inset(20)
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.selectedUser
+            .drive(onNext: { user in
+                if let user {
+                    self.pickerUser.text = "\(user.name)(\(user.identifyCode))"
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isCreateEnabled
+            .drive() { isEnabled in
+                self.createButton.disabled = !isEnabled
+            }
+            .disposed(by: disposeBag)
+        
+        output.response
+            .drive(onNext: { success in
+                if success {
+                    self.showDoneAlert()
+                } else {
+                    self.showErrorAlert(message: "롤페 만들기를 실패하였습니다.")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isLoading
+            .drive(onNext: { isLoading in
+                self.loadingView.isHidden = !isLoading
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 완료 알림창
+    private func showDoneAlert() {
+        let alertController = UIAlertController(title: "알림", message: "롤페가 만들어졌습니다!\n공유하여 마음을 작성해봐요!", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // 오류 알림창
+    private func showErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
     }
 }
 
+#if DEBUG
 struct RollCreateViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
@@ -466,3 +662,4 @@ struct RollCreateViewControllerPreview: PreviewProvider {
         }
     }
 }
+#endif

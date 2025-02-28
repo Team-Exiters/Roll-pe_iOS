@@ -50,10 +50,10 @@ func dateToYYYYMD(_ date: Date) -> String {
 }
 
 // YYYY년 MM월 DD일 A HH:mm 계산
-func dateToYYYYMdahhmm(_ date: Date) -> String {
+func dateToYYYYMd(_ date: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.locale = Locale(identifier: "ko_KR")
-    dateFormatter.dateFormat = "yyyy년 M월 d일 a hh:mm"
+    dateFormatter.dateFormat = "yyyy년 M월 d일"
     return dateFormatter.string(from: date)
 }
 

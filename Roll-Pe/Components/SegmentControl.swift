@@ -51,6 +51,7 @@ class SegmentControl: UIView {
     
     private func setup() {
         // 뷰 디자인 설정
+        self.translatesAutoresizingMaskIntoConstraints = false
         self.backgroundColor = UIColor(red: 0.945, green: 0.945, blue: 0.945, alpha: 1)
         self.layer.cornerRadius = 16
         
