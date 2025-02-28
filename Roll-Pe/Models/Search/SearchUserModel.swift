@@ -25,6 +25,6 @@ struct SearchUserDataModel: Decodable {
 struct SearchUserResultModel: Decodable {
     let identifyCode: String
     let name: String
-    // let id: Int
+    let id: Int
     var isSelected: Bool? = false
 }

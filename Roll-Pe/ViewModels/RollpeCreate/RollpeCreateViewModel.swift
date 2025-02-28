@@ -204,7 +204,8 @@ class RollpeCreateViewModel {
         size: QueryIndexDataModel?,
         ratio: QueryIndexDataModel?) {
             guard let receiver = receiver,
-                  let myIdentifyCode = keychain.read(key: "USER_ID"),
+                  let myId = keychain.read(key: "USER_ID"),
+                  let myIdToInt = Int(myId),
                   let receivingDate = convertDateFormat(receivingDate),
                   !title.isEmpty,
                   let theme = theme,
@@ -216,8 +217,8 @@ class RollpeCreateViewModel {
             
             // 바디
             var body: [String: Any] = [
-                "receiverFK": receiver.identifyCode,
-                "hostFK": myIdentifyCode,
+                "receiverFK": receiver.id,
+                "hostFK": myIdToInt,
                 "receivingDate": receivingDate,
                 "title": title,
                 "description": "",
@@ -236,7 +237,6 @@ class RollpeCreateViewModel {
             
             apiService.request("/api/paper", method: .post, parameters: body)
                 .subscribe(onNext: { data in
-                    print(String(data: data, encoding: .utf8))
                     self.response.onNext(true)
                     self.isLoading.onNext(false)
                 }, onError: { error in
