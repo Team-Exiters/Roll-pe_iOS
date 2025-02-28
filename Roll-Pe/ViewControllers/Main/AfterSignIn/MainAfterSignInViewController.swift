@@ -13,7 +13,7 @@ import RxCocoa
 
 class MainAfterSignInViewController: UIViewController {
     let disposeBag = DisposeBag()
-    let viewModel = MainAfterSignInViewModel()
+    let mainViewModel = MainAfterSignInViewModel()
     let userViewModel = UserViewModel()
     let keychain = Keychain.shared
     
@@ -123,6 +123,7 @@ class MainAfterSignInViewController: UIViewController {
         addSideMenuButton()
     }
     
+    // 내부 뷰
     private func setupContentView() {
         let scrollView = UIScrollView()
         scrollView.bounces = false
@@ -145,6 +146,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 닉네임
     private func setupNickNameLabel() {
         let nickname = self.keychain.read(key: "NAME")
         nickNameLabel.text = "\(nickname ?? "")님은"
@@ -157,6 +159,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 내가 만든 롤페 횟수
     private func setupRollpesLabel(){
         contentView.addSubview(rollpesLabel)
         
@@ -166,6 +169,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 내가 작성한 롤페 횟수
     private func setupHeartsLabel(){
         contentView.addSubview(heartsLabel)
         
@@ -175,6 +179,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 초대받는 롤페 버튼
     private func setupPrimaryButton(){
         contentView.addSubview(primaryButton)
         
@@ -192,6 +197,7 @@ class MainAfterSignInViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    // 롤페 만들기 버튼
     private func setupSecondaryButton(){
         contentView.addSubview(secondaryButton)
         
@@ -204,11 +210,12 @@ class MainAfterSignInViewController: UIViewController {
         
         secondaryButton.rx.tap
             .subscribe(onNext: {
-                
+                self.navigationController?.pushViewController(RollpeCreateViewController(), animated: true)
             })
             .disposed(by: disposeBag)
     }
     
+    // 지금 뜨고있는 롤페 구역
     private func setupHotContentView(){
         contentView.addSubview(hotContentView)
         hotContentView.backgroundColor = .rollpeSectionBackground
@@ -216,9 +223,11 @@ class MainAfterSignInViewController: UIViewController {
         hotContentView.snp.makeConstraints { make in
             make.top.equalTo(secondaryButton.snp.bottom).offset(36)
             make.horizontalEdges.equalToSuperview()
+            make.height.greaterThanOrEqualTo(UIScreen.main.bounds.height - (safeareaTop + 292))
         }
     }
     
+    // 지금 뜨고있는 롤페 라벨
     private func setupHotLabel() {
         hotContentView.addSubview(hotLabel)
         
@@ -239,7 +248,7 @@ class MainAfterSignInViewController: UIViewController {
             make.top.equalTo(hotLabel.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.bottom.equalToSuperview().inset(44)
+            make.bottom.equalToSuperview().inset(44).priority(.low)
             
             collectionViewHeightConstraint = make.height.equalTo(self.collectionView.contentSize.height).constraint
         }
@@ -296,7 +305,7 @@ class MainAfterSignInViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 지금 뜨는 롤페
-        viewModel.hotRollpeList
+        mainViewModel.hotRollpeList
             .map { model in
                 return model?.data ?? []
             }
@@ -305,7 +314,6 @@ class MainAfterSignInViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-    
 }
 
 extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
