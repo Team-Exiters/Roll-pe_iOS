@@ -8,6 +8,8 @@
 import UIKit
 import SnapKit
 
+fileprivate let BORDER_WIDTH: CGFloat = 2
+
 class TextField: UITextField, UITextFieldDelegate {
     var maxLength = 50 {
         didSet {
@@ -21,7 +23,11 @@ class TextField: UITextField, UITextFieldDelegate {
         }
     }
     
-    let BORDER_WIDTH: CGFloat = 2
+    override var text: String? {
+        didSet {
+            updateBorderColor()
+        }
+    }
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -94,8 +100,19 @@ class TextField: UITextField, UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentString = (textField.text ?? "") as NSString
         let newString = currentString.replacingCharacters(in: range, with: string)
-
+        
         return newString.count <= maxLength
+    }
+    
+    // 최소 높이 설정
+    override var intrinsicContentSize: CGSize {
+        let baseSize = super.intrinsicContentSize
+        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
+        let minimumHeight = font.lineHeight + 16 + 16
+        return CGSize(
+            width: baseSize.width,
+            height: ((text?.isEmpty) != nil) ? minimumHeight : max(baseSize.height, minimumHeight)
+        )
     }
 }
 
@@ -107,7 +124,11 @@ class TextFieldForPicker: UITextField, UITextFieldDelegate {
         }
     }
     
-    let BORDER_WIDTH: CGFloat = 2
+    override var text: String? {
+        didSet {
+            updateBorderColor()
+        }
+    }
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -182,5 +203,88 @@ class TextFieldForPicker: UITextField, UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return false
+    }
+    
+    // 최소 높이 설정
+    override var intrinsicContentSize: CGSize {
+        let baseSize = super.intrinsicContentSize
+        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
+        let minimumHeight = font.lineHeight + 16 + 16
+        return CGSize(
+            width: baseSize.width,
+            height: ((text?.isEmpty) != nil) ? minimumHeight : max(baseSize.height, minimumHeight)
+        )
+    }
+}
+
+class Picker: UIButton {
+    var text: String = "" {
+        didSet {
+            updateText()
+            updateBorderColor()
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+        updateBorderColor()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+        updateBorderColor()
+    }
+    
+    private func setup() {
+        layer.cornerRadius = 16
+        backgroundColor = .rollpePrimary
+        layer.borderWidth = 2
+        
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        
+        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
+        
+        config.attributedTitle = AttributedString(
+            text,
+            attributes: AttributeContainer([
+                .font: font,
+                .foregroundColor: UIColor.rollpeSecondary
+            ])
+        )
+        
+        self.configuration = config
+        contentHorizontalAlignment = .left
+    }
+    
+    private func updateText() {
+        var config = self.configuration ?? .plain()
+        
+        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
+        config.attributedTitle = AttributedString(
+            text,
+            attributes: AttributeContainer([
+                .font: font,
+                .foregroundColor: UIColor.rollpeSecondary
+            ])
+        )
+        self.configuration = config
+    }
+    
+    private func updateBorderColor() {
+        layer.borderColor = !text.isEmpty ? UIColor.rollpeSecondary.cgColor : UIColor.rollpeGray.cgColor
+    }
+    
+    // 최소 높이 설정
+    override var intrinsicContentSize: CGSize {
+        let baseSize = super.intrinsicContentSize
+        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
+        let minimumHeight = font.lineHeight + 16 + 16
+        return CGSize(
+            width: baseSize.width,
+            height: text.isEmpty ? minimumHeight : max(baseSize.height, minimumHeight)
+        )
     }
 }

@@ -6,60 +6,113 @@
 //
 
 import UIKit
+import SnapKit
 
-class RollpeThemeBlock: UIStackView {
-    var view: UIView? {
+class RollpeThemeBlock: UIButton {
+    override var isSelected: Bool {
         didSet {
-            update()
+            setSelected()
         }
     }
     
-    var label: UILabel? {
+    var model: QueryIndexDataModel? {
         didSet {
-            update()
+            configure()
         }
     }
     
-    var isSelected: Bool = false {
-        didSet {
-            setSelect()
-        }
-    }
+    let stackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 16
+        sv.alignment = .center
+        sv.isUserInteractionEnabled = false
+        
+        return sv
+    }()
+    
+    let preview: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 40
+        view.clipsToBounds = true
+        
+        return view
+    }()
+    
+    let label: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
+        label.textColor = .rollpeSecondary
+        
+        return label
+    }()
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
-        setSelect()
+        setSelected()
     }
     
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+        setSelected()
     }
     
     private func setup() {
-        self.axis = .vertical
-        self.spacing = 16
-        self.alignment = .center
-    }
-    
-    private func update() {
-        if let view, let label {
-            self.addArrangedSubview(view)
-            self.addArrangedSubview(label)
+        stackView.addArrangedSubview(preview)
+        
+        preview.snp.makeConstraints { make in
+            make.size.equalTo(80)
+        }
+        
+        stackView.addArrangedSubview(label)
+        
+        self.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
     
-    private func setSelect() {
+    private func setSelected() {
         if isSelected {
             self.alpha = 1
-            if let label {
-                label.textColor = .rollpeSecondary
-            }
+            label.textColor = .rollpeSecondary
         } else {
             self.alpha = 0.5
-            if let label {
-                label.textColor = .rollpeGray
+            label.textColor = .rollpeGray
+        }
+    }
+    
+    private func configure() {
+        if let model {
+            switch model.name {
+            case "화이트":
+                preview.backgroundColor = .rollpeWhite
+                preview.layer.borderColor = UIColor.rollpeBlack.cgColor
+                preview.layer.borderWidth = 2
+            case "블랙":
+                preview.backgroundColor = .rollpeBlack
+            case "생일":
+                preview.backgroundColor = .rollpePink
+                let birthdayIcon: UIImageView = UIImageView()
+                let birthdayIconImage: UIImage = .iconBirthdayCake
+                
+                birthdayIcon.image = birthdayIconImage
+                birthdayIcon.contentMode = .scaleAspectFit
+                preview.addSubview(birthdayIcon)
+                
+                birthdayIcon.snp.makeConstraints { make in
+                    make.center.equalToSuperview()
+                    make.width.equalToSuperview().multipliedBy(0.575)
+                    make.height.equalTo(birthdayIcon.snp.width).dividedBy(getImageRatio(image: birthdayIconImage))
+                }
+            default: break
             }
+            
+            label.text = model.name
         }
     }
 }
