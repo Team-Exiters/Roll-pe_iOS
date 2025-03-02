@@ -102,6 +102,11 @@ class MainAfterSignInViewController: UIViewController {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         setUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         bind()
     }
     
@@ -141,7 +146,7 @@ class MainAfterSignInViewController: UIViewController {
         
         contentView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(safeareaBottom * -1)
+            make.bottom.equalToSuperview().inset(-safeareaBottom)
             make.width.equalToSuperview()
         }
     }

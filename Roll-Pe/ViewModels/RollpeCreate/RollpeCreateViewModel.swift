@@ -16,6 +16,7 @@ class RollpeCreateViewModel {
     
     private let isLoading = BehaviorSubject<Bool>(value: false)
     private let errorAlertMessage = PublishSubject<String?>()
+    private let criticalAlertMessage = PublishSubject<String?>()
     private let response = PublishSubject<Bool>()
     
     // 비율
@@ -53,6 +54,7 @@ class RollpeCreateViewModel {
         let isCreateEnabled: Driver<Bool>
         let isLoading: Driver<Bool>
         let errorAlertMessage: Driver<String?>
+        let criticalAlertMessage: Driver<String?>
         let response: Driver<Bool>
     }
     
@@ -157,6 +159,7 @@ class RollpeCreateViewModel {
             isCreateEnabled: isCreateEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
             errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil),
+            criticalAlertMessage: criticalAlertMessage.asDriver(onErrorJustReturn: nil),
             response: response.asDriver(onErrorJustReturn: false)
         )
     }
@@ -167,7 +170,7 @@ class RollpeCreateViewModel {
                 self.ratios.accept(model.data)
             }, onError: { error in
                 print("비율 index 가져오는 중 오류 발생: \(error)")
-                self.response.onNext(false)
+                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
             })
             .disposed(by: disposeBag)
     }
@@ -178,7 +181,7 @@ class RollpeCreateViewModel {
                 self.themes.accept(model.data)
             }, onError: { error in
                 print("테마 index 가져오는 중 오류 발생: \(error)")
-                self.response.onNext(false)
+                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
             })
             .disposed(by: disposeBag)
     }
@@ -189,7 +192,7 @@ class RollpeCreateViewModel {
                 self.sizes.accept(model.data)
             }, onError: { error in
                 print("크기 index 가져오는 중 오류 발생: \(error)")
-                self.response.onNext(false)
+                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
             })
             .disposed(by: disposeBag)
     }
@@ -231,17 +234,16 @@ class RollpeCreateViewModel {
                 body.updateValue(password, forKey: "password")
             }
             
-            print(body)
-            
-            self.isLoading.onNext(true)
-            
             apiService.request("/api/paper", method: .post, parameters: body)
+                .do(onSubscribe: {
+                    self.isLoading.onNext(true)
+                })
                 .subscribe(onNext: { data in
                     self.response.onNext(true)
-                    self.isLoading.onNext(false)
                 }, onError: { error in
                     print("롤페 만드는 중 오류 발생: \(error)")
                     self.response.onNext(false)
+                }, onDisposed: {
                     self.isLoading.onNext(false)
                 })
                 .disposed(by: disposeBag)

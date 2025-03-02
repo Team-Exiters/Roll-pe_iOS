@@ -635,6 +635,14 @@ class RollpeCreateViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        output.criticalAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showCriticalErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // 완료 알림창
@@ -650,6 +658,15 @@ class RollpeCreateViewController: UIViewController {
     private func showErrorAlert(message: String) {
         let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // 심각한 오류 알림창
+    private func showCriticalErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
         self.present(alertController, animated: true, completion: nil)
     }
 }
