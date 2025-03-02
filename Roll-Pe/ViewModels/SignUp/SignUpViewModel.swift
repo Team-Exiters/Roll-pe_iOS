@@ -14,8 +14,8 @@ import RxAlamofire
 final class SignUpViewModel {
     private let disposeBag = DisposeBag()
     
-    private let isLoading = PublishSubject<Bool>()
-    private let alertMessage = PublishSubject<String?>()
+    private let isLoading = BehaviorSubject<Bool>(value: false)
+    private let errorAlertMessage = PublishSubject<String?>()
     private let response = PublishSubject<Bool>()
     
     struct Input {
@@ -32,8 +32,8 @@ final class SignUpViewModel {
     struct Output {
         let isSignUpEnabled: Driver<Bool>
         let isLoading: Driver<Bool>
-        let showAlert: Driver<String?>
-        let signUpResponse: Driver<Bool>
+        let errorAlertMessage: Driver<String?>
+        let response: Driver<Bool>
     }
     
     func transform(_ input: Input) -> Output {
@@ -89,19 +89,21 @@ final class SignUpViewModel {
                 isPasswordMatch,
                 isAllChecked
             ))
-            .subscribe(onNext: { [self] email, name, password, isEmailValid, isNameValid, isPasswordValid, isPasswordMatch, isAllChecked in
+            .subscribe(onNext: { [weak self] email, name, password, isEmailValid, isNameValid, isPasswordValid, isPasswordMatch, isAllChecked in
+                guard let self = self else { return }
+                
                 if !isEmailValid {
-                    alertMessage.onNext("이메일을 다시 확인하세요.")
+                    self.errorAlertMessage.onNext("이메일을 다시 확인하세요.")
                 } else if !isNameValid {
-                    alertMessage.onNext("닉네임은 2-6자로 적어주세요.")
+                    self.errorAlertMessage.onNext("닉네임은 2-6자로 적어주세요.")
                 } else if !isPasswordValid {
-                    alertMessage.onNext("비밀번호는 8자 이상, 대소문자, 숫자, 특수문자를 포함해야 합니다.")
+                    self.errorAlertMessage.onNext("비밀번호는 8자 이상, 대소문자, 숫자, 특수문자를 포함해야 합니다.")
                 } else if !isPasswordMatch {
-                    alertMessage.onNext("비밀번호가 일치하지 않습니다.")
+                    self.errorAlertMessage.onNext("비밀번호가 일치하지 않습니다.")
                 } else if !isAllChecked {
-                    alertMessage.onNext("약관에 동의해주세요.")
+                    self.errorAlertMessage.onNext("약관에 동의해주세요.")
                 } else {
-                    signUp(name: name, email: email, password: password)
+                    self.signUp(name: name, email: email, password: password)
                 }
             })
             .disposed(by: disposeBag)
@@ -109,8 +111,8 @@ final class SignUpViewModel {
         return Output(
             isSignUpEnabled: isSignUpEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil),
-            signUpResponse: response.asDriver(onErrorJustReturn: false)
+            errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil),
+            response: response.asDriver(onErrorJustReturn: false)
         )
     }
     
@@ -130,10 +132,11 @@ final class SignUpViewModel {
             "password": password
         ]
         
-        isLoading.onNext(true)
-        
         RxAlamofire.requestData(.post, "\(ip)/api/user/signup", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
+            .do(onSubscribe: {
+                self.isLoading.onNext(true)
+            })
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
                     self.response.onNext(true)
@@ -142,11 +145,10 @@ final class SignUpViewModel {
                 } else {
                     self.response.onNext(false)
                 }
-                
-                self.isLoading.onNext(false)
             }, onError: { error in
                 print("회원가입 오류: \(error)")
                 self.response.onNext(false)
+            }, onDisposed: {
                 self.isLoading.onNext(false)
             })
             .disposed(by: disposeBag)
@@ -161,7 +163,7 @@ final class SignUpViewModel {
         
         do {
             let model = try JSONDecoder().decode(SignUpModel.self, from: data)
-            self.alertMessage.onNext(model.message)
+            self.errorAlertMessage.onNext(model.message)
         } catch {
             response.onNext(false)
         }
