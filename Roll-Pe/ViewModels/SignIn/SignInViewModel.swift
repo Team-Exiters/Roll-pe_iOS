@@ -12,18 +12,16 @@ import Alamofire
 import RxAlamofire
 import KakaoSDKUser
 import RxKakaoSDKUser
-
 import AuthenticationServices
-import CryptoKit
 
 class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
     private let disposeBag = DisposeBag()
     private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     private let keychain = Keychain.shared
     
-    private let isLoading = PublishSubject<Bool>()
+    private let isLoading = BehaviorSubject<Bool>(value: false)
     private let response = PublishSubject<Bool>()
-    private let alertMessage = PublishSubject<String?>()
+    private let errorAlertMessage = PublishSubject<String?>()
     
     struct Input {
         let email: ControlProperty<String?>
@@ -31,15 +29,14 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         let keepSignInChecked: Observable<Bool>
         let signInButtonTapEvent: ControlEvent<Void>
         let kakaoButtonTapEvent: ControlEvent<Void>
-        let googleButtonTapEvent: ControlEvent<Void>
         let appleButtonTapEvent: ControlEvent<Void>
     }
     
     struct Output {
         let isSignInEnabled: Driver<Bool>
         let isLoading: Driver<Bool>
-        let showAlert: Driver<String?>
-        let signInResponse: Driver<Bool>
+        let errorAlertMessage: Driver<String?>
+        let response: Driver<Bool>
     }
     
     func transform(_ input: Input) -> Output {
@@ -66,11 +63,13 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 isEmailValid,
                 isPasswordValid
             ))
-            .subscribe(onNext: { [self] email, password, keepSignIn, emailValid, passwordValid in
+            .subscribe(onNext: { [weak self] email, password, keepSignIn, emailValid, passwordValid in
+                guard let self = self else { return }
+                
                 if !emailValid {
-                    alertMessage.onNext("이메일을 입력하세요.")
+                    errorAlertMessage.onNext("이메일을 입력하세요.")
                 } else if !passwordValid {
-                    alertMessage.onNext("비밀번호를 입력하세요.")
+                    errorAlertMessage.onNext("비밀번호를 입력하세요.")
                 } else {
                     signIn(email: email!, password: password!, keepSignIn: keepSignIn)
                 }
@@ -96,8 +95,8 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         return Output(
             isSignInEnabled: isSignInEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil),
-            signInResponse: response.asDriver(onErrorJustReturn: false)
+            errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil),
+            response: response.asDriver(onErrorJustReturn: false)
         )
     }
     
@@ -116,10 +115,11 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             "password": password
         ]
         
-        isLoading.onNext(true)
-        
         RxAlamofire.requestData(.post, "\(ip)/api/user/signin", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
+            .do(onSubscribe: {
+                self.isLoading.onNext(true)
+            })
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
                     do {
@@ -134,11 +134,10 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 } else {
                     self.response.onNext(false)
                 }
-                
-                self.isLoading.onNext(false)
             }, onError: { error in
                 print("로그인 중 오류: \(error)")
                 self.response.onNext(false)
+            }, onDisposed: {
                 self.isLoading.onNext(false)
             })
             .disposed(by: disposeBag)
@@ -156,6 +155,11 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             keychain.create(key: "NAME", value: userData.name)
             keychain.create(key: "EMAIL", value: userData.email)
             keychain.create(key: "IDENTIFY_CODE", value: userData.identifyCode)
+            keychain.create(key: "USER_ID", value: "\(userData.id)")
+            
+            if let provider = userData.provider {
+                keychain.create(key: "PROVIDER", value: provider)
+            }
             
             if keepSignIn {
                 keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
@@ -176,10 +180,10 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             let model = try JSONDecoder().decode(SignInModel.self, from: data)
             
             if model.code == "NOT CERIFIED" {
-                self.alertMessage.onNext("이메일 인증되지 않은 계정입니다.\n인증 후 로그인해주세요.")
+                self.errorAlertMessage.onNext("이메일 인증되지 않은 계정입니다.\n인증 후 로그인해주세요.")
                 self.resendEmailAuthentication(email: email)
             } else {
-                self.alertMessage.onNext(model.message)
+                self.errorAlertMessage.onNext(model.message)
             }
         } catch {
             response.onNext(false)
@@ -214,7 +218,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
     // MARK: - 소셜 로그인
     
     // 소셜에서 발급받은 토큰 전송
-    private func sendTokenToServer(token: String, social: String, name: String? = nil) {
+    func sendTokenToServer(token: String, social: String, name: String? = nil) {
         // 헤더
         let headers: HTTPHeaders = [
             .contentType("application/json")
@@ -229,10 +233,14 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             body.updateValue(name, forKey: "name")
         }
         
-        isLoading.onNext(true)
         
         RxAlamofire.requestData(.post, "\(ip)/api/user/social/login/\(social)", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
+            .do(onSubscribe: { [weak self] in
+                guard let self = self else { return }
+                
+                isLoading.onNext(true)
+            })
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
                     do {
@@ -245,18 +253,19 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 } else {
                     do {
                         let model = try JSONDecoder().decode(ErrorModel.self, from: data)
-                        self.alertMessage.onNext(model.message)
+                        self.errorAlertMessage.onNext(model.message)
                     } catch {
                         self.response.onNext(false)
                     }
                 }
                 
-                self.isLoading.onNext(false)
             }, onError: { error in
                 print("로그인 중 오류: \(error)")
                 self.response.onNext(false)
+            }, onDisposed: {
                 self.isLoading.onNext(false)
             })
+            
             .disposed(by: disposeBag)
     }
     
@@ -285,11 +294,6 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 })
                 .disposed(by: disposeBag)
         }
-    }
-    
-    // 구글 로그인
-    private func signInWithGoogle() {
-        
     }
     
     // 애플 로그인

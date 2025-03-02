@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import SwiftUI
 import SafariServices
+import GoogleSignIn
 
 class SignInViewController: UIViewController {
     private let disposeBag = DisposeBag()
@@ -467,7 +468,6 @@ class SignInViewController: UIViewController {
             keepSignInChecked: keepSignIn.rx.isChecked,
             signInButtonTapEvent: signInButton.rx.tap,
             kakaoButtonTapEvent: kakao.rx.tap,
-            googleButtonTapEvent: google.rx.tap,
             appleButtonTapEvent: apple.rx.tap
         )
         
@@ -479,7 +479,7 @@ class SignInViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        output.signInResponse
+        output.response
             .drive(onNext: { success in
                 if success {
                     let vc = MainAfterSignInViewController()
@@ -496,10 +496,32 @@ class SignInViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        output.showAlert
+        output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
                     self.showErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        
+        // 구글 로그인
+        google.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+                    guard error == nil else { return }
+                    guard let signInResult = signInResult else { return }
+                    
+                    signInResult.user.refreshTokensIfNeeded { user, error in
+                        guard error == nil else { return }
+                        guard let user = user else { return }
+                        
+                        guard let idToken = user.idToken?.tokenString else { return }
+                        
+                        self.viewModel.sendTokenToServer(token: idToken, social: "google")
+                    }
                 }
             })
             .disposed(by: disposeBag)
