@@ -128,6 +128,26 @@ class MainAfterSignInViewController: UIViewController {
         addSideMenuButton()
     }
     
+    // 사이드 메뉴
+    private func addSideMenuButton() {
+        let sideMenuView = SidemenuView(menuIndex: 0)
+        let buttonSideMenu: UIButton = ButtonSideMenu()
+         
+        view.addSubview(buttonSideMenu)
+         
+        buttonSideMenu.snp.makeConstraints { make in
+             make.top.equalToSuperview().offset(80)
+             make.trailing.equalToSuperview().inset(20)
+         }
+         
+        buttonSideMenu.rx.tap
+             .subscribe(onNext: {
+                 self.view.addSubview(sideMenuView)
+                 sideMenuView.showMenu()
+             })
+             .disposed(by: disposeBag)
+    }
+    
     // 내부 뷰
     private func setupContentView() {
         let scrollView = UIScrollView()
@@ -242,6 +262,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 지금 뜨고있는 롤페
     private func setupRollpeItems() {
         collectionView.backgroundColor = .clear
         collectionView.delegate = self
@@ -259,6 +280,7 @@ class MainAfterSignInViewController: UIViewController {
         }
     }
     
+    // 푸터
     private func setupFooter(){
         let footer = Footer()
         contentView.addSubview(footer)
@@ -268,25 +290,6 @@ class MainAfterSignInViewController: UIViewController {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
-    }
-    
-    private func addSideMenuButton() {
-        let sideMenuView = SidemenuView(menuIndex: 0)
-        let buttonSideMenu: UIButton = ButtonSideMenu()
-         
-        view.addSubview(buttonSideMenu)
-         
-        buttonSideMenu.snp.makeConstraints { make in
-             make.top.equalToSuperview().offset(80)
-             make.trailing.equalToSuperview().inset(20)
-         }
-         
-        buttonSideMenu.rx.tap
-             .subscribe(onNext: {
-                 self.view.addSubview(sideMenuView)
-                 sideMenuView.showMenu()
-             })
-             .disposed(by: disposeBag)
     }
     
     // MARK: - Bind
