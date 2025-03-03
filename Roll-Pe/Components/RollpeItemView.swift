@@ -81,13 +81,6 @@ class RollpeItemView: UIView {
             make.height.equalTo(94)
         }
         
-        topSection.addSubview(imageView)
-        imageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.48)
-        }
-        
         topSection.addSubview(badgeDDay)
         badgeDDay.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
@@ -120,6 +113,9 @@ class RollpeItemView: UIView {
     }
     
     func configureTopSection(_ theme: String?) {
+        imageView.removeFromSuperview()
+        imageView.image = nil
+        
         switch theme {
         case "화이트":
             topSection.backgroundColor = .rollpeWhite
@@ -128,6 +124,13 @@ class RollpeItemView: UIView {
         case "생일":
             topSection.backgroundColor = .rollpePink
             imageView.image = .iconBirthdayCake
+            topSection.addSubview(imageView)
+            
+            imageView.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview().multipliedBy(0.48)
+            }
         default:
             topSection.backgroundColor = .rollpeWhite
         }
