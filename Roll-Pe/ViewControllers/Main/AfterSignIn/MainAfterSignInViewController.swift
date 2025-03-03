@@ -107,6 +107,8 @@ class MainAfterSignInViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        collectionView.dataSource = nil
+        
         bind()
     }
     
@@ -266,6 +268,7 @@ class MainAfterSignInViewController: UIViewController {
     private func setupRollpeItems() {
         collectionView.backgroundColor = .clear
         collectionView.delegate = self
+        
         collectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
         
         hotContentView.addSubview(collectionView)
