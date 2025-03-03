@@ -93,8 +93,6 @@ class SearchUserModalViewController: UIViewController {
         
         // 내용 여백
         tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        tv.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-        tv.separatorColor = .rollpeGray
         
         return tv
     }()
