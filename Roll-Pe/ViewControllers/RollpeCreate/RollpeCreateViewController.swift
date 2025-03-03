@@ -129,6 +129,7 @@ class RollpeCreateViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         setUI()
         bind()
