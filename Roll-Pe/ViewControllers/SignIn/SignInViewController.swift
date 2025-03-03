@@ -510,7 +510,7 @@ class SignInViewController: UIViewController {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+                GIDSignIn.sharedInstance.signIn(withPresenting: self, hint: nil, additionalScopes: ["email", "profile"]) { signInResult, error in
                     guard error == nil else { return }
                     guard let signInResult = signInResult else { return }
                     
