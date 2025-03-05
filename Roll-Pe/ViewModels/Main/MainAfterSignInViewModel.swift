@@ -18,13 +18,13 @@ class MainAfterSignInViewModel {
     }
     
     // 지금 뜨는 롤페들
-    let hotRollpeList = BehaviorRelay<HotRollpeModel?>(value: nil)
+    let hotRollpeList = BehaviorRelay<[RollpeDataModel]>(value: [])
     
     // 지금 뜨는 롤페들 불러오기
     func getHotRollpes() {
-        apiService.requestDecodable("/api/paper/user?type=hot", method: .get, decodeType: HotRollpeModel.self)
+        apiService.requestDecodable("/api/paper/user?type=hot", method: .get, decodeType: RollpeResponseListModel.self)
             .subscribe(onNext: { model in
-                self.hotRollpeList.accept(model)
+                self.hotRollpeList.accept(model.data)
             }, onError: { error in
                 print("내가 작성한 마음 불러오는 중 오류 발생: \(error)")
             })

@@ -85,15 +85,13 @@ class MainAfterSignInViewController: UIViewController {
         return label
     }()
     
-    private let collectionView: UICollectionView = {
+    private let rollpeCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 12
         layout.minimumLineSpacing = 16
         
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
-    
-    var collectionViewHeightConstraint: Constraint?
     
     // MARK: - 생명주기
     
@@ -107,7 +105,7 @@ class MainAfterSignInViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        collectionView.dataSource = nil
+        rollpeCollectionView.dataSource = nil
         
         bind()
     }
@@ -266,20 +264,19 @@ class MainAfterSignInViewController: UIViewController {
     
     // 지금 뜨고있는 롤페
     private func setupRollpeItems() {
-        collectionView.backgroundColor = .clear
-        collectionView.delegate = self
+        rollpeCollectionView.backgroundColor = .clear
+        rollpeCollectionView.delegate = self
         
-        collectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
+        rollpeCollectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
         
-        hotContentView.addSubview(collectionView)
+        hotContentView.addSubview(rollpeCollectionView)
         
-        collectionView.snp.makeConstraints { make in
+        rollpeCollectionView.snp.makeConstraints { make in
             make.top.equalTo(hotLabel.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.bottom.equalToSuperview().inset(44).priority(.low)
-            
-            collectionViewHeightConstraint = make.height.equalTo(self.collectionView.contentSize.height).constraint
+            make.height.equalTo(0)
         }
     }
     
@@ -317,10 +314,7 @@ class MainAfterSignInViewController: UIViewController {
         
         // 지금 뜨는 롤페
         mainViewModel.hotRollpeList
-            .map { model in
-                return model?.data ?? []
-            }
-            .bind(to: collectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
+            .bind(to: rollpeCollectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
                 cell.configure(model: model)
             }
             .disposed(by: disposeBag)
@@ -333,7 +327,9 @@ extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
         
         // collectionView의 높이 설정
         DispatchQueue.main.async {
-            self.collectionViewHeightConstraint?.update(offset: self.collectionView.contentSize.height)
+            self.rollpeCollectionView.snp.updateConstraints { make in
+                make.height.equalTo(self.rollpeCollectionView.contentSize.height)
+            }
         }
         
         return CGSize(width: width, height: 148)
@@ -362,7 +358,7 @@ class MainAfterSignInGridCell: UICollectionViewCell {
         }
     }
 
-    func configure(model: RollpeItemModel) {
+    func configure(model: RollpeDataModel) {
         rollpeItemView.configure(model: model)
     }
 }

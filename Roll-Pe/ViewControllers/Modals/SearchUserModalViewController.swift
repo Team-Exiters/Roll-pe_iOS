@@ -90,6 +90,7 @@ class SearchUserModalViewController: UIViewController {
         tv.layer.borderColor = UIColor.rollpeSecondary.cgColor
         tv.layer.cornerRadius = 16.0
         tv.layer.masksToBounds = true
+        tv.separatorStyle = .none
         
         // 내용 여백
         tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
@@ -185,7 +186,7 @@ class SearchUserModalViewController: UIViewController {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(20)
             make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().inset(20)
+            make.trailing.equalToSuperview().offset(-20)
         }
     }
     
@@ -224,8 +225,10 @@ class SearchUserModalViewController: UIViewController {
             .disposed(by: disposeBag)
         
         output.users
-            .drive(tableView.rx.items(cellIdentifier: "SearchUserCell", cellType: SearchUserModalTableViewCell.self)) { index, model, cell in
-                cell.configure(model: model)
+            .map { users in users.enumerated().map { ($0.element, users.count) } }
+            .drive(tableView.rx.items(cellIdentifier: "SearchUserCell", cellType: SearchUserModalTableViewCell.self)) { index, data, cell in
+                let (model, length) = data
+                cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
         
@@ -255,11 +258,8 @@ class SearchUserModalViewController: UIViewController {
 
 // TableView 관련
 extension SearchUserModalViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
-        let lineHeight = font.lineHeight
-        
-        return lineHeight + 12 + 12 + 2
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 }
 
@@ -314,28 +314,43 @@ class SearchUserModalTableViewCell: UITableViewCell {
         
         contentView.addSubview(titleLabel)
         
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconCheck.snp.trailing).offset(8)
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-16)
-        }
-        
         contentView.addSubview(separatorView)
-        
-        separatorView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalToSuperview()
-            make.height.equalTo(2)
-        }
     }
     
-    func configure(model: SearchUserResultModel) {
+    func configure(model: SearchUserResultModel, isLast: Bool) {
         titleLabel.text = "\(model.name)(\(model.identifyCode))"
         iconCheck.isHidden = !(model.isSelected ?? false)
         
         iconCheck.snp.updateConstraints { make in
             make.size.equalTo((model.isSelected ?? false) ? 10 : 0)
+        }
+        
+        if isLast {
+            separatorView.removeFromSuperview()
+            
+            titleLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(12)
+                make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
+                make.trailing.equalToSuperview().offset(-16)
+                make.bottom.equalToSuperview().inset(12)
+            }
+        } else {
+            separatorView.removeFromSuperview()
+            contentView.addSubview(separatorView)
+            
+            titleLabel.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(12)
+                make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
+                make.trailing.equalToSuperview().offset(-16)
+            }
+            
+            separatorView.snp.remakeConstraints { make in
+                make.top.equalTo(titleLabel.snp.bottom).offset(12)
+                make.leading.equalToSuperview().offset(16)
+                make.trailing.equalToSuperview().offset(-16)
+                make.bottom.equalToSuperview()
+                make.height.equalTo(2)
+            }
         }
     }
 }

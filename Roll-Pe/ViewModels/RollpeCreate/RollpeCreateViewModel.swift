@@ -164,39 +164,37 @@ class RollpeCreateViewModel {
         )
     }
     
-    func getRatioIndexes() {
-        apiService.requestDecodable("/api/index?type=ratio", method: .get, decodeType: QueryIndexModel.self)
+    // 서버로부터 비율, 테마, 크기 정보 가져오기
+    func getIndexes() {
+        apiService.requestDecodable("/api/index?type=all", method: .get, decodeType: QueryIndexModel.self)
             .subscribe(onNext: { model in
-                self.ratios.accept(model.data)
+                var themes: [QueryIndexDataModel] = []
+                var sizes: [QueryIndexDataModel] = []
+                var ratios: [QueryIndexDataModel] = []
+                
+                for data in model.data {
+                    switch data.type {
+                    case "THEME":
+                        themes.append(data)
+                    case "SIZE":
+                        sizes.append(data)
+                    case "RATIO":
+                        ratios.append(data)
+                    default: break
+                    }
+                }
+                
+                self.themes.accept(themes)
+                self.sizes.accept(sizes)
+                self.ratios.accept(ratios)
             }, onError: { error in
-                print("비율 index 가져오는 중 오류 발생: \(error)")
+                print("index 가져오는 중 오류 발생: \(error)")
                 self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
             })
             .disposed(by: disposeBag)
     }
     
-    func getThemeIndexes() {
-        apiService.requestDecodable("/api/index?type=theme", method: .get, decodeType: QueryIndexModel.self)
-            .subscribe(onNext: { model in
-                self.themes.accept(model.data)
-            }, onError: { error in
-                print("테마 index 가져오는 중 오류 발생: \(error)")
-                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    func getSizeIndexes() {
-        apiService.requestDecodable("/api/index?type=size", method: .get, decodeType: QueryIndexModel.self)
-            .subscribe(onNext: { model in
-                self.sizes.accept(model.data)
-            }, onError: { error in
-                print("크기 index 가져오는 중 오류 발생: \(error)")
-                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
-            })
-            .disposed(by: disposeBag)
-    }
-    
+    // 롤페 만들기
     private func createRollpe(
         receiver: SearchUserResultModel?,
         receivingDate: String,
@@ -248,23 +246,4 @@ class RollpeCreateViewModel {
                 })
                 .disposed(by: disposeBag)
         }
-    
-    private func convertDateFormat(_ input: String) -> String? {
-        // 입력 형식 정의
-        let inputFormatter = DateFormatter()
-        inputFormatter.locale = Locale(identifier: "ko_KR")
-        inputFormatter.dateFormat = "yyyy년 M월 d일 a h시"
-        inputFormatter.amSymbol = "오전"
-        inputFormatter.pmSymbol = "오후"
-        
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "yyyy-MM-dd"
-        
-        guard let date = inputFormatter.date(from: input) else {
-            print("날짜 변환 실패: \(input)")
-            return nil
-        }
-        
-        return outputFormatter.string(from: date)
-    }
 }

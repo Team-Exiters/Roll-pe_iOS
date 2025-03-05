@@ -11,6 +11,16 @@ import SnapKit
 import MarqueeLabel
 
 class RollpeItemView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
     private let topSection = UIView()
     
     private let imageView = {
@@ -60,15 +70,6 @@ class RollpeItemView: UIView {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupView()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupView()
-    }
     
     private func setupView() {
         layer.cornerRadius = 16
@@ -136,10 +137,10 @@ class RollpeItemView: UIView {
         }
     }
     
-    func configure(model: RollpeItemModel) {
-        configureTopSection(model.theme.name)
+    func configure(model: RollpeDataModel) {
+        configureTopSection(model.theme)
         badgeDDay.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
         titleLabel.text = model.title
-        nameLabel.text = model.hostName
+        nameLabel.text = model.host.name
     }
 }

@@ -243,18 +243,18 @@ class RollpeCreateViewController: UIViewController {
         }
         
         contentView.addSubview(scrollRatios)
-        scrollRatios.addSubview(listRatios)
-        
-        listRatios.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().inset(20)
-            make.trailing.equalToSuperview().inset(20)
-            make.height.equalToSuperview()
-        }
         
         scrollRatios.snp.makeConstraints { make in
             make.top.equalTo(subjectRatios.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
+        }
+        
+        scrollRatios.addSubview(listRatios)
+        
+        listRatios.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.height.equalToSuperview()
         }
     }
     
@@ -281,7 +281,7 @@ class RollpeCreateViewController: UIViewController {
         
         listThemes.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.horizontalEdges.equalToSuperview().offset(20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalToSuperview()
         }
     }
@@ -458,9 +458,7 @@ class RollpeCreateViewController: UIViewController {
     // MARK: - Bind
     
     private func bind() {
-        viewModel.getRatioIndexes()
-        viewModel.getThemeIndexes()
-        viewModel.getSizeIndexes()
+        viewModel.getIndexes()
         
         let input = RollpeCreateViewModel.Input(
             title: textFieldTitle.rx.text,
