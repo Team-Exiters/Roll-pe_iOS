@@ -14,6 +14,14 @@ import RxSwift
 //절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 말해서 동혁이가 직접 수정하도록 유도
 class MyPageViewController: UIViewController {
     
+    let disposeBag = DisposeBag()
+    
+    let userViewModel = UserViewModel()
+    
+    let keychain = Keychain.shared
+    
+    private var myStatus : MyStatusModel? = nil
+    
     private var userData : UserDataModel? = nil
     
     private var myRollpeListData : [RollpeListItemModel]? = nil
@@ -25,8 +33,8 @@ class MyPageViewController: UIViewController {
     private let contentView = UIView()
     
     private let sideMenuView = SidemenuView(menuIndex: 4)
+    
     let sideMenuButton = UIButton.makeSideMenuButton()
-    let disposeBag = DisposeBag()
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -79,12 +87,12 @@ class MyPageViewController: UIViewController {
     }()
     
     private lazy var rollpeCountLabel: RollpeCountLabel = {
-        let count = userData?.rollpeCount ?? 0
+        let count = myStatus?.data.host ?? 0
         return RollpeCountLabel(count: count)
     }()
 
     private lazy var heartCountLabel : HeartCountLabel = {
-        let count = userData?.heartCount ?? 0
+        let count = myStatus?.data.heart ?? 0
         return HeartCountLabel(count: count)
     }()
     
@@ -102,7 +110,7 @@ class MyPageViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .rollpePrimary
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        getData()
+        bind()
         setupScrollView()
         setupContentView()
         setupSideMenu()
@@ -156,19 +164,18 @@ class MyPageViewController: UIViewController {
     }
     
     private func setupNicknameAndLoginBadge() {
+        let nickname = self.keychain.read(key: "NAME")
+        let provider = self.keychain.read(key: "PROVIDER")
+        
+        nicknameLabel.text = "\(nickname ?? "")님"
+        
         contentView.addSubview(horizontalStackView)
         horizontalStackView.addArrangedSubview(nicknameLabel)
 
-        if let logins = userData?.login {
-            for login in logins {
-                let loginBadgeView = LoginBadgeView(login: login)
-                loginBadgeView.snp.makeConstraints { make in
-                    make.width.height.equalTo(24)
-                }
-                horizontalStackView.addArrangedSubview(loginBadgeView)
-            }
+        if let provider = provider {
+            horizontalStackView.addArrangedSubview(LoginBadgeView(provider:provider))
         }
-
+        
         horizontalStackView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(52)
             make.leading.equalToSuperview().offset(20)
@@ -176,6 +183,8 @@ class MyPageViewController: UIViewController {
     }
     
     private func setupUserID(){
+        let userID = self.keychain.read(key: "USER_ID")
+        userUIDLabel.text = userID ?? ""
         contentView.addSubview(userUIDLabel)
         userUIDLabel.snp.makeConstraints{make in
             make.top.equalTo(horizontalStackView.snp.bottom).offset(4)
@@ -280,26 +289,15 @@ class MyPageViewController: UIViewController {
         }
     }
     
-    private func getData() {
-        // 나중에 api값연동, 이하는 임의
-        userData = UserDataModel(nickname: "브라이언은몽실몽실해",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
-        nicknameLabel.text =  (userData?.nickname ?? "") + "님"
-        userUIDLabel.text = userData?.userUID
-        myRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        ]
-        invitedRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        ]
+    private func bind() {
+        userViewModel.getMyStatus()
+        userViewModel.myStatus
+            .subscribe(onNext: { [weak self] model in
+                self?.myStatus = model
+            })
+            .disposed(by: disposeBag)
     }
+    
 }
 
 struct MyPageViewControllerPreview: PreviewProvider {
@@ -313,12 +311,12 @@ struct MyPageViewControllerPreview: PreviewProvider {
 //여기서부터 MyPageViewController 전용 컴포넌트
 class LoginBadgeView: UIView {
     private let imageView = UIImageView()
-    init(login: String) {
+    init(provider: String) {
         super.init(frame: .zero)
         setupView()
-        configureImage(for: login)
-        configureBackground(for: login)
-        configureBorder(for: login)
+        configureImage(for: provider)
+        configureBackground(for: provider)
+        configureBorder(for: provider)
     }
     
     required init?(coder: NSCoder) {
