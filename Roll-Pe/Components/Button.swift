@@ -20,28 +20,34 @@ class PrimaryButton: UIButton {
     
     init(frame: CGRect = .zero, title: String) {
         super.init(frame: frame)
-        self.setTitle(title, for: .normal)
-        setup()
+        setup(title: title)
         disableAnimation()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+        setup(title: "")
         disableAnimation()
     }
     
-    private func setup() {
+    private func setup(title: String) {
         self.layer.cornerRadius = 8
         self.backgroundColor = .rollpeMain
-        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
-        self.setTitleColor(.rollpePrimary, for: .normal)
-        self.setTitleColor(.rollpePrimary, for: .highlighted)
-        self.setTitleColor(.rollpePrimary.withAlphaComponent(0.5), for: .disabled)
         
         // 여백 수정
         var config = UIButton.Configuration.plain()
         config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        
+        let font = UIFont(name: "Pretendard-SemiBold", size: 16) ?? .systemFont(ofSize: 16)
+        
+        config.attributedTitle = AttributedString(
+            title,
+            attributes: AttributeContainer([
+                .font: font,
+                .foregroundColor: UIColor.rollpePrimary
+            ])
+        )
+        
         self.configuration = config
     }
     
@@ -63,27 +69,34 @@ extension Reactive where Base: PrimaryButton {
 class SecondaryButton: UIButton {
     init(frame: CGRect = .zero, title: String) {
         super.init(frame: frame)
-        self.setTitle(title, for: .normal)
-        setup()
+        setup(title: title)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup()
+        setup(title: "")
     }
     
-    private func setup() {
+    private func setup(title: String) {
         self.layer.cornerRadius = 8
         self.backgroundColor = .rollpePrimary
-        self.titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 16)
+        
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeMain.cgColor
-        self.setTitleColor(.rollpeMain, for: .normal)
-        self.setTitleColor(.rollpeMain, for: .highlighted)
         
-        // 여백 수정
         var config = UIButton.Configuration.plain()
         config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
+        
+        let font = UIFont(name: "Pretendard-SemiBold", size: 16) ?? .systemFont(ofSize: 16)
+        
+        config.attributedTitle = AttributedString(
+            title,
+            attributes: AttributeContainer([
+                .font: font,
+                .foregroundColor: UIColor.rollpeMain
+            ])
+        )
+        
         self.configuration = config
     }
 }

@@ -11,6 +11,16 @@ import SnapKit
 import MarqueeLabel
 
 class RollpeItemView: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
     private let topSection = UIView()
     
     private let imageView = {
@@ -60,15 +70,6 @@ class RollpeItemView: UIView {
         return label
     }()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupView()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupView()
-    }
     
     private func setupView() {
         layer.cornerRadius = 16
@@ -79,13 +80,6 @@ class RollpeItemView: UIView {
         topSection.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(94)
-        }
-        
-        topSection.addSubview(imageView)
-        imageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.48)
         }
         
         topSection.addSubview(badgeDDay)
@@ -120,6 +114,9 @@ class RollpeItemView: UIView {
     }
     
     func configureTopSection(_ theme: String?) {
+        imageView.removeFromSuperview()
+        imageView.image = nil
+        
         switch theme {
         case "화이트":
             topSection.backgroundColor = .rollpeWhite
@@ -128,15 +125,22 @@ class RollpeItemView: UIView {
         case "생일":
             topSection.backgroundColor = .rollpePink
             imageView.image = .iconBirthdayCake
+            topSection.addSubview(imageView)
+            
+            imageView.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.width.equalToSuperview()
+                make.height.equalToSuperview().multipliedBy(0.48)
+            }
         default:
             topSection.backgroundColor = .rollpeWhite
         }
     }
     
-    func configure(model: RollpeItemModel) {
-        configureTopSection(model.theme.name)
+    func configure(model: RollpeDataModel) {
+        configureTopSection(model.theme)
         badgeDDay.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
         titleLabel.text = model.title
-        nameLabel.text = model.hostName
+        nameLabel.text = model.host.name
     }
 }

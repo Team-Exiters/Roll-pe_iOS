@@ -13,7 +13,7 @@ import RxCocoa
 
 class MainAfterSignInViewController: UIViewController {
     let disposeBag = DisposeBag()
-    let viewModel = MainAfterSignInViewModel()
+    let mainViewModel = MainAfterSignInViewModel()
     let userViewModel = UserViewModel()
     let keychain = Keychain.shared
     
@@ -85,15 +85,13 @@ class MainAfterSignInViewController: UIViewController {
         return label
     }()
     
-    private let collectionView: UICollectionView = {
+    private let rollpeCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 12
         layout.minimumLineSpacing = 16
         
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
-    
-    var collectionViewHeightConstraint: Constraint?
     
     // MARK: - 생명주기
     
@@ -102,6 +100,13 @@ class MainAfterSignInViewController: UIViewController {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         setUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        rollpeCollectionView.dataSource = nil
+        
         bind()
     }
     
@@ -123,139 +128,7 @@ class MainAfterSignInViewController: UIViewController {
         addSideMenuButton()
     }
     
-    private func setupContentView() {
-        let scrollView = UIScrollView()
-        scrollView.bounces = false
-        scrollView.showsVerticalScrollIndicator = false
-        
-        view.addSubview(scrollView)
-        
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.horizontalEdges.bottom.equalToSuperview()
-            make.width.equalToSuperview()
-        }
-        
-        scrollView.addSubview(contentView)
-        
-        contentView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(safeareaBottom * -1)
-            make.width.equalToSuperview()
-        }
-    }
-    
-    private func setupNickNameLabel() {
-        let nickname = self.keychain.read(key: "NAME")
-        nickNameLabel.text = "\(nickname ?? "")님은"
-        
-        contentView.addSubview(nickNameLabel)
-        
-        nickNameLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(40)
-            make.leading.equalToSuperview().offset(20)
-        }
-    }
-    
-    private func setupRollpesLabel(){
-        contentView.addSubview(rollpesLabel)
-        
-        rollpesLabel.snp.makeConstraints { make in
-            make.top.equalTo(nickNameLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(20)
-        }
-    }
-    
-    private func setupHeartsLabel(){
-        contentView.addSubview(heartsLabel)
-        
-        heartsLabel.snp.makeConstraints { make in
-            make.top.equalTo(rollpesLabel.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(20)
-        }
-    }
-    
-    private func setupPrimaryButton(){
-        contentView.addSubview(primaryButton)
-        
-        primaryButton.snp.makeConstraints { make in
-            make.top.equalTo(heartsLabel.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.centerX.equalToSuperview()
-        }
-        
-        primaryButton.rx.tap
-            .subscribe(onNext: {
-                
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func setupSecondaryButton(){
-        contentView.addSubview(secondaryButton)
-        
-        secondaryButton.snp.makeConstraints { make in
-            make.top.equalTo(primaryButton.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.centerX.equalToSuperview()
-        }
-        
-        secondaryButton.rx.tap
-            .subscribe(onNext: {
-                
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func setupHotContentView(){
-        contentView.addSubview(hotContentView)
-        hotContentView.backgroundColor = .rollpeSectionBackground
-        
-        hotContentView.snp.makeConstraints { make in
-            make.top.equalTo(secondaryButton.snp.bottom).offset(36)
-            make.horizontalEdges.equalToSuperview()
-        }
-    }
-    
-    private func setupHotLabel() {
-        hotContentView.addSubview(hotLabel)
-        
-        hotLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(44)
-            make.leading.equalToSuperview().offset(20)
-        }
-    }
-    
-    private func setupRollpeItems() {
-        collectionView.backgroundColor = .clear
-        collectionView.delegate = self
-        collectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
-        
-        hotContentView.addSubview(collectionView)
-        
-        collectionView.snp.makeConstraints { make in
-            make.top.equalTo(hotLabel.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
-            make.bottom.equalToSuperview().inset(44)
-            
-            collectionViewHeightConstraint = make.height.equalTo(self.collectionView.contentSize.height).constraint
-        }
-    }
-    
-    private func setupFooter(){
-        let footer = Footer()
-        contentView.addSubview(footer)
-        
-        footer.snp.makeConstraints{make in
-            make.top.equalTo(hotContentView.snp.bottom)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalToSuperview()
-        }
-    }
-    
+    // 사이드 메뉴
     private func addSideMenuButton() {
         let sideMenuView = SidemenuView(menuIndex: 0)
         let buttonSideMenu: UIButton = ButtonSideMenu()
@@ -273,6 +146,150 @@ class MainAfterSignInViewController: UIViewController {
                  sideMenuView.showMenu()
              })
              .disposed(by: disposeBag)
+    }
+    
+    // 내부 뷰
+    private func setupContentView() {
+        let scrollView = UIScrollView()
+        scrollView.bounces = false
+        scrollView.showsVerticalScrollIndicator = false
+        
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.horizontalEdges.bottom.equalToSuperview()
+            make.width.equalToSuperview()
+        }
+        
+        scrollView.addSubview(contentView)
+        
+        contentView.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-safeareaBottom)
+            make.width.equalToSuperview()
+        }
+    }
+    
+    // 닉네임
+    private func setupNickNameLabel() {
+        let nickname = self.keychain.read(key: "NAME")
+        nickNameLabel.text = "\(nickname ?? "")님은"
+        
+        contentView.addSubview(nickNameLabel)
+        
+        nickNameLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(40)
+            make.leading.equalToSuperview().offset(20)
+        }
+    }
+    
+    // 내가 만든 롤페 횟수
+    private func setupRollpesLabel(){
+        contentView.addSubview(rollpesLabel)
+        
+        rollpesLabel.snp.makeConstraints { make in
+            make.top.equalTo(nickNameLabel.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(20)
+        }
+    }
+    
+    // 내가 작성한 롤페 횟수
+    private func setupHeartsLabel(){
+        contentView.addSubview(heartsLabel)
+        
+        heartsLabel.snp.makeConstraints { make in
+            make.top.equalTo(rollpesLabel.snp.bottom).offset(4)
+            make.leading.equalToSuperview().offset(20)
+        }
+    }
+    
+    // 초대받는 롤페 버튼
+    private func setupPrimaryButton(){
+        contentView.addSubview(primaryButton)
+        
+        primaryButton.snp.makeConstraints { make in
+            make.top.equalTo(heartsLabel.snp.bottom).offset(40)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
+        }
+        
+        primaryButton.rx.tap
+            .subscribe(onNext: {
+                
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 롤페 만들기 버튼
+    private func setupSecondaryButton(){
+        contentView.addSubview(secondaryButton)
+        
+        secondaryButton.snp.makeConstraints { make in
+            make.top.equalTo(primaryButton.snp.bottom).offset(8)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
+        }
+        
+        secondaryButton.rx.tap
+            .subscribe(onNext: {
+                self.navigationController?.pushViewController(RollpeCreateViewController(), animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 지금 뜨고있는 롤페 구역
+    private func setupHotContentView(){
+        contentView.addSubview(hotContentView)
+        hotContentView.backgroundColor = .rollpeSectionBackground
+        
+        hotContentView.snp.makeConstraints { make in
+            make.top.equalTo(secondaryButton.snp.bottom).offset(36)
+            make.horizontalEdges.equalToSuperview()
+            make.height.greaterThanOrEqualTo(UIScreen.main.bounds.height - (safeareaTop + 292))
+        }
+    }
+    
+    // 지금 뜨고있는 롤페 라벨
+    private func setupHotLabel() {
+        hotContentView.addSubview(hotLabel)
+        
+        hotLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(44)
+            make.leading.equalToSuperview().offset(20)
+        }
+    }
+    
+    // 지금 뜨고있는 롤페
+    private func setupRollpeItems() {
+        rollpeCollectionView.backgroundColor = .clear
+        rollpeCollectionView.delegate = self
+        
+        rollpeCollectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
+        
+        hotContentView.addSubview(rollpeCollectionView)
+        
+        rollpeCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(hotLabel.snp.bottom).offset(40)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalToSuperview().inset(44).priority(.low)
+            make.height.equalTo(0)
+        }
+    }
+    
+    // 푸터
+    private func setupFooter(){
+        let footer = Footer()
+        contentView.addSubview(footer)
+        
+        footer.snp.makeConstraints{make in
+            make.top.equalTo(hotContentView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
     
     // MARK: - Bind
@@ -296,16 +313,12 @@ class MainAfterSignInViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 지금 뜨는 롤페
-        viewModel.hotRollpeList
-            .map { model in
-                return model?.data ?? []
-            }
-            .bind(to: collectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
+        mainViewModel.hotRollpeList
+            .bind(to: rollpeCollectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
                 cell.configure(model: model)
             }
             .disposed(by: disposeBag)
     }
-    
 }
 
 extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
@@ -314,7 +327,9 @@ extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
         
         // collectionView의 높이 설정
         DispatchQueue.main.async {
-            self.collectionViewHeightConstraint?.update(offset: self.collectionView.contentSize.height)
+            self.rollpeCollectionView.snp.updateConstraints { make in
+                make.height.equalTo(self.rollpeCollectionView.contentSize.height)
+            }
         }
         
         return CGSize(width: width, height: 148)
@@ -343,7 +358,7 @@ class MainAfterSignInGridCell: UICollectionViewCell {
         }
     }
 
-    func configure(model: RollpeItemModel) {
+    func configure(model: RollpeDataModel) {
         rollpeItemView.configure(model: model)
     }
 }

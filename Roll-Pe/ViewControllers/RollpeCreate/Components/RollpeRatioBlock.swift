@@ -8,27 +8,36 @@
 import UIKit
 import SnapKit
 
-class RollpeRatioBlock: UIView {
-    var image: String? {
-        didSet {
-            setup()
-        }
-    }
-    
-    var text: String? {
-        didSet {
-            setup()
-        }
-    }
-    
-    var isSelected: Bool = false {
+class RollpeRatioBlock: UIButton {
+    override var isSelected: Bool {
         didSet {
             setSelected()
         }
     }
     
-    let title: UILabel = UILabel()
-    let imageView: UIImageView = UIImageView()
+    var model: QueryIndexDataModel? {
+        didSet {
+            configure()
+        }
+    }
+    
+    let icon: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        
+        return iv
+    }()
+    
+    let label: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        label.lineBreakMode = .byTruncatingTail
+        
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,49 +46,36 @@ class RollpeRatioBlock: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setup()
+        setSelected()
     }
     
     private func setup() {
         self.layer.cornerRadius = 16
         self.layer.borderWidth = 2
         
+        self.addSubview(icon)
+        
+        icon.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12).priority(.high)
+            make.top.lessThanOrEqualToSuperview().inset(24).priority(.required)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.size.lessThanOrEqualTo(80)
+            make.bottom.greaterThanOrEqualToSuperview().inset(48)
+        }
+        
+        self.addSubview(label)
+        
+        label.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(12)
+            make.centerX.equalToSuperview()
+        }
+        
         self.snp.makeConstraints { make in
             make.width.equalTo(120)
             make.height.equalTo(140)
-        }
-        
-        if let text, let image {
-            // 이미지
-            let image: UIImage! = UIImage(named: image)
-            imageView.image = image
-            imageView.contentMode = .scaleAspectFit
-            imageView.clipsToBounds = true
-            
-            self.addSubview(imageView)
-            
-            imageView.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(12).priority(.high)
-                make.top.lessThanOrEqualToSuperview().inset(24).priority(.required)
-                make.horizontalEdges.equalToSuperview().inset(20)
-                make.size.lessThanOrEqualTo(80)
-                make.bottom.greaterThanOrEqualToSuperview().inset(48)
-            }
-            
-            // 내용
-            title.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-            title.numberOfLines = 1
-            title.textAlignment = .center
-            title.lineBreakMode = .byTruncatingTail
-            title.text = text
-            
-            self.addSubview(title)
-            
-            title.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview().inset(16)
-                make.bottom.equalToSuperview().inset(12)
-                make.centerX.equalToSuperview()
-            }
         }
     }
     
@@ -87,11 +83,23 @@ class RollpeRatioBlock: UIView {
         if isSelected {
             self.alpha = 1
             self.layer.borderColor = UIColor.rollpeSecondary.cgColor
-            title.textColor = .rollpeSecondary
+            label.textColor = .rollpeSecondary
         } else {
             self.alpha = 0.5
             self.layer.borderColor = UIColor.rollpeGray.cgColor
-            title.textColor = .rollpeGray
+            label.textColor = .rollpeGray
+        }
+    }
+    
+    private func configure() {
+        if let model {
+            switch model.name {
+            case "가로": icon.image = .imgPaperHorizontal
+            case "세로": icon.image = .imgPaperVertical
+            default: break
+            }
+            
+            label.text = model.name
         }
     }
 }

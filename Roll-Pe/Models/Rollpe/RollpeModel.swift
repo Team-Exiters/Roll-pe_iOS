@@ -20,5 +20,31 @@ struct RollpeModel {
     var password : String?
 }
 
+struct RollpeResponseListModel: Decodable {
+    let status_code: Int
+    let message: String
+    let code: String
+    let link: String?
+    let data: [RollpeDataModel]
+}
 
+struct RollpeDataModel: Decodable {
+    let id: Int
+    let code: String
+    let title: String
+    let host: RollpeHostDataModel
+    let viewStat: Bool
+    let receivingDate: String
+    let receivingStat: Int
+    let theme: String
+    let size: String
+    let ratio: String
+    let createdAt: String
+}
 
+struct RollpeHostDataModel: Decodable {
+    let id: Int
+    let code: String
+    let identifyCode: String
+    let name: String
+}

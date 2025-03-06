@@ -44,9 +44,9 @@ class MainBeforeSignInViewController: UIViewController {
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(safeareaTop * -1)
+            make.top.equalToSuperview().inset(-safeareaTop)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(safeareaBottom * -1)
+            make.bottom.equalToSuperview().inset(-safeareaBottom)
             make.width.equalToSuperview()
         }
         
