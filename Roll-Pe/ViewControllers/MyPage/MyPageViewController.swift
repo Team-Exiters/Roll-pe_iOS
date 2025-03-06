@@ -253,30 +253,29 @@ class MyPageViewController: UIViewController {
     }
 
     private func vipPurchaseTapped() {
-        print("VIP 구매 버튼 눌림")
+
     }
     private func changePasswordTapped() {
-        print("비밀번호 변경 버튼 눌림")
         let changePasswordVC = ChangePasswordViewController()
         navigationController?.pushViewController(changePasswordVC, animated: true)
     }
     private func myRollpeTapped() {
-        print("내 롤페 버튼 눌림")
-        let myRollpeVC = MyRollpeViewController()
-        myRollpeVC.rollpeListData = myRollpeListData ?? []
-        navigationController?.pushViewController(myRollpeVC, animated: true)
+        let vc = MyRollpeViewController()
+        userViewModel.getMyRollpes()
+        vc.rollpeListData = myRollpeListData ?? []
+        navigationController?.pushViewController(vc, animated: true)
     }
     private func invitedRollpeTapped() {
-        print("초대받은 롤페 버튼 눌림")
-        let invitedRollpeVC = InvitedRollpeViewController()
-        invitedRollpeVC.rollpeListData = invitedRollpeListData ?? []
-        navigationController?.pushViewController(invitedRollpeVC, animated: true)
+        let vc = InvitedRollpeViewController()
+        userViewModel.getInvitedRollpes()
+        vc.rollpeListData = invitedRollpeListData ?? []
+        navigationController?.pushViewController(vc, animated: true)
     }
     private func logoutTapped() {
-        print("로그아웃 버튼 눌림")
+        userViewModel.logout()
     }
     private func withdrawTapped() {
-        print("회원탈퇴 버튼 눌림")
+   
     }
     
     private func setupFooter() {
@@ -294,6 +293,16 @@ class MyPageViewController: UIViewController {
         userViewModel.myStatus
             .subscribe(onNext: { [weak self] model in
                 self?.myStatus = model
+            })
+            .disposed(by: disposeBag)
+        userViewModel.myRollpe
+            .subscribe(onNext:{[weak self] model in
+                self?.myRollpeListData = model
+            })
+            .disposed(by: disposeBag)
+        userViewModel.invitedRollpe
+            .subscribe(onNext:{ [weak self] model in
+                self?.invitedRollpeListData = model
             })
             .disposed(by: disposeBag)
     }
