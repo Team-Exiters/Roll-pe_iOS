@@ -8,27 +8,44 @@
 import UIKit
 import SnapKit
 
-class RollpeSizeBlock: UIView {
-    var size: String? {
-        didSet {
-            setup()
-        }
-    }
-    
-    var maximum: Int? {
-        didSet {
-            setup()
-        }
-    }
-    
-    var isSelected: Bool = false {
+class RollpeSizeBlock: UIButton {
+    override var isSelected: Bool {
         didSet {
             setSelected()
         }
     }
     
-    let labelSize: UILabel = UILabel()
-    let labelMaximum: UILabel = UILabel()
+    var model: QueryIndexDataModel? {
+        didSet {
+            configure()
+        }
+    }
+    
+    private let stackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 0
+        sv.alignment = .center
+        sv.isUserInteractionEnabled = false
+        
+        return sv
+    }()
+    
+    let labelSize: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24)
+        label.textAlignment = .center
+        
+        return label
+    }()
+    
+    let labelMaximum: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 10)
+        label.textAlignment = .center
+        
+        return label
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,7 +54,9 @@ class RollpeSizeBlock: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setup()
+        setSelected()
     }
     
     private func setup() {
@@ -45,32 +64,17 @@ class RollpeSizeBlock: UIView {
         self.layer.masksToBounds = true
         self.layer.borderWidth = 2
         
-        self.snp.makeConstraints { make in
-            make.size.equalTo(80)
+        stackView.addArrangedSubview(labelSize)
+        stackView.addArrangedSubview(labelMaximum)
+        
+        self.addSubview(stackView)
+        
+        stackView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
         
-        if let size, let maximum {
-            let stackView: UIStackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.spacing = 0
-            stackView.alignment = .center
-            
-            labelSize.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24)
-            labelSize.textAlignment = .center
-            labelSize.text = size
-            
-            labelMaximum.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 10)
-            labelMaximum.textAlignment = .center
-            labelMaximum.text = "최대 \(maximum)명"
-            
-            stackView.addArrangedSubview(labelSize)
-            stackView.addArrangedSubview(labelMaximum)
-            
-            self.addSubview(stackView)
-            
-            stackView.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-            }
+        self.snp.makeConstraints { make in
+            make.size.equalTo(80)
         }
     }
     
@@ -85,6 +89,17 @@ class RollpeSizeBlock: UIView {
             self.layer.borderColor = UIColor.rollpeGray.cgColor
             labelSize.textColor = .rollpeGray
             labelMaximum.textColor = .rollpeGray
+        }
+    }
+    
+    private func configure() {
+        if let model {
+            switch model.name {
+            case "A4": labelMaximum.text = "최대 \(13)명"
+            default: break
+            }
+            
+            labelSize.text = model.name
         }
     }
 }

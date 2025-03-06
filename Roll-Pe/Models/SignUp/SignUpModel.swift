@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SignUpModel: Codable {
+struct SignUpModel: Decodable {
     let status_code: Int
     let message: String
     let code: String

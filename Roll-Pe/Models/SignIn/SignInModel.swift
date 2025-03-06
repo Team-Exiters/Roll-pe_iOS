@@ -25,4 +25,6 @@ struct SignIngDataUserStructure: Decodable {
     let name: String
     let email: String
     let identifyCode: String
+    let id: Int
+    let provider: String?
 }

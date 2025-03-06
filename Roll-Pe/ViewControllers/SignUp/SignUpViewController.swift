@@ -117,7 +117,7 @@ class SignUpViewController: UIViewController {
         return view
     }()
     
-    // MARK: - viewDidLoad
+    // MARK: - 생명주기
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -411,7 +411,7 @@ class SignUpViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        output.signUpResponse
+        output.response
             .drive(onNext: { success in
                 if success {
                     self.showDoneAlert()
@@ -427,7 +427,7 @@ class SignUpViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        output.showAlert
+        output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
                     self.showErrorAlert(message: message)
