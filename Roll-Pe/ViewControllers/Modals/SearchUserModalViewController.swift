@@ -10,7 +10,7 @@ import SnapKit
 import SwiftUI
 import RxSwift
 
-class SearchUserModalViewController: UIViewController {
+class SearchUserModalViewController: UIViewController, UITableViewDelegate {
     private let disposeBag = DisposeBag()
     private let viewModel = SearchUserViewModel()
     
@@ -19,7 +19,14 @@ class SearchUserModalViewController: UIViewController {
     
     // MARK: - 요소
     
-    private let contentView = UIView()
+    private let contentView = {
+        let view = UIView()
+        view.backgroundColor = .rollpePrimary
+        view.layer.cornerRadius = 16
+        view.layer.masksToBounds = true
+        
+        return view
+    }()
     
     private let closeButton : UIButton = {
         let button = UIButton()
@@ -83,7 +90,10 @@ class SearchUserModalViewController: UIViewController {
     
     private let tableView: UITableView = {
         let tv = UITableView()
-        tv.register(UITableViewCell.self, forCellReuseIdentifier: "SearchUserCell")
+        tv.register(SearchUserModalTableViewCell.self, forCellReuseIdentifier: "SearchUserCell")
+        
+        tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = 46
         
         tv.backgroundColor = .rollpePrimary
         tv.layer.borderWidth = 2.0
@@ -124,10 +134,6 @@ class SearchUserModalViewController: UIViewController {
     
     // 내부 뷰
     private func setupContentView() {
-        contentView.backgroundColor = .rollpePrimary
-        contentView.layer.cornerRadius = 16
-        contentView.layer.masksToBounds = true
-        
         view.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
@@ -179,7 +185,6 @@ class SearchUserModalViewController: UIViewController {
     // 테이블 뷰
     private func setupTableView() {
         tableView.delegate = self
-        tableView.register(SearchUserModalTableViewCell.self, forCellReuseIdentifier: "SearchUserCell")
         
         contentView.addSubview(tableView)
         
@@ -256,13 +261,7 @@ class SearchUserModalViewController: UIViewController {
     }
 }
 
-// TableView 관련
-extension SearchUserModalViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-}
-
+// table view cell
 class SearchUserModalTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -325,9 +324,9 @@ class SearchUserModalTableViewCell: UITableViewCell {
             make.size.equalTo((model.isSelected ?? false) ? 10 : 0)
         }
         
+        separatorView.removeFromSuperview()
+        
         if isLast {
-            separatorView.removeFromSuperview()
-            
             titleLabel.snp.remakeConstraints { make in
                 make.top.equalToSuperview().offset(12)
                 make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
@@ -335,7 +334,6 @@ class SearchUserModalTableViewCell: UITableViewCell {
                 make.bottom.equalToSuperview().inset(12)
             }
         } else {
-            separatorView.removeFromSuperview()
             contentView.addSubview(separatorView)
             
             titleLabel.snp.remakeConstraints { make in
@@ -348,7 +346,7 @@ class SearchUserModalTableViewCell: UITableViewCell {
                 make.top.equalTo(titleLabel.snp.bottom).offset(12)
                 make.leading.equalToSuperview().offset(16)
                 make.trailing.equalToSuperview().offset(-16)
-                make.bottom.equalToSuperview()
+                make.bottom.equalToSuperview().priority(.low)
                 make.height.equalTo(2)
             }
         }
