@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 func RollpeListItem(_ model: RollpeListItemModel) -> UIStackView {
     let view: UIStackView = UIStackView()
     view.axis = .vertical
@@ -92,6 +91,7 @@ func RollpeListItem(_ model: RollpeListItemModel) -> UIStackView {
     return view
 }
 
+// 이걸로 변경
 /*
 class RollpeListItem: UIStackView {
     override init(frame: CGRect) {
@@ -104,6 +104,13 @@ class RollpeListItem: UIStackView {
         setup()
     }
     
+    // 공개 여부
+    private var viewStatView: UIView = UIView()
+    
+    // 테마
+    private var themeView: UIView = UIView()
+    
+    // 상태
     private let statusesView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -113,8 +120,10 @@ class RollpeListItem: UIStackView {
         return sv
     }()
     
+    // D-day
     private let dday = BadgeDDay()
     
+    // 테마와 제목, 설명
     private let contentView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -124,6 +133,7 @@ class RollpeListItem: UIStackView {
         return sv
     }()
     
+    // 정보
     private let infoView: UIStackView = {
         let sv: UIStackView = UIStackView()
         sv.axis = .vertical
@@ -134,6 +144,7 @@ class RollpeListItem: UIStackView {
         return sv
     }()
     
+    // 제목
     private let title: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
@@ -145,6 +156,7 @@ class RollpeListItem: UIStackView {
         return label
     }()
     
+    // 설명
     private let desc: UILabel = {
         let label: UILabel = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
@@ -158,34 +170,51 @@ class RollpeListItem: UIStackView {
         self.axis = .vertical
         self.spacing = 12
         self.alignment = .leading
-    }
-    
-    func configure(model: RollpeDataModel) {
-        self.addArrangedSubview(statusesView)
-        statusesView.addArrangedSubview(model.viewStat ? BadgePublic() : BadgePrivate())
         
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        self.addArrangedSubview(statusesView)
         statusesView.addArrangedSubview(dday)
         
         self.addArrangedSubview(contentView)
         
-        switch model.theme {
-        case "화이트": contentView.addArrangedSubview(themeWhite())
-        case "블랙": contentView.addArrangedSubview(themeBlack())
-        case "생일": contentView.addArrangedSubview(themeBirthday())
-        default: contentView.addArrangedSubview(themeWhite())
-        }
-        
         contentView.addArrangedSubview(infoView)
-        
-        title.text = model.title
         infoView.addArrangedSubview(title)
- 
+        infoView.addArrangedSubview(desc)
+    }
+    
+    func configure(model: RollpeDataModel) {
+        // 공개 여부
+        self.removeArrangedSubview(viewStatView)
+        viewStatView.removeFromSuperview()
+        
+        viewStatView = model.viewStat ? BadgePublic() : BadgePrivate()
+        statusesView.insertArrangedSubview(viewStatView, at: 0)
+        
+        // D-day
+        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        
+        // 테마
+        contentView.removeArrangedSubview(themeView)
+        themeView.removeFromSuperview()
+        
+        themeView = {
+            switch model.theme {
+            case "화이트": return themeWhite()
+            case "블랙": return themeBlack()
+            case "생일": return themeBirthday()
+            default: return themeWhite()
+            }
+        }()
+        
+        contentView.addArrangedSubview(themeView)
+        
+        // 제목
+        title.text = model.title
+        
+        // 설명
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
          
-        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMd(dateFormatter.date(from: model.createdAt)!)) 생성"
-        infoView.addArrangedSubview(desc)
+        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
     }
 }
  */
@@ -201,8 +230,11 @@ class RollpeSearchListItem: UIStackView {
         setup()
     }
     
+    // 테마
+    private var themeView: UIView = UIView()
+    
     // 정보
-    private let infoView = {
+    private let infoView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.spacing = 8
@@ -212,7 +244,7 @@ class RollpeSearchListItem: UIStackView {
     }()
     
     // 상단 뷰
-    private let topStackView = {
+    private let topStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 8
@@ -222,11 +254,11 @@ class RollpeSearchListItem: UIStackView {
         return sv
     }()
     
-    // d-day
+    // D-day
     private let dday = BadgeDDay()
     
     // 제목
-    private let title = {
+    private let title: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeSecondary
@@ -238,7 +270,7 @@ class RollpeSearchListItem: UIStackView {
     }()
     
     // 내용
-    private let desc = {
+    private let desc: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         label.textColor = .rollpeGray
@@ -251,29 +283,42 @@ class RollpeSearchListItem: UIStackView {
         self.axis = .horizontal
         self.spacing = 12
         self.alignment = .center
-    }
-    
-    func configure(model: RollpeDataModel) {
-        switch model.theme {
-        case "화이트": self.addArrangedSubview(themeWhite())
-        case "블랙": self.addArrangedSubview(themeBlack())
-        case "생일": self.addArrangedSubview(themeBirthday())
-        default: self.addArrangedSubview(themeWhite())
-        }
         
         self.addArrangedSubview(infoView)
         
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
         topStackView.addArrangedSubview(dday)
-        
-        title.text = model.title
         topStackView.addArrangedSubview(title)
         infoView.addArrangedSubview(topStackView)
+        infoView.addArrangedSubview(desc)
+    }
+    
+    
+    func configure(model: RollpeDataModel) {
+        // 테마
+        self.removeArrangedSubview(themeView)
+        themeView.removeFromSuperview()
         
+        themeView = {
+            switch model.theme {
+            case "화이트": return themeWhite()
+            case "블랙": return themeBlack()
+            case "생일": return themeBirthday()
+            default: return themeWhite()
+            }
+        }()
+        
+        self.insertArrangedSubview(themeView, at: 0)
+        
+        // D-day
+        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        
+        // 제목
+        title.text = model.title
+        
+        // 설명
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
-        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMd(dateFormatter.date(from: model.createdAt)!)) 생성"
-        infoView.addArrangedSubview(desc)
+        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
     }
 }
