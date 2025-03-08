@@ -178,6 +178,7 @@ class RollpeCreateViewController: UIViewController {
     // 내부 뷰
     private func setupContentView() {
         let scrollView: UIScrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
         
         view.addSubview(scrollView)
         
