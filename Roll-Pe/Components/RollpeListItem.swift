@@ -190,7 +190,7 @@ class RollpeListItem: UIStackView {
         statusesView.insertArrangedSubview(viewStatView, at: 0)
         
         // D-day
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        dday.text = dateToDDay(convertYYYYMMddToDate(model.receive.receivingDate))
         
         // 테마
         contentView.removeArrangedSubview(themeView)
@@ -217,7 +217,7 @@ class RollpeListItem: UIStackView {
         desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
     }
 }
- */
+*/
 
 class RollpeSearchListItem: UIStackView {
     override init(frame: CGRect) {
@@ -310,7 +310,7 @@ class RollpeSearchListItem: UIStackView {
         self.insertArrangedSubview(themeView, at: 0)
         
         // D-day
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receivingDate))
+        dday.text = dateToDDay(convertYYYYMMddToDate(model.receive.receivingDate))
         
         // 제목
         title.text = model.title
