@@ -102,19 +102,18 @@ final class AuthInterceptor: RequestInterceptor {
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         let userViewModel = UserViewModel()
         
-        isRefreshing = true
-        
         print("retry 진입")
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             print("401 오류가 아님")
             completion(.doNotRetryWithError(error))
-            isRefreshing = false
             return
         }
         
         if isRefreshing {
             print("재발급 중")
         } else {
+            isRefreshing = true
+            
             refreshToken() { isSuccess in
                 self.isRefreshing = false
                 
