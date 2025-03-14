@@ -23,9 +23,8 @@ struct SearchUserDataModel: Decodable {
 }
 
 struct SearchUserResultModel: Decodable {
-    let code: String
+    let id: Int
     let identifyCode: String
     let name: String
-    let id: Int
     var isSelected: Bool? = false
 }
