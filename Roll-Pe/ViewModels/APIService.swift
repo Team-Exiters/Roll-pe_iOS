@@ -83,6 +83,8 @@ final class AuthInterceptor: RequestInterceptor {
     
     private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     
+    private var isRefreshing: Bool = false
+    
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         let keychain = Keychain.shared
         
@@ -100,21 +102,30 @@ final class AuthInterceptor: RequestInterceptor {
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         let userViewModel = UserViewModel()
         
+        isRefreshing = true
+        
         print("retry 진입")
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             print("401 오류가 아님")
             completion(.doNotRetryWithError(error))
+            isRefreshing = false
             return
         }
         
-        refreshToken() { isSuccess in
-            if isSuccess {
-                print("재발급 완료")
-                completion(.retry)
-            } else {
-                print("리프레시 토큰 만료")
-                userViewModel.logout()
-                completion(.doNotRetry)
+        if isRefreshing {
+            print("재발급 중")
+        } else {
+            refreshToken() { isSuccess in
+                self.isRefreshing = false
+                
+                if isSuccess {
+                    print("재발급 완료")
+                    completion(.retry)
+                } else {
+                    print("리프레시 토큰 만료")
+                    userViewModel.logout()
+                    completion(.doNotRetry)
+                }
             }
         }
     }

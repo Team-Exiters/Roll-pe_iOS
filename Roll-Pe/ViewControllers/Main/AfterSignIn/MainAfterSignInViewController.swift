@@ -130,22 +130,23 @@ class MainAfterSignInViewController: UIViewController {
     
     // 사이드 메뉴
     private func addSideMenuButton() {
+        // 사이드 메뉴
         let sideMenuView = SidemenuView(menuIndex: 0)
         let buttonSideMenu: UIButton = ButtonSideMenu()
-         
+        
         view.addSubview(buttonSideMenu)
-         
+        
         buttonSideMenu.snp.makeConstraints { make in
-             make.top.equalToSuperview().offset(80)
-             make.trailing.equalToSuperview().inset(20)
-         }
-         
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.trailing.equalToSuperview().inset(20)
+        }
+        
         buttonSideMenu.rx.tap
-             .subscribe(onNext: {
-                 self.view.addSubview(sideMenuView)
-                 sideMenuView.showMenu()
-             })
-             .disposed(by: disposeBag)
+            .subscribe(onNext: {
+                self.view.addSubview(sideMenuView)
+                sideMenuView.showMenu()
+            })
+            .disposed(by: disposeBag)
     }
     
     // 내부 뷰

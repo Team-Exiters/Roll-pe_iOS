@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct RollpeModel {
     // api값 저장만하고 화면에 뿌려주는 용도라 id추가 필요없음
     // 변수들 작명,타입은 임의, 추후에 최종수정
@@ -28,14 +27,28 @@ struct RollpeResponseListModel: Decodable {
     let data: [RollpeDataModel]
 }
 
+struct RollpeResponsePagenationListModel: Decodable {
+    let status_code: Int
+    let message: String
+    let code: String
+    let link: String?
+    let data: RollpeResponsePagenationListDataModel
+}
+
+struct RollpeResponsePagenationListDataModel: Decodable {
+    let count: Int
+    let next: String?
+    let previous: String?
+    let results: [RollpeDataModel]
+}
+
 struct RollpeDataModel: Decodable {
     let id: Int
     let code: String
     let title: String
     let host: RollpeHostDataModel
+    let receive: RollpeReceiveDataModel
     let viewStat: Bool
-    let receivingDate: String
-    let receivingStat: Int
     let theme: String
     let size: String
     let ratio: String
@@ -44,7 +57,18 @@ struct RollpeDataModel: Decodable {
 
 struct RollpeHostDataModel: Decodable {
     let id: Int
-    let code: String
+    let identifyCode: String
+    let name: String
+}
+
+struct RollpeReceiveDataModel: Decodable {
+    let receiver: RollpeReceiverDataModel
+    let receivingDate: String
+    let receivingStat: Int
+}
+
+struct RollpeReceiverDataModel: Decodable {
+    let id: Int
     let identifyCode: String
     let name: String
 }
