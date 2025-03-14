@@ -9,61 +9,85 @@ import UIKit
 import SnapKit
 
 // 화이트
-func themeWhite() -> UIView {
-    let view: UIView = UIView()
-    
-    view.backgroundColor = .rollpeWhite
-    view.layer.cornerRadius = 24
-    view.layer.masksToBounds = true
-    view.layer.borderWidth = 1
-    view.layer.borderColor = UIColor.rollpeBlack.cgColor
-    
-    view.snp.makeConstraints { make in
-        make.size.equalTo(48)
+class themeWhite: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
     }
     
-    return view
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    private func setup() {
+        self.backgroundColor = .rollpeWhite
+        self.layer.cornerRadius = 24
+        self.layer.masksToBounds = true
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor.rollpeBlack.cgColor
+        
+        self.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
+    }
 }
 
 // 블랙
-func themeBlack() -> UIView {
-    let view: UIView = UIView()
-    
-    view.backgroundColor = .rollpeBlack
-    view.layer.cornerRadius = 24
-    view.layer.masksToBounds = true
-    
-    view.snp.makeConstraints { make in
-        make.size.equalTo(48)
+class themeBlack: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
     }
     
-    return view
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    private func setup() {
+        self.backgroundColor = .rollpeBlack
+        self.layer.cornerRadius = 24
+        self.layer.masksToBounds = true
+        
+        self.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
+    }
 }
 
 // 생일
-func themeBirthday() -> UIView {
-    let view: UIView = UIView()
-    
-    view.backgroundColor = .rollpePink
-    view.layer.cornerRadius = 24
-    view.layer.masksToBounds = true
-    
-    let iconView: UIImageView = UIImageView()
-    let icon: UIImage = UIImage.iconBirthdayCake
-    iconView.image = icon
-    iconView.contentMode = .scaleAspectFit
-    
-    view.addSubview(iconView)
-    
-    iconView.snp.makeConstraints { make in
-        make.center.equalToSuperview()
-        make.width.equalTo(27.6)
-        make.height.equalTo(iconView.snp.width).dividedBy(getImageRatio(image: icon))
+class themeBirthday: UIView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
     }
     
-    view.snp.makeConstraints { make in
-        make.size.equalTo(48)
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
     }
     
-    return view
+    private func setup() {
+        self.backgroundColor = .rollpePink
+        self.layer.cornerRadius = 24
+        self.layer.masksToBounds = true
+        
+        let iconView: UIImageView = UIImageView()
+        let icon: UIImage = UIImage.iconBirthdayCake
+        iconView.image = icon
+        iconView.contentMode = .scaleAspectFit
+        
+        self.addSubview(iconView)
+        
+        iconView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalTo(27.6)
+            make.height.equalTo(iconView.snp.width).dividedBy(getImageRatio(image: icon))
+        }
+        
+        self.snp.makeConstraints { make in
+            make.size.equalTo(48)
+        }
+    }
 }
