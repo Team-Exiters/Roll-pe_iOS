@@ -10,6 +10,9 @@ import SwiftUI
 import RxSwift
 
 class ChangePasswordViewController: UIViewController {
+    private let disposeBag = DisposeBag()
+    
+    private let userViewModel = UserViewModel()
     
     private var equalToCurrentPassword : Bool = false
     
@@ -57,11 +60,13 @@ class ChangePasswordViewController: UIViewController {
         navigationItem.hidesBackButton = true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
+        bindData()
         setupNavigationBar()
         setupTitleLabel()
         setupChangePasswordTextField()
         setupConfirmPasswordTextField()
         setupChangeConfirmButton()
+        bindPasswordTextField()
     }
     
     private func setupNavigationBar() {
@@ -109,12 +114,29 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    private func bindPasswordTextField() {
+          changePasswordTextField.rx.text.orEmpty
+              .debounce(.seconds(1), scheduler: MainScheduler.instance) //1초간 입력변화 없으면 호출
+              .distinctUntilChanged()
+              .subscribe(onNext: { [weak self] text in
+                  self?.userViewModel.checkPassword(password: text)
+              })
+              .disposed(by: disposeBag)
+      }
+    
+    private func bindData(){
+        userViewModel.equalToCurrentPassword
+            .subscribe(onNext:{[weak self] model in
+                self?.equalToCurrentPassword = model ?? false
+            })
+            .disposed(by: disposeBag)
+    }
+    
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     
     @objc private func changeConfirmButtonTapped() {
-       //서버에 changePasswordTextField.text값 보내서 현재 비밀번호와 비교시켜 같은지 아닌지 bool값으로 ViewModel함수로 반환시킨후 equalToCurrentPassword 변수에 저장시키는 로직
         if let changePassword = changePasswordTextField.text {
             if (changePassword != ""){
                     if (changePassword != confirmPasswordTextField.text) {

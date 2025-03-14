@@ -19,6 +19,7 @@ class UserViewModel {
     let myStatus = BehaviorRelay<MyStatusModel?>(value: nil)
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
+    let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
     
     // 내 롤페 불러오기
     func getMyRollpes() {
@@ -52,6 +53,25 @@ class UserViewModel {
             })
             .disposed(by: disposeBag)
     }
+    
+    // 기존 비밀번호와 동일한지 확인하기
+    func checkPassword(password:String) {
+        let parameters: [String: Any] = ["password": password]
+        apiService.requestDecodable("/api/user/password-check", method: .post,parameters: parameters ,decodeType: Bool.self)
+            .subscribe(onNext: { model in
+                self.equalToCurrentPassword.accept(model)
+                print("요청값:\(model)")
+            }, onError: { error in
+                print("비밀번호 확인 중 오류 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 비밀번호 변경확정 하기
+    func changePassword(password:String){
+        
+    }
+    
     
     public func logout() {
         keychain.delete(key: "ACCESS_TOKEN")
