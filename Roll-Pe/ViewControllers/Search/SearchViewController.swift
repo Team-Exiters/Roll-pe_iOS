@@ -94,9 +94,8 @@ class SearchViewController: UIViewController, UITableViewDelegate {
     
     // 더 불러오기 버튼
     private let getMoreButton = {
-        let button = SecondaryButton(title: "더 불러오기")
+        let button = SecondaryButton(title: "더 불러오기", isColorMain: false)
         button.layer.borderColor = UIColor.rollpeSecondary.cgColor
-        button.setTitleColor(.rollpeSecondary, for: .normal)
         
         return button
     }()
@@ -260,7 +259,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         
         getMoreButton.snp.makeConstraints { make in
             make.top.equalTo(rollpeTableView.snp.bottom).offset(32)
-            make.horizontalEdges.bottom.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().inset(40)
         }
     }
@@ -332,7 +331,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
                             make.horizontalEdges.equalToSuperview()
                             make.height.equalTo(self.rollpeTableView.contentSize.height)
                             
-                            if rollpeData.data.next == nil && self.contentView.bounds.height > UIScreen.main.bounds.height - (safeareaTop + safeareaBottom) {
+                            if rollpeData.data.next == nil && self.rollpeTableView.contentSize.height > UIScreen.main.bounds.height - (safeareaTop + safeareaBottom) {
                                 make.bottom.equalToSuperview().inset(40)
                             }
                         }
