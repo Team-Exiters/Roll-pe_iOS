@@ -111,6 +111,7 @@ final class AuthInterceptor: RequestInterceptor {
         
         if isRefreshing {
             print("재발급 중")
+            completion(.retry)
         } else {
             isRefreshing = true
             
