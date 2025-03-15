@@ -67,24 +67,25 @@ extension Reactive where Base: PrimaryButton {
 }
 
 class SecondaryButton: UIButton {
-    init(frame: CGRect = .zero, title: String) {
+    var config = UIButton.Configuration.plain()
+    
+    init(frame: CGRect = .zero, title: String, isColorMain: Bool = true) {
         super.init(frame: frame)
-        setup(title: title)
+        setup(title: title, isColorMain: isColorMain)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup(title: "")
+        setup(title: "", isColorMain: true)
     }
     
-    private func setup(title: String) {
+    private func setup(title: String, isColorMain: Bool) {
         self.layer.cornerRadius = 8
         self.backgroundColor = .rollpePrimary
         
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeMain.cgColor
         
-        var config = UIButton.Configuration.plain()
         config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
         let font = UIFont(name: "Pretendard-SemiBold", size: 16) ?? .systemFont(ofSize: 16)
@@ -93,7 +94,7 @@ class SecondaryButton: UIButton {
             title,
             attributes: AttributeContainer([
                 .font: font,
-                .foregroundColor: UIColor.rollpeMain
+                .foregroundColor: isColorMain ? UIColor.rollpeMain : UIColor.rollpeSecondary
             ])
         )
         
