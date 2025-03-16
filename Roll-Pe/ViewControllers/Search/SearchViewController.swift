@@ -17,8 +17,10 @@ class SearchViewController: UIViewController, UITableViewDelegate {
     
     // MARK: - 요소
     
+    // 내부 뷰
     private let contentView: UIView = UIView()
     
+    // 제목
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "진행 중인 롤페를 검색해요."
@@ -30,6 +32,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         return label
     }()
     
+    // 검색 바
     private lazy var searchBar = {
         let textField = TextField()
         textField.placeholder = "검색어를 입력하세요."
@@ -40,6 +43,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         return textField
     }()
     
+    // 검색 아이콘 버튼
     private let searchButton: UIButton = {
         let button: UIButton = UIButton()
         let iconView: UIImageView = UIImageView()
@@ -62,6 +66,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         return button
     }()
     
+    // 롤페 개수 라벨
     private let amountLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
@@ -72,13 +77,13 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         return label
     }()
     
+    // 테이블 뷰
     private let rollpeTableView: UITableView = {
         let tv = AutoHeightTableView()
-        tv.register(SearchRollpeTableViewCell.self, forCellReuseIdentifier: "SearchRollpeCell")
         
-        tv.estimatedRowHeight = 90
         tv.backgroundColor = .rollpePrimary
         tv.separatorStyle = .none
+        tv.estimatedRowHeight = 90
         tv.isScrollEnabled = false
         
         // 내용 여백
@@ -87,14 +92,15 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         return tv
     }()
     
+    // 더 불러오기 버튼
     private let getMoreButton = {
-        let button = SecondaryButton(title: "더 불러오기")
+        let button = SecondaryButton(title: "더 불러오기", isColorMain: false)
         button.layer.borderColor = UIColor.rollpeSecondary.cgColor
-        button.setTitleColor(.rollpeSecondary, for: .normal)
         
         return button
     }()
     
+    // 노 데이터 뷰
     private let noDataView: UIView = {
         let view = UIView()
         
@@ -166,7 +172,6 @@ class SearchViewController: UIViewController, UITableViewDelegate {
     
     // 사이드 메뉴
     private func addSideMenuButton() {
-        // 사이드 메뉴
         let sideMenuView = SidemenuView(menuIndex: 1)
         let buttonSideMenu: UIButton = ButtonSideMenu()
         
@@ -254,7 +259,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         
         getMoreButton.snp.makeConstraints { make in
             make.top.equalTo(rollpeTableView.snp.bottom).offset(32)
-            make.horizontalEdges.bottom.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().inset(40)
         }
     }
@@ -276,7 +281,8 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         let input = SearchRollpeViewModel.Input(
             word: searchBar.rx.text,
             keyboardTapEvent: searchBar.rx.controlEvent(.editingDidEndOnExit),
-            searchButtonTapEvent: searchButton.rx.tap
+            searchButtonTapEvent: searchButton.rx.tap,
+            getMoreButtonTapEvent: getMoreButton.rx.tap
         )
         
         let output = viewModel.transform(input)
@@ -291,44 +297,48 @@ class SearchViewController: UIViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
         
-        output.rollpeData
+        output.rollpeModels
             .map { rollpes in
-                (rollpes?.data ?? []).enumerated().map { ($0.element, rollpes?.data.count ?? 0) }
+                return (rollpes ?? []).enumerated().map {
+                    ($0.element, rollpes?.count ?? 0)
                 }
+            }
             .drive(rollpeTableView.rx.items(cellIdentifier: "SearchRollpeCell", cellType: SearchRollpeTableViewCell.self)) { index, data, cell in
                 let (model, length) = data
                 cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
         
-        output.rollpeData
-            .drive(onNext: { [weak self] rollpeData in
-                guard let self = self else { return }
+        Driver.combineLatest(output.rollpeModels, output.rollpeData)
+            .drive(onNext: { [weak self] rollpeModels, rollpeData in
+                guard let self = self,
+                      let rollpeModels = rollpeModels,
+                      let rollpeData = rollpeData else { return }
                 
-                if let rollpeData = rollpeData {
+                DispatchQueue.main.async {
                     self.resetResult()
                     
-                    if rollpeData.data.count > 0 {
-                        amountLabel.text = "총 \(rollpeData.data.count)개의 검색 결과"
-                        setupAmountLabel()
+                    if rollpeModels.isEmpty {
+                        self.setupNoDataView()
+                    } else {
+                        self.amountLabel.text = "총 \(rollpeModels.count)개의 검색 결과"
                         
-                        contentView.addSubview(rollpeTableView)
+                        self.setupAmountLabel()
+                        self.contentView.addSubview(self.rollpeTableView)
                         
-                        rollpeTableView.snp.remakeConstraints { make in
+                        self.rollpeTableView.snp.remakeConstraints { make in
                             make.top.equalTo(self.amountLabel.snp.bottom)
                             make.horizontalEdges.equalToSuperview()
                             make.height.equalTo(self.rollpeTableView.contentSize.height)
                             
-                            if rollpeData.data.count % 20 != 0 && self.contentView.bounds.height > UIScreen.main.bounds.height - (safeareaTop + safeareaBottom) {
+                            if rollpeData.data.next == nil && self.rollpeTableView.contentSize.height > UIScreen.main.bounds.height - (safeareaTop + safeareaBottom) {
                                 make.bottom.equalToSuperview().inset(40)
                             }
                         }
                         
-                        if rollpeData.data.count % 20 == 0 {
-                            setupGetMoreButton()
+                        if rollpeData.data.next != nil {
+                            self.setupGetMoreButton()
                         }
-                    } else {
-                        setupNoDataView()
                     }
                 }
             })
@@ -373,23 +383,21 @@ class SearchRollpeTableViewCell: UITableViewCell {
     
     func configure(model: RollpeDataModel, isLast: Bool) {
         rollpeListItem.configure(model: model)
+        separatorView.removeFromSuperview()
         
         if isLast {
-            separatorView.removeFromSuperview()
-            
             rollpeListItem.snp.remakeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
                 make.verticalEdges.equalToSuperview().offset(20)
             }
             
         } else {
-            separatorView.removeFromSuperview()
-            contentView.addSubview(separatorView)
-            
             rollpeListItem.snp.remakeConstraints { make in
                 make.top.equalToSuperview().offset(20)
                 make.horizontalEdges.equalToSuperview()
             }
+            
+            contentView.addSubview(separatorView)
             
             separatorView.snp.remakeConstraints { make in
                 make.top.equalTo(rollpeListItem.snp.bottom).offset(20)

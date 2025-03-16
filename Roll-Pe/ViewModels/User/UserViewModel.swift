@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import UIKit
+import Alamofire
 
 class UserViewModel {
     private let disposeBag = DisposeBag()
@@ -20,6 +21,8 @@ class UserViewModel {
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
+    let successChangePassword = BehaviorRelay<Bool?>(value: nil)
+    
     
     // 내 롤페 불러오기
     func getMyRollpes() {
@@ -62,15 +65,22 @@ class UserViewModel {
                 self.equalToCurrentPassword.accept(model)
                 print("요청값:\(model)")
             }, onError: { error in
-                print("비밀번호 확인 중 오류 발생: \(error)")
+                print("비밀번호 일치 확인 중 오류 발생: \(error)")
             })
             .disposed(by: disposeBag)
     }
     
     // 비밀번호 변경확정 하기
-    func changePassword(password:String){
-        
+    func changePassword(password: String) -> Completable {
+        let parameters: [String: Any] = ["password": password]
+        return apiService.requestDecodable("/api/user/change-password",
+                                           method: .patch,
+                                           parameters: parameters,
+                                           decodeType: EmptyResponse.self)
+        .ignoreElements()
+        .asCompletable()
     }
+
     
     
     public func logout() {
@@ -96,3 +106,5 @@ class UserViewModel {
         }
     }
 }
+
+struct EmptyResponse: Decodable {}

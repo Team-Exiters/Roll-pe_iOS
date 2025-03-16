@@ -150,6 +150,11 @@ class ChangePasswordViewController: UIViewController {
                             alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
                             self.present(alert, animated: true, completion: nil)
                         }
+                        else if (!NSPredicate(format: "SELF MATCHES %@", "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$").evaluate(with: changePassword)) {
+                            let alert = UIAlertController(title: "오류", message: "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
+                        }
                         else{
                             if (equalToCurrentPassword) {
                                 let alert = UIAlertController(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.", preferredStyle: .alert)
@@ -157,10 +162,17 @@ class ChangePasswordViewController: UIViewController {
                                 self.present(alert, animated: true, completion: nil)
                             }
                             else {
-                                // 비밀번호 변경 로직 추가하기
-                                let alert = UIAlertController(title: "성공", message: "비밀번호가 성공적으로 변경되었습니다.", preferredStyle: .alert)
-                                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                                self.present(alert, animated: true, completion: nil)
+                                userViewModel.changePassword(password: changePassword)
+                                      .subscribe(onCompleted: { [weak self] in
+                                          let alert = UIAlertController(title: "성공", message: "비밀번호가 성공적으로 변경되었습니다.", preferredStyle: .alert)
+                                          alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+                                          self?.present(alert, animated: true, completion: nil)
+                                      }, onError: { [weak self] error in
+                                          let alert = UIAlertController(title: "오류", message: "비밀번호 변경 중 오류가 발생했습니다.", preferredStyle: .alert)
+                                          alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+                                          self?.present(alert, animated: true, completion: nil)
+                                      })
+                                      .disposed(by: disposeBag)
                             }
                         }
                     }
