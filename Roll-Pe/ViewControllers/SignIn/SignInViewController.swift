@@ -15,20 +15,66 @@ import GoogleSignIn
 
 class SignInViewController: UIViewController {
     private let disposeBag = DisposeBag()
-    
-    // 뷰모델
     private let viewModel = SignInViewModel()
     
-    // MARK: - 속성
+    // MARK: - 컴포넌트
+    
+    // 메뉴 라벨
+    private func menuText(_ text: String) -> UILabel {
+        let label: UILabel = UILabel()
+        label.textColor = .rollpeGray
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
+        label.text = text
+        
+        return label
+    }
+    
+    // 약관 라벨
+    private func policyText(_ text: String) -> UILabel {
+        let label: UILabel = UILabel()
+        label.textColor = .rollpeGray
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
+        label.text = text
+        
+        let tapGesture = UITapGestureRecognizer()
+        label.addGestureRecognizer(tapGesture)
+        
+        return label
+    }
+    
+    // MARK: - 요소
     
     // 내부 뷰
     private let contentView: UIView = UIView()
     
     // 로고
-    private let logo: UIImageView = UIImageView()
+    private lazy var logo: UIImageView = {
+        let iv = UIImageView()
+        iv.image = logoImage
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        
+        return iv
+    }()
+    
+    // 로고 이미지
+    private let logoImage = UIImage.imgLogo
     
     // 제목
-    private let titleLabel: UILabel = UILabel()
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .rollpeSecondary
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.numberOfLines = 2
+        
+        let titleParagraphStyle = NSMutableParagraphStyle()
+        titleParagraphStyle.lineHeightMultiple = 0.98
+        titleParagraphStyle.alignment = .center
+        
+        label.attributedText = NSMutableAttributedString(string: "다같이 한 마음으로\n사랑하는 사람에게 전달해보세요", attributes: [.paragraphStyle: titleParagraphStyle])
+        
+        return label
+    }()
     
     // 이메일
     private let email: TextField = {
@@ -51,7 +97,15 @@ class SignInViewController: UIViewController {
     }()
     
     // 로그인 유지
-    private let keepSignInView: UIStackView = UIStackView()
+    private let keepSignInView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .center
+        
+        return sv
+    }()
+    
     private let keepSignIn: Checkbox = {
         let checkbox = Checkbox()
         checkbox.isChecked = true
@@ -63,18 +117,24 @@ class SignInViewController: UIViewController {
     private let signInButton = PrimaryButton(title: "로그인")
     
     // 메뉴들
-    private let menus: UIStackView = UIStackView()
-    private func menuText(_ text: String) -> UILabel {
-        let label: UILabel = UILabel()
-        label.textColor = .rollpeGray
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        label.text = text
+    private let menus: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .center
         
-        return label
-    }
+        return sv
+    }()
     
     // 소셜 로그인
-    private let socialSignInView: UIStackView = UIStackView()
+    private let socialSignInView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 16
+        sv.alignment = .center
+        
+        return sv
+    }()
     
     // 소셜 로그인 - 카카오
     private let kakao: UIButton = {
@@ -162,18 +222,15 @@ class SignInViewController: UIViewController {
         return view
     }()
     
-    // 약관들
-    private func policyText(_ text: String) -> UILabel {
-        let label: UILabel = UILabel()
-        label.textColor = .rollpeGray
-        label.font = UIFont(name: "Pretendard-Regular", size: 12)
-        label.text = text
+    // 약관
+    private let policiesView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 6
+        sv.alignment = .center
         
-        let tapGesture = UITapGestureRecognizer()
-        label.addGestureRecognizer(tapGesture)
-        
-        return label
-    }
+        return sv
+    }()
     
     // 로딩 뷰
     private let loadingView: LoadingView = {
@@ -191,8 +248,6 @@ class SignInViewController: UIViewController {
         
         setUI()
         bind()
-        addBack()
-        addLoadingView()
     }
     
     // MARK: - UI 구성
@@ -228,21 +283,24 @@ class SignInViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = .rollpePrimary
         
-        setBackground()
-        setContentView()
-        setLogo()
-        setTitle()
-        setEmail()
-        setPassword()
-        setKeepSignIn()
-        setSignInButton()
-        setMenus()
-        setSocials()
-        setPolicies()
+        setupBackground()
+        setupContentView()
+        setupLogo()
+        setupTitle()
+        setupEmail()
+        setupPassword()
+        setupKeepSignIn()
+        setupSignInButton()
+        setupMenus()
+        setupSocials()
+        setupPolicies()
+        
+        addBack()
+        addLoadingView()
     }
     
     // 배경
-    private func setBackground() {
+    private func setupBackground() {
         let background: UIImageView = UIImageView()
         background.image = .imgBackground
         background.contentMode = .scaleAspectFill
@@ -258,7 +316,7 @@ class SignInViewController: UIViewController {
     }
     
     // 내부 뷰
-    private func setContentView() {
+    private func setupContentView() {
         let scrollView: UIScrollView = UIScrollView()
         scrollView.bounces = false
         scrollView.showsVerticalScrollIndicator = false
@@ -283,12 +341,7 @@ class SignInViewController: UIViewController {
     }
     
     // 로고
-    private func setLogo() {
-        let logoImage = UIImage.imgLogo
-        logo.image = logoImage
-        logo.contentMode = .scaleAspectFit
-        logo.clipsToBounds = true
-        
+    private func setupLogo() {
         contentView.addSubview(logo)
         
         logo.snp.makeConstraints { make in
@@ -300,15 +353,7 @@ class SignInViewController: UIViewController {
     }
     
     // 제목
-    private func setTitle() {
-        titleLabel.textColor = .rollpeSecondary
-        titleLabel.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        titleLabel.numberOfLines = 2
-        let titleParagraphStyle = NSMutableParagraphStyle()
-        titleParagraphStyle.lineHeightMultiple = 0.98
-        titleParagraphStyle.alignment = .center
-        titleLabel.attributedText = NSMutableAttributedString(string: "다같이 한 마음으로\n사랑하는 사람에게 전달해보세요", attributes: [.paragraphStyle: titleParagraphStyle])
-        
+    private func setupTitle() {
         contentView.addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
@@ -318,7 +363,7 @@ class SignInViewController: UIViewController {
     }
     
     // 이메일
-    private func setEmail() {
+    private func setupEmail() {
         contentView.addSubview(email)
         
         email.snp.makeConstraints { make in
@@ -328,7 +373,7 @@ class SignInViewController: UIViewController {
     }
     
     // 비밀번호
-    private func setPassword() {
+    private func setupPassword() {
         contentView.addSubview(password)
         
         password.snp.makeConstraints { make in
@@ -338,11 +383,7 @@ class SignInViewController: UIViewController {
     }
     
     // 로그인 유지
-    private func setKeepSignIn() {
-        keepSignInView.axis = .horizontal
-        keepSignInView.spacing = 8
-        keepSignInView.alignment = .center
-        
+    private func setupKeepSignIn() {
         contentView.addSubview(keepSignInView)
         
         keepSignInView.addArrangedSubview(keepSignIn)
@@ -361,7 +402,7 @@ class SignInViewController: UIViewController {
     }
     
     // 로그인 버튼
-    private func setSignInButton() {
+    private func setupSignInButton() {
         contentView.addSubview(signInButton)
         
         signInButton.snp.makeConstraints { make in
@@ -371,14 +412,17 @@ class SignInViewController: UIViewController {
     }
     
     // 메뉴들
-    private func setMenus() {
-        menus.axis = .horizontal
-        menus.spacing = 8
-        menus.alignment = .center
-        
-        let findAccountButton = menuText("계정 찾기")
+    private func setupMenus() {
+        // let findAccountButton = menuText("계정 찾기")
         let findPasswordButton = menuText("비밀번호 찾기")
         let signUpButton = menuText("회원가입")
+        
+        findPasswordButton.rx.tap
+            .subscribe(onNext: {
+                let vc = ForgotPasswordViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
         
         signUpButton.rx.tap
             .subscribe(onNext: {
@@ -387,8 +431,10 @@ class SignInViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        /*
         menus.addArrangedSubview(findAccountButton)
         menus.addArrangedSubview(menuText("|"))
+        */
         menus.addArrangedSubview(findPasswordButton)
         menus.addArrangedSubview(menuText("|"))
         menus.addArrangedSubview(signUpButton)
@@ -402,11 +448,7 @@ class SignInViewController: UIViewController {
     }
     
     // 소셜 로그인
-    private func setSocials() {
-        socialSignInView.axis = .horizontal
-        socialSignInView.spacing = 16
-        socialSignInView.alignment = .center
-        
+    private func setupSocials() {
         socialSignInView.addArrangedSubview(kakao)
         socialSignInView.addArrangedSubview(google)
         socialSignInView.addArrangedSubview(apple)
@@ -420,15 +462,10 @@ class SignInViewController: UIViewController {
     }
     
     // 약관
-    private func setPolicies() {
-        let policies: UIStackView = UIStackView()
-        policies.axis = .horizontal
-        policies.spacing = 6
-        policies.alignment = .center
+    private func setupPolicies() {
+        contentView.addSubview(policiesView)
         
-        contentView.addSubview(policies)
-        
-        policies.snp.makeConstraints { make in
+        policiesView.snp.makeConstraints { make in
             make.top.equalTo(socialSignInView.snp.bottom).offset(64)
             make.centerX.equalToSuperview()
             make.bottom.equalToSuperview()
@@ -454,9 +491,9 @@ class SignInViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        policies.addArrangedSubview(termsOfServiceButton)
-        policies.addArrangedSubview(policyText("|"))
-        policies.addArrangedSubview(privacyPolicy)
+        policiesView.addArrangedSubview(termsOfServiceButton)
+        policiesView.addArrangedSubview(policyText("|"))
+        policiesView.addArrangedSubview(privacyPolicy)
     }
     
     // MARK: - Bind
