@@ -21,7 +21,6 @@ class UserViewModel {
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
-    let successChangePassword = BehaviorRelay<Bool?>(value: nil)
     
     
     // 내 롤페 불러오기
@@ -83,12 +82,13 @@ class UserViewModel {
 
     
     
-    public func logout() {
+    func logout() {
         keychain.delete(key: "ACCESS_TOKEN")
         keychain.delete(key: "REFRESH_TOKEN")
         keychain.delete(key: "NAME")
         keychain.delete(key: "EMAIL")
         keychain.delete(key: "IDENTITY_CODE")
+        keychain.delete(key: "PROVIDER")
         
         DispatchQueue.main.async {
             let scenes = UIApplication.shared.connectedScenes
@@ -104,6 +104,21 @@ class UserViewModel {
                 rootVC.present(alertController, animated: true, completion: nil)
             }
         }
+    }
+    
+    func deleteAccount() {
+        apiService.requestDecodable("/api/user/drop-user",
+                                    method: .delete,
+                                    decodeType: EmptyResponse.self)
+            .ignoreElements()
+            .asCompletable()
+            .subscribe(onCompleted: {
+                print("회원탈퇴 성공")
+                self.logout()
+            }, onError: { error in
+                print("회원탈퇴 실패: \(error)")
+            })
+            .disposed(by: disposeBag)
     }
 }
 

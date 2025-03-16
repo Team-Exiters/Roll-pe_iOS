@@ -275,7 +275,14 @@ class MyPageViewController: UIViewController {
         userViewModel.logout()
     }
     private func withdrawTapped() {
-   
+        let alert = UIAlertController(title: "회원 탈퇴", message: "정말 회원 탈퇴를 진행하시겠습니까?", preferredStyle: .alert)
+           let confirmAction = UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+               self?.userViewModel.deleteAccount()
+           }
+           let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+           alert.addAction(confirmAction)
+           alert.addAction(cancelAction)
+           self.present(alert, animated: true, completion: nil)
     }
     
     private func setupFooter() {
