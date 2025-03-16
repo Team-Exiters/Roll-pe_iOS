@@ -67,8 +67,6 @@ extension Reactive where Base: PrimaryButton {
 }
 
 class SecondaryButton: UIButton {
-    var config = UIButton.Configuration.plain()
-    
     init(frame: CGRect = .zero, title: String, isColorMain: Bool = true) {
         super.init(frame: frame)
         setup(title: title, isColorMain: isColorMain)
@@ -85,6 +83,8 @@ class SecondaryButton: UIButton {
         
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeMain.cgColor
+        
+        var config = UIButton.Configuration.plain()
         
         config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
         
