@@ -21,6 +21,8 @@ class UserViewModel {
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
+    let serverResponse = BehaviorRelay<String?>(value: nil)
+    let navigationPop = BehaviorRelay<Bool?>(value: nil)
     
     
     // 내 롤페 불러오기
@@ -70,14 +72,20 @@ class UserViewModel {
     }
     
     // 비밀번호 변경확정 하기
-    func changePassword(password: String) -> Completable {
+    func changePassword(password: String) {
         let parameters: [String: Any] = ["password": password]
         return apiService.requestDecodable("/api/user/change-password",
                                            method: .patch,
                                            parameters: parameters,
-                                           decodeType: EmptyResponse.self)
-        .ignoreElements()
-        .asCompletable()
+                                           decodeType: String.self)
+        .subscribe(onNext: { model in
+            self.serverResponse.accept(model)
+            self.navigationPop.accept(true)
+        }, onError: { error in
+            print("changePassword함수 에러:\(error)")
+            self.serverResponse.accept("오류가 발생하였습니다")
+        })
+        .disposed(by: disposeBag)
     }
 
     
@@ -108,18 +116,21 @@ class UserViewModel {
     
     func deleteAccount() {
         apiService.requestDecodable("/api/user/drop-user",
-                                    method: .delete,
-                                    decodeType: EmptyResponse.self)
-            .ignoreElements()
-            .asCompletable()
-            .subscribe(onCompleted: {
-                print("회원탈퇴 성공")
+                                    method: .delete,decodeType: String.self)
+            .subscribe(onNext: { model in
+                self.serverResponse.accept(model)
                 self.logout()
             }, onError: { error in
                 print("회원탈퇴 실패: \(error)")
+                self.serverResponse.accept("오류가 발생하였습니다")
             })
             .disposed(by: disposeBag)
     }
+    
+    func isValidPassword(_ password: String) -> Bool {
+         let pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", pattern)
+         return predicate.evaluate(with: password)
+     }
 }
 
-struct EmptyResponse: Decodable {}

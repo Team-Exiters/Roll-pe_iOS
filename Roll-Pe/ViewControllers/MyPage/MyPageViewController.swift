@@ -297,16 +297,19 @@ class MyPageViewController: UIViewController {
     
     private func bind() {
         userViewModel.getMyStatus()
+        
         userViewModel.myStatus
             .subscribe(onNext: { [weak self] model in
                 self?.myStatus = model
             })
             .disposed(by: disposeBag)
+        
         userViewModel.myRollpe
             .subscribe(onNext:{[weak self] model in
                 self?.myRollpeListData = model
             })
             .disposed(by: disposeBag)
+        
         userViewModel.invitedRollpe
             .subscribe(onNext:{ [weak self] model in
                 self?.invitedRollpeListData = model
