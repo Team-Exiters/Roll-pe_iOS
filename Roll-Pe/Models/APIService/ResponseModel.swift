@@ -1,13 +1,13 @@
 //
-//  SignUpModel.swift
+//  ResponseModel.swift
 //  Roll-Pe
 //
-//  Created by 김태은 on 2/15/25.
+//  Created by 김태은 on 3/15/25.
 //
 
 import Foundation
 
-struct SignUpModel: Decodable {
+struct ResponseNoDataModel: Decodable {
     let status_code: Int
     let message: String
     let code: String
