@@ -13,15 +13,61 @@ import SwiftUI
 import SafariServices
 
 class SignUpViewController: UIViewController {
-    let disposeBag = DisposeBag()
-    
-    // 뷰모델
+    private let disposeBag = DisposeBag()
     private let viewModel = SignUpViewModel()
     
-    // MARK: - 속성
+    // MARK: - 컴포넌트
+    
+    // 약관확인 라벤
+    private func confirmLabel(_ text: String) -> UILabel {
+        let label = UILabel()
+        label.textColor = .rollpeSecondary
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
+        label.text = text
+        
+        return label
+    }
+    
+    // 링크 라벨
+    private func linkLabel() -> UILabel {
+        let label = UILabel()
+        label.text = "보기"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
+        label.textColor = .rollpeGray
+        
+        return label
+    }
+    
+    // MARK: - 요소
+    
+    // 내부 뷰
+    private let contentView: UIView = UIView()
+    
+    // 로고
+    private lazy var logo: UIImageView = {
+        let iv = UIImageView()
+        iv.image = logoImage
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        
+        return iv
+    }()
+    
+    // 로고 이미지
+        private let logoImage = UIImage.imgLogo
+    
+    // 제목
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .rollpeSecondary
+        label.font = UIFont(name: "Pretendard-Regular", size: 20)
+        label.text = "회원가입"
+        
+        return label
+    }()
     
     // Spacer
-    let spacer: UIView = {
+    private let spacer: UIView = {
         let view = UIView()
         view.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
@@ -29,7 +75,7 @@ class SignUpViewController: UIViewController {
     }()
     
     // 이메일
-    let email: TextField = {
+    private let email: TextField = {
         let textField = TextField()
         textField.placeholder = "이메일"
         textField.textContentType = .emailAddress
@@ -39,7 +85,7 @@ class SignUpViewController: UIViewController {
     }()
     
     // 닉네임
-    let name: TextField = {
+    private let name: TextField = {
         let textField = TextField()
         textField.placeholder = "닉네임(2-6자)"
         textField.maxLength = 6
@@ -47,26 +93,8 @@ class SignUpViewController: UIViewController {
         return textField
     }()
     
-    /*
-     // 인증번호 발송
-     let buttonSendVerificationCode = SecondaryButton(title: "인증번호 발송")
-     
-     // 인증번호
-     let verificationCode: TextField = {
-     let textField = TextField()
-     textField.placeholder = "인증번호"
-     textField.textContentType = .oneTimeCode
-     textField.keyboardType = .numberPad
-     
-     return textField
-     }()
-     
-     // 인증번호 확인
-     let buttonCheckSendVerificationCode = SecondaryButton(title: "인증번호 확인")
-     */
-    
     // 비밀번호
-    let password: TextField = {
+    private let password: TextField = {
         let textField = TextField()
         textField.placeholder = "비밀번호"
         textField.textContentType = .password
@@ -76,7 +104,7 @@ class SignUpViewController: UIViewController {
     }()
     
     // 비밀번호 확인
-    let passwordConfirm: TextField = {
+    private let passwordConfirm: TextField = {
         let textField = TextField()
         textField.placeholder = "비밀번호 확인"
         textField.textContentType = .password
@@ -86,28 +114,55 @@ class SignUpViewController: UIViewController {
     }()
     
     // 연령 확인
-    let checkboxConfirmAge: Checkbox = {
+    private let confirmAgeView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .center
+        
+        return sv
+    }()
+    
+    private let checkboxConfirmAge: Checkbox = {
         let checkbox = Checkbox()
         
         return checkbox
     }()
     
     // 서비스 이용약관
-    let checkboxConfirmTerms: Checkbox = {
+    private let confirmTermsView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .center
+        
+        return sv
+    }()
+    
+    private let checkboxConfirmTerms: Checkbox = {
         let checkbox = Checkbox()
         
         return checkbox
     }()
     
     // 개인정보 수집 및 이용동의
-    let checkboxConfirmPrivacy: Checkbox = {
+    private let confirmPrivacyView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .center
+        
+        return sv
+    }()
+    
+    private let checkboxConfirmPrivacy: Checkbox = {
         let checkbox = Checkbox()
         
         return checkbox
     }()
     
     // 가입
-    let signUpButton = PrimaryButton(title: "가입")
+    private let signUpButton = PrimaryButton(title: "가입")
     
     // 로딩 뷰
     private let loadingView: LoadingView = {
@@ -125,8 +180,6 @@ class SignUpViewController: UIViewController {
         
         setUI()
         bind()
-        addBack()
-        addLoadingView()
     }
     
     // MARK: - UI 구성
@@ -162,6 +215,24 @@ class SignUpViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = .rollpePrimary
         
+        setupContentView()
+        setupLogo()
+        setupTitle()
+        setupEmail()
+        setupName()
+        setupPassword()
+        setupPasswordConfirm()
+        setupConfirmAge()
+        setupConfirmTerms()
+        setupConfirmPrivacyPolicy()
+        setupSignUpButton()
+        
+        addBack()
+        addLoadingView()
+    }
+    
+    // 내부 뷰
+    private func setupContentView() {
         let scrollView: UIScrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
         
@@ -173,8 +244,6 @@ class SignUpViewController: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
-        let contentView: UIView = UIView()
-        
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
@@ -183,14 +252,10 @@ class SignUpViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
         }
-        
-        // 로고
-        let logo: UIImageView = UIImageView()
-        let logoImage = UIImage.imgLogo
-        logo.image = logoImage
-        logo.contentMode = .scaleAspectFit
-        logo.clipsToBounds = true
-        
+    }
+    
+    // 로고
+    private func setupLogo() {
         contentView.addSubview(logo)
         
         logo.snp.makeConstraints { make in
@@ -199,93 +264,60 @@ class SignUpViewController: UIViewController {
             make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage))
             make.centerX.equalToSuperview()
         }
+    }
+    
+    // 제목
+    private func setupTitle() {
+        contentView.addSubview(titleLabel)
         
-        // 제목
-        let title: UILabel = UILabel()
-        title.textColor = .rollpeSecondary
-        title.font = UIFont(name: "Pretendard-Regular", size: 20)
-        title.text = "회원가입"
-        
-        contentView.addSubview(title)
-        
-        title.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
             make.top.equalTo(logo.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
-        
-        // 이메일
+    }
+    
+    // 이메일
+    private func setupEmail() {
         contentView.addSubview(email)
         
         email.snp.makeConstraints { make in
-            make.top.equalTo(title.snp.bottom).offset(60)
+            make.top.equalTo(titleLabel.snp.bottom).offset(60)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 닉네임
+    }
+    
+    // 이름
+    private func setupName() {
         contentView.addSubview(name)
         
         name.snp.makeConstraints { make in
             make.top.equalTo(email.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        /*
-         // 인증번호 발송
-         contentView.addArrangedSubview(buttonSendVerificationCode)
-         
-         buttonSendVerificationCode.snp.makeConstraints { make in
-         make.horizontalEdges.equalToSuperview()
-         }
-         
-         contentView.setCustomSpacing(8, after: buttonSendVerificationCode)
-         */
-        
-        // 인증번호
-        /*
-         contentView.addArrangedSubview(verificationCode)
-         
-         verificationCode.snp.makeConstraints { make in
-         make.width.equalToSuperview()
-         }
-         
-         contentView.setCustomSpacing(8, after: verificationCode)
-         */
-        
-        // 인증번호 확인
-        /*
-         contentView.addArrangedSubview(buttonCheckSendVerificationCode)
-         
-         buttonCheckSendVerificationCode.snp.makeConstraints { make in
-         make.horizontalEdges.equalToSuperview()
-         }
-         
-         contentView.setCustomSpacing(8, after: buttonCheckSendVerificationCode)
-         */
-        
-        
-        
-        // 비밀번호
+    }
+    
+    // 비밀번호
+    private func setupPassword() {
         contentView.addSubview(password)
         
         password.snp.makeConstraints { make in
             make.top.equalTo(name.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
         }
-        
-        // 비밀번호 확인
+    }
+    
+    // 비밀번호 확인
+    private func setupPasswordConfirm() {
         contentView.addSubview(passwordConfirm)
         
         passwordConfirm.snp.makeConstraints { make in
             make.top.equalTo(password.snp.bottom).offset(8)
             make.width.equalToSuperview()
         }
-        
-        // 연령 확인
-        let confirmAgeView: UIStackView = UIStackView()
-        confirmAgeView.axis = .horizontal
-        confirmAgeView.spacing = 8
-        confirmAgeView.alignment = .center
-        
+    }
+    
+    // 연령 확인
+    private func setupConfirmAge() {
         contentView.addSubview(confirmAgeView)
         
         confirmAgeView.snp.makeConstraints { make in
@@ -295,19 +327,12 @@ class SignUpViewController: UIViewController {
         
         confirmAgeView.addArrangedSubview(checkboxConfirmAge)
         
-        let confirmAgeText: UILabel = UILabel()
-        confirmAgeText.textColor = .rollpeSecondary
-        confirmAgeText.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        confirmAgeText.text = "저는 만 14세 이상입니다."
-        
+        let confirmAgeText = confirmLabel("저는 만 14세 이상입니다.")
         confirmAgeView.addArrangedSubview(confirmAgeText)
-        
-        // 서비스 이용약관
-        let confirmTermsView: UIStackView = UIStackView()
-        confirmTermsView.axis = .horizontal
-        confirmTermsView.spacing = 8
-        confirmTermsView.alignment = .center
-        
+    }
+    
+    // 서비스 이용약관
+    private func setupConfirmTerms() {
         contentView.addSubview(confirmTermsView)
         
         confirmTermsView.snp.makeConstraints { make in
@@ -317,19 +342,12 @@ class SignUpViewController: UIViewController {
         
         confirmTermsView.addArrangedSubview(checkboxConfirmTerms)
         
-        let confirmTermsText: UILabel = UILabel()
-        confirmTermsText.textColor = .rollpeSecondary
-        confirmTermsText.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        confirmTermsText.text = "서비스 이용약관에 동의합니다."
-        
+        let confirmTermsText = confirmLabel("서비스 이용약관에 동의합니다.")
         confirmTermsView.addArrangedSubview(confirmTermsText)
         
         confirmTermsView.addArrangedSubview(spacer)
         
-        let linkToTerms: UILabel = UILabel()
-        linkToTerms.text = "보기"
-        linkToTerms.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        linkToTerms.textColor = .rollpeGray
+        let linkToTerms = linkLabel()
         
         linkToTerms.rx.tap
             .subscribe(onNext: {
@@ -340,13 +358,10 @@ class SignUpViewController: UIViewController {
             .disposed(by: disposeBag)
         
         confirmTermsView.addArrangedSubview(linkToTerms)
-        
-        // 개인정보 수집 및 이용 동의
-        let confirmPrivacyView: UIStackView = UIStackView()
-        confirmPrivacyView.axis = .horizontal
-        confirmPrivacyView.spacing = 8
-        confirmPrivacyView.alignment = .center
-        
+    }
+    
+    // 개인정보 수집 및 이용 동의
+    private func setupConfirmPrivacyPolicy() {
         contentView.addSubview(confirmPrivacyView)
         
         confirmPrivacyView.snp.makeConstraints { make in
@@ -356,19 +371,12 @@ class SignUpViewController: UIViewController {
         
         confirmPrivacyView.addArrangedSubview(checkboxConfirmPrivacy)
         
-        let confirmPrivacyText: UILabel = UILabel()
-        confirmPrivacyText.textColor = .rollpeSecondary
-        confirmPrivacyText.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        confirmPrivacyText.text = "개인정보 수집 및 이용에 동의합니다."
-        
+        let confirmPrivacyText: UILabel = confirmLabel("개인정보 수집 및 이용에 동의합니다.")
         confirmPrivacyView.addArrangedSubview(confirmPrivacyText)
         
         confirmPrivacyView.addArrangedSubview(spacer)
         
-        let linkToPrivacy: UILabel = UILabel()
-        linkToPrivacy.text = "보기"
-        linkToPrivacy.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
-        linkToPrivacy.textColor = .rollpeGray
+        let linkToPrivacy: UILabel = linkLabel()
         
         linkToPrivacy.rx.tap
             .subscribe(onNext: {
@@ -379,8 +387,10 @@ class SignUpViewController: UIViewController {
             .disposed(by: disposeBag)
         
         confirmPrivacyView.addArrangedSubview(linkToPrivacy)
-        
-        // 가입
+    }
+    
+    // 가입
+    private func setupSignUpButton() {
         contentView.addSubview(signUpButton)
         
         signUpButton.snp.makeConstraints { make in
@@ -406,24 +416,22 @@ class SignUpViewController: UIViewController {
         let output = viewModel.transform(input)
         
         output.isSignUpEnabled
-            .drive() { isEnabled in
+            .drive(onNext: { isEnabled in
                 self.signUpButton.disabled = !isEnabled
-            }
-            .disposed(by: disposeBag)
-        
-        output.response
-            .drive(onNext: { success in
-                if success {
-                    self.showDoneAlert()
-                } else {
-                    self.showErrorAlert(message: "오류가 발생하였습니다.")
-                }
             })
             .disposed(by: disposeBag)
         
         output.isLoading
             .drive(onNext: { isLoading in
                 self.loadingView.isHidden = !isLoading
+            })
+            .disposed(by: disposeBag)
+        
+        output.successAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showSuccessAlert(message: message)
+                }
             })
             .disposed(by: disposeBag)
         
@@ -436,8 +444,8 @@ class SignUpViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    private func showDoneAlert() {
-        let alertController = UIAlertController(title: "알림", message: "회원가입이 정상적으로 완료되었습니다.\n이메일 인증 후 로그인해주세요.", preferredStyle: .alert)
+    private func showSuccessAlert(message: String) {
+        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             self.navigationController?.popViewController(animated: true)
         }))

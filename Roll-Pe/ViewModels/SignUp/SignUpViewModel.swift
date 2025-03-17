@@ -15,8 +15,8 @@ final class SignUpViewModel {
     private let disposeBag = DisposeBag()
     
     private let isLoading = BehaviorSubject<Bool>(value: false)
+    private let successAlertMessage = PublishSubject<String?>()
     private let errorAlertMessage = PublishSubject<String?>()
-    private let response = PublishSubject<Bool>()
     
     struct Input {
         let email: ControlProperty<String?>
@@ -32,8 +32,8 @@ final class SignUpViewModel {
     struct Output {
         let isSignUpEnabled: Driver<Bool>
         let isLoading: Driver<Bool>
+        let successAlertMessage: Driver<String?>
         let errorAlertMessage: Driver<String?>
-        let response: Driver<Bool>
     }
     
     func transform(_ input: Input) -> Output {
@@ -111,8 +111,8 @@ final class SignUpViewModel {
         return Output(
             isSignUpEnabled: isSignUpEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
-            errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil),
-            response: response.asDriver(onErrorJustReturn: false)
+            successAlertMessage: successAlertMessage.asDriver(onErrorJustReturn: nil),
+            errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     
@@ -139,33 +139,26 @@ final class SignUpViewModel {
             })
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
-                    self.response.onNext(true)
-                } else if response.statusCode == 400 {
-                    self.handleFailure(data)
+                    do {
+                        let model = try JSONDecoder().decode(ResponseNoDataModel.self, from: data)
+                        self.successAlertMessage.onNext(model.message)
+                    } catch {
+                        self.errorAlertMessage.onNext("오류가 발생하였습니다.")
+                    }
                 } else {
-                    self.response.onNext(false)
+                    do {
+                        let model = try JSONDecoder().decode(ResponseNoDataModel.self, from: data)
+                        self.errorAlertMessage.onNext(model.message)
+                    } catch {
+                        self.errorAlertMessage.onNext("오류가 발생하였습니다.")
+                    }
                 }
             }, onError: { error in
                 print("회원가입 오류: \(error)")
-                self.response.onNext(false)
+                self.errorAlertMessage.onNext("오류가 발생하였습니다.")
             }, onDisposed: {
                 self.isLoading.onNext(false)
             })
             .disposed(by: disposeBag)
-    }
-    
-    // 회원가입 오류
-    private func handleFailure(_ data: Data?) {
-        guard let data = data else {
-            response.onNext(false)
-            return
-        }
-        
-        do {
-            let model = try JSONDecoder().decode(SignUpModel.self, from: data)
-            self.errorAlertMessage.onNext(model.message)
-        } catch {
-            response.onNext(false)
-        }
     }
 }

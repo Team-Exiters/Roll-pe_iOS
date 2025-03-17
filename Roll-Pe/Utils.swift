@@ -38,7 +38,7 @@ func dateToDDay(_ endDate: Date) -> String {
     } else if daysDifference > 0 {
         return "D-\(daysDifference)"
     } else {
-        return "D+\(abs(daysDifference))"
+        return "마감"
     }
 }
 
