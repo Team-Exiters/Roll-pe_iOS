@@ -133,7 +133,13 @@ class ChangePasswordViewController: UIViewController {
         
         userViewModel.serverResponse
             .subscribe(onNext:{ message in
-                self.showAlert(title: "", message: message ?? "")
+                self.showAlert(title: "성공", message: message?.message ?? "")
+            })
+            .disposed(by: disposeBag)
+        
+        userViewModel.serverResponseError
+            .subscribe(onNext:{ message in
+                self.showAlert(title: "오류", message: "오류가 발생했습니다")
             })
             .disposed(by: disposeBag)
         
@@ -170,7 +176,7 @@ class ChangePasswordViewController: UIViewController {
                                 showAlert(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.")
                             }
                             else {
-                                userViewModel.changePassword(password: changePassword)
+                                userViewModel.changePassword(newPassword: changePassword)
                             }
                         }
                     }

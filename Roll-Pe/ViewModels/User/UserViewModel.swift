@@ -21,7 +21,8 @@ class UserViewModel {
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
-    let serverResponse = BehaviorRelay<String?>(value: nil)
+    let serverResponse = BehaviorRelay<ResponseNoDataModel?>(value: nil)
+    let serverResponseError = BehaviorRelay<String?>(value: nil)
     let navigationPop = BehaviorRelay<Bool?>(value: nil)
     
     
@@ -72,18 +73,23 @@ class UserViewModel {
     }
     
     // 비밀번호 변경확정 하기
-    func changePassword(password: String) {
-        let parameters: [String: Any] = ["password": password]
+    func changePassword(newPassword: String) {
+        guard let refreshToken = keychain.read(key:"REFRESH_TOKEN") else{
+            serverResponseError.accept("오류가 발생했습니다")
+            return
+        }
+        
+        let parameters: [String: Any] = ["newPassword": newPassword,"refresh":refreshToken]
         return apiService.requestDecodable("/api/user/change-password",
                                            method: .patch,
                                            parameters: parameters,
-                                           decodeType: String.self)
+                                           decodeType: ResponseNoDataModel.self)
         .subscribe(onNext: { model in
             self.serverResponse.accept(model)
             self.navigationPop.accept(true)
         }, onError: { error in
             print("changePassword함수 에러:\(error)")
-            self.serverResponse.accept("오류가 발생하였습니다")
+            self.serverResponseError.accept("오류가 발생했습니다")
         })
         .disposed(by: disposeBag)
     }
@@ -116,13 +122,13 @@ class UserViewModel {
     
     func deleteAccount() {
         apiService.requestDecodable("/api/user/drop-user",
-                                    method: .delete,decodeType: String.self)
+                                    method: .delete,decodeType: ResponseNoDataModel.self)
             .subscribe(onNext: { model in
                 self.serverResponse.accept(model)
                 self.logout()
             }, onError: { error in
                 print("회원탈퇴 실패: \(error)")
-                self.serverResponse.accept("오류가 발생하였습니다")
+                self.serverResponseError.accept("오류가 발생했습니다")
             })
             .disposed(by: disposeBag)
     }

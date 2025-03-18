@@ -34,7 +34,7 @@ class MyPageViewController: UIViewController {
     
     private let sideMenuView = SidemenuView(menuIndex: 4)
     
-    let sideMenuButton = UIButton.makeSideMenuButton()
+    private let buttonSideMenu = ButtonSideMenu()
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -86,14 +86,14 @@ class MyPageViewController: UIViewController {
         return label
     }()
     
-    private lazy var rollpeCountLabel: RollpeCountLabel = {
+    private lazy var rollpeCountLabel: CountLabel = {
         let count = myStatus?.data.host ?? 0
-        return RollpeCountLabel(count: count)
+        return CountLabel(count: count,type: .rollpe)
     }()
 
-    private lazy var heartCountLabel : HeartCountLabel = {
+    private lazy var heartCountLabel : CountLabel = {
         let count = myStatus?.data.heart ?? 0
-        return HeartCountLabel(count: count)
+        return CountLabel(count: count, type: .heart)
     }()
     
     private let verticalStackView: UIStackView = {
@@ -142,12 +142,12 @@ class MyPageViewController: UIViewController {
 
     
     private func setupSideMenu() {
-        contentView.addSubview(sideMenuButton)
-        sideMenuButton.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+        contentView.addSubview(buttonSideMenu)
+        buttonSideMenu.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(80)
             make.trailing.equalToSuperview().inset(20)
         }
-        sideMenuButton.rx.tap
+        buttonSideMenu.rx.tap
             .subscribe(onNext: {
                 self.view.addSubview(self.sideMenuView)
                 self.sideMenuView.showMenu()
@@ -158,7 +158,7 @@ class MyPageViewController: UIViewController {
     private func setupTitleLabel(){
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{ make in
-            make.top.equalTo(sideMenuButton).offset(28)
+            make.top.equalTo(buttonSideMenu).offset(28)
             make.centerX.equalToSuperview()
         }
     }
