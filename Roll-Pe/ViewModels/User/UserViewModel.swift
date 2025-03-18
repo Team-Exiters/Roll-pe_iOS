@@ -21,9 +21,8 @@ class UserViewModel {
     let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
     let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
-    let serverResponse = BehaviorRelay<ResponseNoDataModel?>(value: nil)
+    let serverResponse = BehaviorRelay<String?>(value: nil)
     let serverResponseError = BehaviorRelay<String?>(value: nil)
-    let navigationPop = BehaviorRelay<Bool?>(value: nil)
     
     
     // 내 롤페 불러오기
@@ -85,8 +84,7 @@ class UserViewModel {
                                            parameters: parameters,
                                            decodeType: ResponseNoDataModel.self)
         .subscribe(onNext: { model in
-            self.serverResponse.accept(model)
-            self.navigationPop.accept(true)
+            self.serverResponse.accept(model.message)
         }, onError: { error in
             print("changePassword함수 에러:\(error)")
             self.serverResponseError.accept("오류가 발생했습니다")
@@ -124,7 +122,7 @@ class UserViewModel {
         apiService.requestDecodable("/api/user/drop-user",
                                     method: .delete,decodeType: ResponseNoDataModel.self)
             .subscribe(onNext: { model in
-                self.serverResponse.accept(model)
+                self.serverResponse.accept(model.message)
                 self.logout()
             }, onError: { error in
                 print("회원탈퇴 실패: \(error)")

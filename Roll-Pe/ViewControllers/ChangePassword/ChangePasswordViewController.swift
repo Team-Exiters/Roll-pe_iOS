@@ -57,16 +57,23 @@ class ChangePasswordViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // 네비게이션 및 배경 설정
         navigationItem.hidesBackButton = true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
+        
+        // Bind 설정
         bindData()
+        bindPasswordTextField()
+        
+        // UI 설정
         setupNavigationBar()
         setupTitleLabel()
         setupChangePasswordTextField()
         setupConfirmPasswordTextField()
         setupChangeConfirmButton()
-        bindPasswordTextField()
+      
     }
     
     private func setupNavigationBar() {
@@ -132,26 +139,19 @@ class ChangePasswordViewController: UIViewController {
             .disposed(by: disposeBag)
         
         userViewModel.serverResponse
-            .subscribe(onNext:{ message in
-                self.showAlert(title: "성공", message: message?.message ?? "")
+            .subscribe(onNext:{ [weak self] message in
+                self?.showAlert(title: "성공", message: message ?? "",completion: {
+                    self?.navigationController?.popViewController(animated: true)
+                })
             })
             .disposed(by: disposeBag)
         
         userViewModel.serverResponseError
             .subscribe(onNext:{ message in
-                self.showAlert(title: "오류", message: "오류가 발생했습니다")
+                self.showAlert(title: "오류", message: "오류가 발생했습니다",completion: nil)
             })
             .disposed(by: disposeBag)
         
-        userViewModel.navigationPop
-            .subscribe(onNext:{ result in
-                if(result == true){
-                    DispatchQueue.main.async {
-                                  self.navigationController?.popViewController(animated: true)
-                              }
-                }
-            })
-            .disposed(by: disposeBag)
     }
     
     @objc private func backButtonTapped() {
@@ -162,18 +162,18 @@ class ChangePasswordViewController: UIViewController {
         if let changePassword = changePasswordTextField.text {
             if (changePassword != ""){
                     if (changePassword != confirmPasswordTextField.text) {
-                        showAlert(title: "오류", message: "비밀번호가 일치하지 않습니다")
+                        showAlert(title: "오류", message: "비밀번호가 일치하지 않습니다",completion: nil)
                     }
                     else {
                         if (changePassword.contains(" ")) {
-                            showAlert(title: "오류", message: "띄어쓰기는 포함될 수 없습니다")
+                            showAlert(title: "오류", message: "띄어쓰기는 포함될 수 없습니다",completion: nil)
                         }
                         else if (!userViewModel.isValidPassword(changePassword)) {
-                            showAlert(title: "오류", message: "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.")
+                            showAlert(title: "오류", message: "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",completion: nil)
                         }
                         else{
                             if (equalToCurrentPassword) {
-                                showAlert(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.")
+                                showAlert(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.",completion: nil)
                             }
                             else {
                                 userViewModel.changePassword(newPassword: changePassword)
@@ -182,17 +182,20 @@ class ChangePasswordViewController: UIViewController {
                     }
             }
             else{
-                showAlert(title: "오류", message: "바꾸실 비밀번호를 입력해주세요")
+                showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요", completion: nil)
             }
         }
         else{
-            showAlert(title: "오류", message: "바꾸실 비밀번호를 입력해주세요")
+            showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요",completion: nil)
         }
     }
     
-    private func showAlert(title: String, message: String) {
+    private func showAlert(title: String, message: String, completion: (() -> Void)?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        let okAction = UIAlertAction(title: "확인", style: .default){ _ in
+             completion?()
+        }
+        alert.addAction(okAction)
         present(alert, animated: true, completion: nil)
     }
 

@@ -108,9 +108,14 @@ class MyPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 배경 및 네비게이션 설정
         view.backgroundColor = .rollpePrimary
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
+        // Bind 설정
         bind()
+        
+        // UI 설정
         setupScrollView()
         setupContentView()
         setupSideMenu()
@@ -423,27 +428,12 @@ class ListSectionButton: UIButton {
         }
     }
 }
-//절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 의논후 동혁이가 직접 수정하도록 유도
-extension UIButton {
-    static func makeSideMenuButton() -> UIButton {
-        let button = UIButton()
-        button.backgroundColor = .rollpePrimary
-        button.layer.cornerRadius = 4
-        
-        let icon = UIImageView()
-        let image = UIImage.iconHamburger
-        icon.image = image
-        icon.contentMode = .scaleAspectFit
-        icon.tintColor = .rollpeSecondary
-        
-        button.addSubview(icon)
-        
-        icon.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(16)
-            make.height.equalTo(icon.snp.width).dividedBy(getImageRatio(image: image))
-        }
-        
-        return button
+
+extension UIViewController {
+    func setupDefaultAppearance() {
+        navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        view.backgroundColor = .rollpePrimary
     }
 }
+
