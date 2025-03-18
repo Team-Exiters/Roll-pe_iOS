@@ -14,6 +14,14 @@ import RxSwift
 //절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 말해서 동혁이가 직접 수정하도록 유도
 class MyPageViewController: UIViewController {
     
+    let disposeBag = DisposeBag()
+    
+    let userViewModel = UserViewModel()
+    
+    let keychain = Keychain.shared
+    
+    private var myStatus : MyStatusModel? = nil
+    
     private var userData : UserDataModel? = nil
     
     private var myRollpeListData : [RollpeListItemModel]? = nil
@@ -25,8 +33,8 @@ class MyPageViewController: UIViewController {
     private let contentView = UIView()
     
     private let sideMenuView = SidemenuView(menuIndex: 4)
-    let sideMenuButton = UIButton.makeSideMenuButton()
-    let disposeBag = DisposeBag()
+    
+    private let buttonSideMenu = ButtonSideMenu()
     
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -78,14 +86,14 @@ class MyPageViewController: UIViewController {
         return label
     }()
     
-    private lazy var rollpeCountLabel: RollpeCountLabel = {
-        let count = userData?.rollpeCount ?? 0
-        return RollpeCountLabel(count: count)
+    private lazy var rollpeCountLabel: CountLabel = {
+        let count = myStatus?.data.host ?? 0
+        return CountLabel(count: count,type: .rollpe)
     }()
 
-    private lazy var heartCountLabel : HeartCountLabel = {
-        let count = userData?.heartCount ?? 0
-        return HeartCountLabel(count: count)
+    private lazy var heartCountLabel : CountLabel = {
+        let count = myStatus?.data.heart ?? 0
+        return CountLabel(count: count, type: .heart)
     }()
     
     private let verticalStackView: UIStackView = {
@@ -100,9 +108,14 @@ class MyPageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 배경 및 네비게이션 설정
         view.backgroundColor = .rollpePrimary
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        getData()
+        
+        // Bind 설정
+        bind()
+        
+        // UI 설정
         setupScrollView()
         setupContentView()
         setupSideMenu()
@@ -134,12 +147,12 @@ class MyPageViewController: UIViewController {
 
     
     private func setupSideMenu() {
-        contentView.addSubview(sideMenuButton)
-        sideMenuButton.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+        contentView.addSubview(buttonSideMenu)
+        buttonSideMenu.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(80)
             make.trailing.equalToSuperview().inset(20)
         }
-        sideMenuButton.rx.tap
+        buttonSideMenu.rx.tap
             .subscribe(onNext: {
                 self.view.addSubview(self.sideMenuView)
                 self.sideMenuView.showMenu()
@@ -150,25 +163,24 @@ class MyPageViewController: UIViewController {
     private func setupTitleLabel(){
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{ make in
-            make.top.equalTo(sideMenuButton).offset(28)
+            make.top.equalTo(buttonSideMenu).offset(28)
             make.centerX.equalToSuperview()
         }
     }
     
     private func setupNicknameAndLoginBadge() {
+        let nickname = self.keychain.read(key: "NAME")
+        let provider = self.keychain.read(key: "PROVIDER")
+        
+        nicknameLabel.text = "\(nickname ?? "")님"
+        
         contentView.addSubview(horizontalStackView)
         horizontalStackView.addArrangedSubview(nicknameLabel)
 
-        if let logins = userData?.login {
-            for login in logins {
-                let loginBadgeView = LoginBadgeView(login: login)
-                loginBadgeView.snp.makeConstraints { make in
-                    make.width.height.equalTo(24)
-                }
-                horizontalStackView.addArrangedSubview(loginBadgeView)
-            }
+        if let provider = provider {
+            horizontalStackView.addArrangedSubview(LoginBadgeView(provider:provider))
         }
-
+        
         horizontalStackView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(52)
             make.leading.equalToSuperview().offset(20)
@@ -176,6 +188,8 @@ class MyPageViewController: UIViewController {
     }
     
     private func setupUserID(){
+        let userID = self.keychain.read(key: "USER_ID")
+        userUIDLabel.text = userID ?? ""
         contentView.addSubview(userUIDLabel)
         userUIDLabel.snp.makeConstraints{make in
             make.top.equalTo(horizontalStackView.snp.bottom).offset(4)
@@ -244,30 +258,36 @@ class MyPageViewController: UIViewController {
     }
 
     private func vipPurchaseTapped() {
-        print("VIP 구매 버튼 눌림")
+
     }
     private func changePasswordTapped() {
-        print("비밀번호 변경 버튼 눌림")
         let changePasswordVC = ChangePasswordViewController()
         navigationController?.pushViewController(changePasswordVC, animated: true)
     }
     private func myRollpeTapped() {
-        print("내 롤페 버튼 눌림")
-        let myRollpeVC = MyRollpeViewController()
-        myRollpeVC.rollpeListData = myRollpeListData ?? []
-        navigationController?.pushViewController(myRollpeVC, animated: true)
+        let vc = MyRollpeViewController()
+        userViewModel.getMyRollpes()
+        vc.rollpeListData = myRollpeListData ?? []
+        navigationController?.pushViewController(vc, animated: true)
     }
     private func invitedRollpeTapped() {
-        print("초대받은 롤페 버튼 눌림")
-        let invitedRollpeVC = InvitedRollpeViewController()
-        invitedRollpeVC.rollpeListData = invitedRollpeListData ?? []
-        navigationController?.pushViewController(invitedRollpeVC, animated: true)
+        let vc = InvitedRollpeViewController()
+        userViewModel.getInvitedRollpes()
+        vc.rollpeListData = invitedRollpeListData ?? []
+        navigationController?.pushViewController(vc, animated: true)
     }
     private func logoutTapped() {
-        print("로그아웃 버튼 눌림")
+        userViewModel.logout()
     }
     private func withdrawTapped() {
-        print("회원탈퇴 버튼 눌림")
+        let alert = UIAlertController(title: "회원 탈퇴", message: "정말 회원 탈퇴를 진행하시겠습니까?", preferredStyle: .alert)
+           let confirmAction = UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
+               self?.userViewModel.deleteAccount()
+           }
+           let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+           alert.addAction(confirmAction)
+           alert.addAction(cancelAction)
+           self.present(alert, animated: true, completion: nil)
     }
     
     private func setupFooter() {
@@ -280,26 +300,28 @@ class MyPageViewController: UIViewController {
         }
     }
     
-    private func getData() {
-        // 나중에 api값연동, 이하는 임의
-        userData = UserDataModel(nickname: "브라이언은몽실몽실해",login: ["kakao","google","apple"],userUID: "ghkdehdgur01",rollpeCount: 12,heartCount: 14)
-        nicknameLabel.text =  (userData?.nickname ?? "") + "님"
-        userUIDLabel.text = userData?.userUID
-        myRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        ]
-        invitedRollpeListData = [RollpeListItemModel(id: 1, receiverDate: Date(), theme: "블랙", isPublic: true, dDay: "D-102", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 2, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 3, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 4, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 5, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        RollpeListItemModel(id: 6, receiverDate: Date(), theme: "생일", isPublic: false, dDay: "D-365", title: "축하해", createdUser: "test", createdAt: Date()),
-        ]
+    private func bind() {
+        userViewModel.getMyStatus()
+        
+        userViewModel.myStatus
+            .subscribe(onNext: { [weak self] model in
+                self?.myStatus = model
+            })
+            .disposed(by: disposeBag)
+        
+        userViewModel.myRollpe
+            .subscribe(onNext:{[weak self] model in
+                self?.myRollpeListData = model
+            })
+            .disposed(by: disposeBag)
+        
+        userViewModel.invitedRollpe
+            .subscribe(onNext:{ [weak self] model in
+                self?.invitedRollpeListData = model
+            })
+            .disposed(by: disposeBag)
     }
+    
 }
 
 struct MyPageViewControllerPreview: PreviewProvider {
@@ -313,12 +335,12 @@ struct MyPageViewControllerPreview: PreviewProvider {
 //여기서부터 MyPageViewController 전용 컴포넌트
 class LoginBadgeView: UIView {
     private let imageView = UIImageView()
-    init(login: String) {
+    init(provider: String) {
         super.init(frame: .zero)
         setupView()
-        configureImage(for: login)
-        configureBackground(for: login)
-        configureBorder(for: login)
+        configureImage(for: provider)
+        configureBackground(for: provider)
+        configureBorder(for: provider)
     }
     
     required init?(coder: NSCoder) {
@@ -406,27 +428,12 @@ class ListSectionButton: UIButton {
         }
     }
 }
-//절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 의논후 동혁이가 직접 수정하도록 유도
-extension UIButton {
-    static func makeSideMenuButton() -> UIButton {
-        let button = UIButton()
-        button.backgroundColor = .rollpePrimary
-        button.layer.cornerRadius = 4
-        
-        let icon = UIImageView()
-        let image = UIImage.iconHamburger
-        icon.image = image
-        icon.contentMode = .scaleAspectFit
-        icon.tintColor = .rollpeSecondary
-        
-        button.addSubview(icon)
-        
-        icon.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(16)
-            make.height.equalTo(icon.snp.width).dividedBy(getImageRatio(image: image))
-        }
-        
-        return button
+
+extension UIViewController {
+    func setupDefaultAppearance() {
+        navigationItem.hidesBackButton = true
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        view.backgroundColor = .rollpePrimary
     }
 }
+

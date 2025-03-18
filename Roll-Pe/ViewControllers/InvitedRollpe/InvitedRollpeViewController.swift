@@ -115,7 +115,6 @@ class InvitedRollpeViewController: UIViewController {
         }
     }
     
-    //태은짱 코드 개날먹 ㅅㅅ
     private func setupListStackView() {
         contentView.addSubview(listStackView)
         listStackView.snp.makeConstraints { make in

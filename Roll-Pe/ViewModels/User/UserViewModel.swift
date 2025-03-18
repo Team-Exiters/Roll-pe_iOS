@@ -9,23 +9,42 @@ import Foundation
 import RxSwift
 import RxCocoa
 import UIKit
+import Alamofire
 
 class UserViewModel {
     private let disposeBag = DisposeBag()
     private let apiService = APIService.shared
     private let keychain = Keychain.shared
     
-    // 현재 나의 롤페/마음 작성 횟수
+   
     let myStatus = BehaviorRelay<MyStatusModel?>(value: nil)
+    let myRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
+    let invitedRollpe = BehaviorRelay<[RollpeListItemModel]?>(value: nil)
+    let equalToCurrentPassword = BehaviorRelay<Bool?>(value: nil)
+    let serverResponse = BehaviorRelay<String?>(value: nil)
+    let serverResponseError = BehaviorRelay<String?>(value: nil)
+    
     
     // 내 롤페 불러오기
     func getMyRollpes() {
-        
+        apiService.requestDecodable("/api/paper/mypage?type=my", method: .get, decodeType: [RollpeListItemModel]?.self)
+            .subscribe(onNext: { model in
+                self.myRollpe.accept(model)
+            }, onError: { error in
+                print("내 롤페 불러오는 중 오류 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
     }
     
     // 초대받은 롤페 불러오기
     func getInvitedRollpes() {
-        
+        apiService.requestDecodable("/api/paper/mypage?type=inviting", method: .get, decodeType: [RollpeListItemModel]?.self)
+            .subscribe(onNext: { model in
+                self.invitedRollpe.accept(model)
+            }, onError: { error in
+                print("초대받은 롤페 불러오는 중 오류 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
     }
     
     // 내가 작성한 마음 불러오기
@@ -39,12 +58,49 @@ class UserViewModel {
             .disposed(by: disposeBag)
     }
     
-    public func logout() {
+    // 기존 비밀번호와 동일한지 확인하기
+    func checkPassword(password:String) {
+        let parameters: [String: Any] = ["password": password]
+        apiService.requestDecodable("/api/user/password-check", method: .post,parameters: parameters ,decodeType: Bool.self)
+            .subscribe(onNext: { model in
+                self.equalToCurrentPassword.accept(model)
+                print("요청값:\(model)")
+            }, onError: { error in
+                print("비밀번호 일치 확인 중 오류 발생: \(error)")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 비밀번호 변경확정 하기
+    func changePassword(newPassword: String) {
+        guard let refreshToken = keychain.read(key:"REFRESH_TOKEN") else{
+            serverResponseError.accept("오류가 발생했습니다")
+            return
+        }
+        
+        let parameters: [String: Any] = ["newPassword": newPassword,"refresh":refreshToken]
+        return apiService.requestDecodable("/api/user/change-password",
+                                           method: .patch,
+                                           parameters: parameters,
+                                           decodeType: ResponseNoDataModel.self)
+        .subscribe(onNext: { model in
+            self.serverResponse.accept(model.message)
+        }, onError: { error in
+            print("changePassword함수 에러:\(error)")
+            self.serverResponseError.accept("오류가 발생했습니다")
+        })
+        .disposed(by: disposeBag)
+    }
+
+    
+    
+    func logout() {
         keychain.delete(key: "ACCESS_TOKEN")
         keychain.delete(key: "REFRESH_TOKEN")
         keychain.delete(key: "NAME")
         keychain.delete(key: "EMAIL")
         keychain.delete(key: "IDENTITY_CODE")
+        keychain.delete(key: "PROVIDER")
         
         DispatchQueue.main.async {
             let scenes = UIApplication.shared.connectedScenes
@@ -61,4 +117,24 @@ class UserViewModel {
             }
         }
     }
+    
+    func deleteAccount() {
+        apiService.requestDecodable("/api/user/drop-user",
+                                    method: .delete,decodeType: ResponseNoDataModel.self)
+            .subscribe(onNext: { model in
+                self.serverResponse.accept(model.message)
+                self.logout()
+            }, onError: { error in
+                print("회원탈퇴 실패: \(error)")
+                self.serverResponseError.accept("오류가 발생했습니다")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func isValidPassword(_ password: String) -> Bool {
+         let pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]).{8,}$"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", pattern)
+         return predicate.evaluate(with: password)
+     }
 }
+

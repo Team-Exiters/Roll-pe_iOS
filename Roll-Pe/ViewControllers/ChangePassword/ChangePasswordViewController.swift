@@ -10,6 +10,9 @@ import SwiftUI
 import RxSwift
 
 class ChangePasswordViewController: UIViewController {
+    private let disposeBag = DisposeBag()
+    
+    private let userViewModel = UserViewModel()
     
     private var equalToCurrentPassword : Bool = false
     
@@ -54,14 +57,23 @@ class ChangePasswordViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // 네비게이션 및 배경 설정
         navigationItem.hidesBackButton = true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
+        
+        // Bind 설정
+        bindData()
+        bindPasswordTextField()
+        
+        // UI 설정
         setupNavigationBar()
         setupTitleLabel()
         setupChangePasswordTextField()
         setupConfirmPasswordTextField()
         setupChangeConfirmButton()
+      
     }
     
     private func setupNavigationBar() {
@@ -109,52 +121,84 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    private func bindPasswordTextField() {
+          changePasswordTextField.rx.text.orEmpty
+              .debounce(.seconds(1), scheduler: MainScheduler.instance) //1초간 입력변화 없으면 호출
+              .distinctUntilChanged()
+              .subscribe(onNext: { [weak self] text in
+                  self?.userViewModel.checkPassword(password: text)
+              })
+              .disposed(by: disposeBag)
+      }
+    
+    private func bindData(){
+        userViewModel.equalToCurrentPassword
+            .subscribe(onNext:{[weak self] model in
+                self?.equalToCurrentPassword = model ?? false
+            })
+            .disposed(by: disposeBag)
+        
+        userViewModel.serverResponse
+            .subscribe(onNext:{ [weak self] message in
+                self?.showAlert(title: "성공", message: message ?? "",completion: {
+                    self?.navigationController?.popViewController(animated: true)
+                })
+            })
+            .disposed(by: disposeBag)
+        
+        userViewModel.serverResponseError
+            .subscribe(onNext:{ message in
+                self.showAlert(title: "오류", message: "오류가 발생했습니다",completion: nil)
+            })
+            .disposed(by: disposeBag)
+        
+    }
+    
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     
     @objc private func changeConfirmButtonTapped() {
-       //서버에 changePasswordTextField.text값 보내서 현재 비밀번호와 비교시켜 같은지 아닌지 bool값으로 ViewModel함수로 반환시킨후 equalToCurrentPassword 변수에 저장시키는 로직
         if let changePassword = changePasswordTextField.text {
             if (changePassword != ""){
                     if (changePassword != confirmPasswordTextField.text) {
-                        let alert = UIAlertController(title: "오류", message: "비밀번호가 일치하지 않습니다.", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
+                        showAlert(title: "오류", message: "비밀번호가 일치하지 않습니다",completion: nil)
                     }
                     else {
                         if (changePassword.contains(" ")) {
-                            let alert = UIAlertController(title: "오류", message: "띄어쓰기는 포함될 수 없습니다", preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                            self.present(alert, animated: true, completion: nil)
+                            showAlert(title: "오류", message: "띄어쓰기는 포함될 수 없습니다",completion: nil)
+                        }
+                        else if (!userViewModel.isValidPassword(changePassword)) {
+                            showAlert(title: "오류", message: "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",completion: nil)
                         }
                         else{
                             if (equalToCurrentPassword) {
-                                let alert = UIAlertController(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.", preferredStyle: .alert)
-                                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                                self.present(alert, animated: true, completion: nil)
+                                showAlert(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.",completion: nil)
                             }
                             else {
-                                // 비밀번호 변경 로직 추가하기
-                                let alert = UIAlertController(title: "성공", message: "비밀번호가 성공적으로 변경되었습니다.", preferredStyle: .alert)
-                                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                                self.present(alert, animated: true, completion: nil)
+                                userViewModel.changePassword(newPassword: changePassword)
                             }
                         }
                     }
             }
             else{
-                let alert = UIAlertController(title: "오류", message: "바꾸실 비밀번호를 입력해주세요", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+                showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요", completion: nil)
             }
         }
         else{
-            let alert = UIAlertController(title: "오류", message: "바꾸실 비밀번호를 입력해주세요", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요",completion: nil)
         }
     }
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)?) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default){ _ in
+             completion?()
+        }
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+
 }
 
 struct ChangePasswordViewControllerPreview: PreviewProvider {

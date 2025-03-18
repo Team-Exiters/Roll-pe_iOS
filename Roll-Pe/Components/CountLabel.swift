@@ -1,20 +1,28 @@
 //
-//  RollpeCountLabel.swift
+//  CountLabel.swift
 //  Roll-Pe
 //
-//  Created by DongHyeokHwang on 1/27/25.
+//  Created by DongHyeokHwang on 3/18/25.
 //
 
-import Foundation
 import UIKit
 
-
-class RollpeCountLabel: UILabel {
+class CountLabel: UILabel {
     
-    init(count: Int) {
+    enum CountType {
+        case rollpe
+        case heart
+    }
+    
+    init(count: Int, type: CountType) {
         super.init(frame: .zero)
         setupLabel()
-        self.text = "\(count)개의 롤페를 만드셨어요"
+        switch type {
+        case .rollpe:
+            self.text = "\(count)개의 롤페를 만드셨어요"
+        case .heart:
+            self.text = "\(count)번의 마음을 작성하셨어요"
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -35,6 +43,4 @@ class RollpeCountLabel: UILabel {
         self.numberOfLines = 1
     }
 }
-
-
 

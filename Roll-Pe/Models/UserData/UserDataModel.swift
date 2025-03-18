@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UserDataModel {
+class UserDataModel : Decodable {
     var nickname : String?
     var login : [String]?
     var userUID : String?
