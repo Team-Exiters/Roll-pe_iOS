@@ -19,6 +19,8 @@ class APIService {
     private let disposeBag = DisposeBag()
     private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     
+    var isRefreshing: Bool = false
+    
     // 요청
     func request(
         _ url: String,
@@ -83,8 +85,6 @@ final class AuthInterceptor: RequestInterceptor {
     
     private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     
-    private var isRefreshing: Bool = false
-    
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         let keychain = Keychain.shared
         
@@ -109,14 +109,14 @@ final class AuthInterceptor: RequestInterceptor {
             return
         }
         
-        if isRefreshing {
+        if APIService.shared.isRefreshing {
             print("재발급 중")
             completion(.retry)
         } else {
-            isRefreshing = true
+            APIService.shared.isRefreshing = true
             
             refreshToken() { isSuccess in
-                self.isRefreshing = false
+                APIService.shared.isRefreshing = false
                 
                 if isSuccess {
                     print("재발급 완료")
@@ -160,6 +160,5 @@ final class AuthInterceptor: RequestInterceptor {
                     completion(false)
                 }
             }
-        
     }
 }
