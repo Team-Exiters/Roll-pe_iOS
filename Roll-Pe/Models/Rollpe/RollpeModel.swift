@@ -62,13 +62,7 @@ struct RollpeHostDataModel: Decodable {
 }
 
 struct RollpeReceiveDataModel: Decodable {
-    let receiver: RollpeReceiverDataModel
+    let receiver: ReceiverDataModel
     let receivingDate: String
     let receivingStat: Int
-}
-
-struct RollpeReceiverDataModel: Decodable {
-    let id: Int
-    let identifyCode: String
-    let name: String
 }
