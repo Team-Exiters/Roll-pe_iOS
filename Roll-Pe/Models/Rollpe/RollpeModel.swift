@@ -19,6 +19,7 @@ struct RollpeModel {
     var password : String?
 }
 
+// 롤페 목록 모델
 struct RollpeResponseListModel: Decodable {
     let status_code: Int
     let message: String
@@ -27,6 +28,7 @@ struct RollpeResponseListModel: Decodable {
     let data: [RollpeDataModel]
 }
 
+// 롤페 페이지네이션 적용된 목록 모델
 struct RollpeResponsePagenationListModel: Decodable {
     let status_code: Int
     let message: String
@@ -42,6 +44,7 @@ struct RollpeResponsePagenationListDataModel: Decodable {
     let results: [RollpeDataModel]
 }
 
+// 롤페 data 모델
 struct RollpeDataModel: Decodable {
     let id: Int
     let code: String
@@ -55,12 +58,38 @@ struct RollpeDataModel: Decodable {
     let createdAt: String
 }
 
+// 롤페 상세 모델
+struct RollpeDetailResponseModel: Decodable {
+    let status_code: Int
+    let message: String
+    let code: String
+    let link: String?
+    let data: RollpDetailDataModel
+}
+
+// 롤페 상세 data 모델
+struct RollpDetailDataModel: Decodable {
+    let id: Int
+    let code: String
+    let title: String
+    let host: RollpeHostDataModel
+    let receive: RollpeReceiveDataModel
+    let viewStat: Bool
+    let theme: String
+    let size: String
+    let ratio: String
+    let createdAt: String
+    let hearts: [HeartModel]
+}
+
+// 방장
 struct RollpeHostDataModel: Decodable {
     let id: Int
     let identifyCode: String
     let name: String
 }
 
+// 수신자
 struct RollpeReceiveDataModel: Decodable {
     let receiver: ReceiverDataModel
     let receivingDate: String

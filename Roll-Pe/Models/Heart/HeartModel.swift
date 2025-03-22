@@ -8,7 +8,7 @@
 import Foundation
 
 struct HeartModel: Decodable {
-    let id: String
+    let id: Int
     let index: Int
     let author: ReceiverDataModel;
     let content: String
