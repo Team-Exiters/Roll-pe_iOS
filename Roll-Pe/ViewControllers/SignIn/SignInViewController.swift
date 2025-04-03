@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 import SwiftUI
 import SafariServices
 import GoogleSignIn
@@ -77,8 +78,8 @@ class SignInViewController: UIViewController {
     }()
     
     // 이메일
-    private let email: TextField = {
-        let textField = TextField()
+    private let email: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "이메일"
         textField.textContentType = .emailAddress
         textField.keyboardType = .emailAddress
@@ -87,8 +88,8 @@ class SignInViewController: UIViewController {
     }()
     
     // 비밀번호
-    private let password: TextField = {
-        let textField = TextField()
+    private let password: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
@@ -417,15 +418,19 @@ class SignInViewController: UIViewController {
         let findPasswordButton = menuText("비밀번호 찾기")
         let signUpButton = menuText("회원가입")
         
-        findPasswordButton.rx.tap
-            .subscribe(onNext: {
+        findPasswordButton.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let vc = ForgotPasswordViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
-        signUpButton.rx.tap
-            .subscribe(onNext: {
+        signUpButton.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let vc = SignUpViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
             })
@@ -473,8 +478,10 @@ class SignInViewController: UIViewController {
         
         let termsOfServiceButton = policyText("서비스 이용약관")
         
-        termsOfServiceButton.rx.tap
-            .subscribe(onNext: {
+        termsOfServiceButton.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
@@ -483,8 +490,10 @@ class SignInViewController: UIViewController {
         
         let privacyPolicy = policyText("개인정보처리방침")
         
-        privacyPolicy.rx.tap
-            .subscribe(onNext: {
+        privacyPolicy.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)

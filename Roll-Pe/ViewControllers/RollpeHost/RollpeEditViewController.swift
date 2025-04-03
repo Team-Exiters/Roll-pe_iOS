@@ -174,8 +174,8 @@ class EditView : UIView {
     
     private let segmentControl = SegmentControl(items: ["공개","비공개"])
     
-    private let passwordTextField : TextField = {
-        let textField = TextField()
+    private let passwordTextField : RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호"
         textField.textContentType = .password
         return textField
@@ -195,8 +195,8 @@ class EditView : UIView {
         return label
     }()
     
-    private let dateTextField : TextField = {
-        let textField = TextField()
+    private let dateTextField : RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = ""
         textField.textContentType = .password
         return textField

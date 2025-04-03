@@ -37,16 +37,16 @@ class ChangePasswordViewController: UIViewController {
         return label
     }()
     
-    private let changePasswordTextField : TextField = {
-        let textField = TextField()
+    private let changePasswordTextField : RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
         return textField
     }()
     
-    private let confirmPasswordTextField : TextField = {
-        let textField = TextField()
+    private let confirmPasswordTextField : RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호 확인"
         textField.textContentType = .password
         textField.isSecureTextEntry = true

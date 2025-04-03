@@ -33,8 +33,8 @@ class SearchViewController: UIViewController, UITableViewDelegate {
     }()
     
     // 검색 바
-    private lazy var searchBar = {
-        let textField = TextField()
+    private lazy var searchBar: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "검색어를 입력하세요."
         textField.rightViewMode = .always
         textField.rightView = searchButton

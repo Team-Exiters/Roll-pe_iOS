@@ -34,6 +34,10 @@
 	<string>$(KAKAO_APP_KEY)</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>NanumPen.otf</string>
+		<string>JalnanGothic.otf</string>
+		<string>JalnanOTF.otf</string>
+		<string>NanumMyeongjo.ttf</string>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-Medium.otf</string>
 		<string>Pretendard-Regular.otf</string>

@@ -25,8 +25,8 @@ class RollpeCreateViewController: UIViewController {
     
     private let pageTitle = UILabel()
     
-    private let textFieldTitle = {
-        let tf = TextField()
+    private let textFieldTitle: RoundedBorderTextField = {
+        let tf = RoundedBorderTextField()
         tf.placeholder = ""
         tf.maxLength = 20
         
@@ -65,13 +65,13 @@ class RollpeCreateViewController: UIViewController {
     
     private let controlPrivate = SegmentControl(items: ["공개", "비공개"])
     
-    private let password = TextField()
+    private let password = RoundedBorderTextField()
     
     private lazy var subjectSendDate: UILabel = LabelSubject()
     
-    private let textFieldSendDate = TextFieldForPicker()
+    private let textFieldSendDate = RoundedBorderTextFieldPicker()
     
-    private let pickerUser = Picker()
+    private let pickerUser = RoundedBorderTextField()
     
     private let imageViewPreview = UIImageView()
     
@@ -396,8 +396,10 @@ class RollpeCreateViewController: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        pickerUser.rx.tap
-            .subscribe(onNext: { [weak self] in
+        pickerUser.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
                 let modalVC = SearchUserModalViewController()
                 modalVC.onUserSelected = { user in
                     self?.viewModel.selectedUser.accept(user)
@@ -615,7 +617,7 @@ class RollpeCreateViewController: UIViewController {
         output.response
             .drive(onNext: { success in
                 if success {
-                    self.showDoneAlert()
+                    self.showSuccessAlert(message: "롤페가 만들어졌습니다!\n공유하여 마음을 작성해봐요!")
                 } else {
                     self.showErrorAlert(message: "롤페 만들기를 실패하였습니다.")
                 }
@@ -646,8 +648,8 @@ class RollpeCreateViewController: UIViewController {
     }
     
     // 완료 알림창
-    private func showDoneAlert() {
-        let alertController = UIAlertController(title: "알림", message: "롤페가 만들어졌습니다!\n공유하여 마음을 작성해봐요!", preferredStyle: .alert)
+    private func showSuccessAlert(message: String) {
+        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             self.navigationController?.popViewController(animated: true)
         }))
