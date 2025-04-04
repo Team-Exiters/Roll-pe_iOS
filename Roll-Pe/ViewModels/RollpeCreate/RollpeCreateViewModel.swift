@@ -73,6 +73,7 @@ class RollpeCreateViewModel {
         ) { isVisible, password in
             return isVisible ? !password.isEmpty : true
         }
+        
         let isDateValid = input.sendDate.orEmpty.map { !$0.isEmpty }
         let isUserValid = selectedUser.map { $0 != nil }
         
@@ -166,7 +167,7 @@ class RollpeCreateViewModel {
     
     // 서버로부터 비율, 테마, 크기 정보 가져오기
     func getIndexes() {
-        apiService.requestDecodable("/api/index?type=all", method: .get, decodeType: QueryIndexModel.self)
+        apiService.requestDecodable("/api/index?type=all", method: .get, decodeType: QueryIndexResponseModel.self)
             .subscribe(onNext: { model in
                 var themes: [QueryIndexDataModel] = []
                 var sizes: [QueryIndexDataModel] = []

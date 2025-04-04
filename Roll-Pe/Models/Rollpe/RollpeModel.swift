@@ -59,16 +59,16 @@ struct RollpeDataModel: Decodable {
 }
 
 // 롤페 상세 모델
-struct RollpeDetailResponseModel: Decodable {
+struct RollpeV1ResponseModel: Decodable {
     let status_code: Int
     let message: String
     let code: String
     let link: String?
-    let data: RollpDetailDataModel
+    let data: RollpeV1DataModel
 }
 
 // 롤페 상세 data 모델
-struct RollpDetailDataModel: Decodable {
+struct RollpeV1DataModel: Decodable {
     let id: Int
     let code: String
     let title: String
