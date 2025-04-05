@@ -69,14 +69,12 @@ class MemoV1: UIView {
         if label.text == nil || label.text!.isEmpty {
             dashedBorder.frame = self.bounds
             dashedBorder.path = UIBezierPath(rect: self.bounds).cgPath
+        } else {
+            dashedBorder.removeFromSuperlayer()
         }
     }
     
     private func setMemo(model: HeartModel) {
-        // 점선 효과 삭제
-        if label.text != nil && !label.text!.isEmpty {
-            dashedBorder.removeFromSuperlayer()
-        }
         
         setBackground(color: model.color)
         setText(content: model.content, author: model.author.name)
