@@ -86,8 +86,8 @@ func convertDateFormat(_ input: String) -> String? {
     return outputFormatter.string(from: date)
 }
 
-// 키보드 숨기기
 extension UIViewController {
+    // 키보드 숨기기
     func hideKeyboardWhenTappedAround() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
@@ -96,6 +96,23 @@ extension UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    // RxSwift + 확인 알림창
+    func showConfirmAlert(title: String?, message: String?) -> Observable<Void> {
+        let result = PublishSubject<Void>()
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "확인", style: .default, handler: { _ in
+            result.onNext(())
+            result.onCompleted()
+        })
+        let cancel = UIAlertAction(title: "취소", style: .cancel) { _ in
+            result.onCompleted()
+        }
+        alert.addAction(ok)
+        alert.addAction(cancel)
+        present(alert, animated: true)
+        return result
     }
 }
 
@@ -132,16 +149,39 @@ extension UIButton {
     }
 }
 
-// UILabel rx.tap 추가
-extension Reactive where Base: UILabel {
-    var tap: Observable<Void> {
-        let tapGestureRecognizer = UITapGestureRecognizer()
-        
-        base.addGestureRecognizer(tapGestureRecognizer)
-        base.isUserInteractionEnabled = true
+// hex에서 UIColor로 변환
+extension UIColor {
+    convenience init?(hex: String) {
+        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
 
-        return tapGestureRecognizer.rx.event
-            .map { _ in () }
-            .asObservable()
+        var rgb: UInt64 = 0
+        guard Scanner(string: hexSanitized).scanHexInt64(&rgb) else { return nil }
+
+        let r = CGFloat((rgb >> 16) & 0xFF) / 255.0
+        let g = CGFloat((rgb >> 8) & 0xFF) / 255.0
+        let b = CGFloat(rgb & 0xFF) / 255.0
+
+        self.init(red: r, green: g, blue: b, alpha: 1.0)
+    }
+}
+
+// UILabel에 line-height 설정
+extension UILabel {
+    func setTextWithLineHeight(text: String?, lineHeight: CGFloat) {
+        if let text = text {
+            let style = NSMutableParagraphStyle()
+            style.maximumLineHeight = lineHeight
+            style.minimumLineHeight = lineHeight
+            
+            let attributes: [NSAttributedString.Key: Any] = [
+                .paragraphStyle: style,
+                .baselineOffset: (lineHeight - font.lineHeight) / 4
+            ]
+            
+            let attrString = NSAttributedString(string: text,
+                                                attributes: attributes)
+            self.attributedText = attrString
+        }
     }
 }
