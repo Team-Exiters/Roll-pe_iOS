@@ -79,7 +79,7 @@ struct RollpeV1DataModel: Decodable {
     let size: String
     let ratio: String
     let createdAt: String
-    let hearts: [HeartModel]
+    let hearts: HeartResponseModel
 }
 
 // 방장

@@ -7,6 +7,11 @@
 
 import Foundation
 
+struct HeartResponseModel: Decodable {
+    let count: Int
+    let data: [HeartModel]
+}
+
 struct HeartModel: Decodable {
     let id: Int
     let code: String
