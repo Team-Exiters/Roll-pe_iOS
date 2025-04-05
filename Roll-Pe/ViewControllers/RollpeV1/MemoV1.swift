@@ -28,6 +28,17 @@ class MemoV1: UIView {
         return label
     }()
     
+    private let dashedBorder: CAShapeLayer = {
+        let border = CAShapeLayer()
+        border.strokeColor = UIColor.rollpeBlack.cgColor
+        border.lineDashPattern = [2, 2]
+        border.lineWidth = 1
+        border.lineJoin = .round
+        border.fillColor = nil
+        
+        return border
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -43,13 +54,26 @@ class MemoV1: UIView {
     private func setup() {
         self.backgroundColor = .rollpeGray.withAlphaComponent(0.5)
         
+        // 점선 효과 추가
+        self.layer.addSublayer(dashedBorder)
+        
         self.snp.makeConstraints { make in
             make.width.equalTo(140)
             make.height.equalTo(160)
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        dashedBorder.frame = self.bounds
+        dashedBorder.path = UIBezierPath(rect: self.bounds).cgPath
+    }
+    
     private func setMemo(model: HeartModel) {
+        // 점선 효과 삭제
+        dashedBorder.removeFromSuperlayer()
+        
         setBackground(color: model.color)
         setText(content: model.content, author: model.author.name)
     }
