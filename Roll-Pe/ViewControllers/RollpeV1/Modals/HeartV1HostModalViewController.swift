@@ -1,5 +1,5 @@
 //
-//  HeartV1MineModalViewController.swift
+//  HeartV1HostModalViewController.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 3/27/25.
@@ -11,15 +11,13 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HeartV1MineModalViewController: UIViewController {
+class HeartV1HostModalViewController: UIViewController {
     let paperId: Int
     let model: HeartModel
-    let isMono: Bool
     
-    init(paperId: Int, model: HeartModel, isMono: Bool) {
+    init(paperId: Int, model: HeartModel) {
         self.paperId = paperId
         self.model = model
-        self.isMono = isMono
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -65,10 +63,10 @@ class HeartV1MineModalViewController: UIViewController {
         return label
     }()
     
-    // 수정 버튼
-    private let editButton: UIButton = {
+    // 신고 버튼
+    private let reportButton: UIButton = {
         let button = UIButton()
-        button.setTitle("수정", for: .normal)
+        button.setTitle("신고", for: .normal)
         button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         button.setTitleColor(.rollpeBlack, for: .normal)
         button.setTitleColor(.rollpeBlack, for: .highlighted)
@@ -81,8 +79,8 @@ class HeartV1MineModalViewController: UIViewController {
         let button = UIButton()
         button.setTitle("삭제", for: .normal)
         button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeBlack, for: .normal)
-        button.setTitleColor(.rollpeBlack, for: .highlighted)
+        button.setTitleColor(.rollpeStatusDanger, for: .normal)
+        button.setTitleColor(.rollpeStatusDanger, for: .highlighted)
         
         return button
     }()
@@ -100,7 +98,7 @@ class HeartV1MineModalViewController: UIViewController {
         // UI 설정
         setupMemoView()
         setupMemoLabel()
-        setupEditButton()
+        setupReportButton()
         setupDeleteButton()
         addCloseButton()
         
@@ -145,10 +143,10 @@ class HeartV1MineModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupEditButton() {
-        memoView.addSubview(editButton)
+    private func setupReportButton() {
+        memoView.addSubview(reportButton)
         
-        editButton.snp.makeConstraints { make in
+        reportButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.bottom.equalToSuperview().offset(-20)
         }
@@ -175,23 +173,14 @@ class HeartV1MineModalViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        // 수정 버튼
-        editButton.rx.tap
+        // 신고 버튼
+        reportButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                
-                self.navigationController?.pushViewController(
-                    HeartV1EditModalViewController(
-                        paperId: paperId,
-                        heartId: model.id,
-                        context: model.content,
-                        index: model.index,
-                        isMono: isMono
-                    ), animated: false)
             })
             .disposed(by: disposeBag)
         
-        // 완료 버튼
+        // 삭제 버튼
         deleteButton.rx.tap
             .observe(on: MainScheduler.instance)
             .flatMap {
@@ -235,16 +224,6 @@ class HeartV1MineModalViewController: UIViewController {
     private func showErrorAlert(message: String) {
         let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 심각한 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
         self.present(alertController, animated: true, completion: nil)
     }
 }
