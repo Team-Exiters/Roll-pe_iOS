@@ -75,7 +75,6 @@ class MemoV1: UIView {
     }
     
     private func setMemo(model: HeartModel) {
-        
         setBackground(color: model.color)
         setText(content: model.content, author: model.author.name)
     }
@@ -89,11 +88,12 @@ class MemoV1: UIView {
     private func setText(content: String, author: String) {
         label.text = "\(content)\n- \(author)"
         
-        self.addSubview(label)
-        
-        label.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(8)
-            make.center.equalToSuperview()
+        if label.superview == nil {
+            self.addSubview(label)
+            label.snp.makeConstraints { make in
+                make.edges.equalToSuperview().inset(8)
+                make.center.equalToSuperview()
+            }
         }
     }
 }
