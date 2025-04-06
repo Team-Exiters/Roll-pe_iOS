@@ -71,7 +71,12 @@ class RollpeV1ViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 마음이 변경되었을 경우 롤페 뷰 초기화
-        NotificationCenter.default.addObserver(self, selector: #selector(getData), name: Notification.Name(rawValue: "HEART_EDITED"), object: nil)
+        NotificationCenter.default.rx.notification(Notification.Name(rawValue: "HEART_EDITED"))
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.getData()
+            })
+            .disposed(by: disposeBag)
         
         // UI 설정
         addCloseButton()
@@ -158,7 +163,7 @@ class RollpeV1ViewController: UIViewController {
     
     // MARK: - Bind
     
-    @objc private func getData() {
+    private func getData() {
         viewModel.getRollpeData(pCode: pCode)
     }
     
