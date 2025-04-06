@@ -19,6 +19,9 @@ let window = windowScene?.windows.first
 let safeareaTop = window?.safeAreaInsets.top ?? 0
 let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
 
+// 서버 IP 주소
+let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+
 // 이미지 비율 계산
 func getImageRatio(image: UIImage) -> CGFloat {
     return image.size.width / image.size.height
