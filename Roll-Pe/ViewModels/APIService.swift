@@ -17,7 +17,6 @@ class APIService {
     private init() {}
     
     private let disposeBag = DisposeBag()
-    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     
     var isRefreshing: Bool = false
     
@@ -28,7 +27,7 @@ class APIService {
         parameters: [String: Any]? = nil,
         encoding: ParameterEncoding = JSONEncoding.default,
         isDomainInclude: Bool = false
-    ) -> Observable<Data> {
+    ) -> Observable<(HTTPURLResponse, Data)> {
         return RxAlamofire.request(
             method,
             "\(isDomainInclude ? "" : ip)\(url)",
@@ -37,11 +36,14 @@ class APIService {
             interceptor: AuthInterceptor.shared
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
-        .responseData()
-        .flatMap { response, data in
-            return Observable.just(data)
+        .validate { _, response, _ in
+            if response.statusCode == 401 || (500..<600).contains(response.statusCode) {
+                return .failure(AFError.responseValidationFailed(reason: .unacceptableStatusCode(code: response.statusCode)))
+            } else {
+                return .success(())
+            }
         }
+        .responseData()
     }
     
     // 요청과 Decode처리
@@ -61,7 +63,13 @@ class APIService {
             interceptor: AuthInterceptor.shared
         )
         .observe(on: MainScheduler.instance)
-        .validate(statusCode: 200..<300)
+        .validate { _, response, _ in
+            if response.statusCode == 401 || (500..<600).contains(response.statusCode) {
+                return .failure(AFError.responseValidationFailed(reason: .unacceptableStatusCode(code: response.statusCode)))
+            } else {
+                return .success(())
+            }
+        }
         .responseData()
         .flatMap { response, data in
             do {
@@ -75,15 +83,12 @@ class APIService {
     }
 }
 
-
 // MARK: - Interceptor
 
 final class AuthInterceptor: RequestInterceptor {
     static let shared = AuthInterceptor()
     
     private init() {}
-    
-    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         let keychain = Keychain.shared

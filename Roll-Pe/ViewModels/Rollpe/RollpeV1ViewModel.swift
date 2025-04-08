@@ -31,13 +31,39 @@ class RollpeV1ViewModel {
     
     // 롤페 불러오기
     func getRollpeData(pCode: String) {
-        apiService.requestDecodable("/api/paper?pcode=\(pCode)", method: .get, decodeType: RollpeV1ResponseModel.self)
-            .subscribe(onNext: { model in
-                self.rollpe.accept(model.data)
+        apiService.request("/api/paper?pcode=\(pCode)", method: .get)
+            .subscribe(onNext: { response, data in
+                let decoder = JSONDecoder()
+                
+                if (200..<300).contains(response.statusCode) {
+                    do {
+                        let model = try decoder.decode(RollpeV1ResponseModel.self, from: data)
+                        self.rollpe.accept(model.data)
+                    } catch {
+                        print("ResponseNoDataModel 변환 실패")
+                        print(String(data: data, encoding: .utf8) ?? "")
+                        
+                        self.onError()
+                    }
+                } else {
+                    do {
+                        let nodataModel = try decoder.decode(ResponseNoDataModel.self, from: data)
+                        self.criticalAlertMessage.onNext(nodataModel.message)
+                    } catch {
+                        print("ResponseNoDataModel 변환 실패")
+                        print(String(data: data, encoding: .utf8) ?? "")
+                        
+                        self.onError()
+                    }
+                }
             }, onError: { error in
                 print("롤페 정보 가져오는 중 오류 발생: \(error)")
-                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
+                self.onError()
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func onError() {
+        self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
     }
 }

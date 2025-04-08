@@ -12,6 +12,8 @@ import RxCocoa
 import RxGesture
 import SwiftUI
 
+let monoThemes: [String] = ["추모"]
+
 class RollpeV1ViewController: UIViewController {
     let pCode: String
     
@@ -27,8 +29,6 @@ class RollpeV1ViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let viewModel = RollpeV1ViewModel()
     private let keychain = Keychain.shared
-    
-    private let monoThemes: [String] = ["추모"]
     
     // MARK: - 요소
     
@@ -268,7 +268,7 @@ class RollpeV1ViewController: UIViewController {
     private func bindMemoTap(dataModel: RollpeV1DataModel) {
         guard let rollpeView = rollpeView else { return }
         
-        let isMono: Bool = self.monoThemes.contains(dataModel.theme)
+        let isMono: Bool = monoThemes.contains(dataModel.theme)
         
         rollpeView.onMemoSelected = { (index, model) in
             guard self.presentedViewController == nil else { return }

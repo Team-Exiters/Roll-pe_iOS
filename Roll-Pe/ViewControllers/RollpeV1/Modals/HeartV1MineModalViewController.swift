@@ -52,6 +52,14 @@ class HeartV1MineModalViewController: UIViewController {
         return view
     }()
     
+    // 스크롤 뷰
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        
+        return scrollView
+    }()
+    
     // 메모 텍스트
     private lazy var memoLabel: UILabel = {
         let label = UILabel()
@@ -99,6 +107,7 @@ class HeartV1MineModalViewController: UIViewController {
         
         // UI 설정
         setupMemoView()
+        setupScrollView()
         setupMemoLabel()
         setupEditButton()
         setupDeleteButton()
@@ -134,13 +143,34 @@ class HeartV1MineModalViewController: UIViewController {
         }
     }
     
+    // 스크롤 뷰
+    private func setupScrollView() {
+        memoView.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     // 메모지 라벨
     private func setupMemoLabel() {
-        memoView.addSubview(memoLabel)
+        scrollView.addSubview(memoLabel)
         
         memoLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
-            make.center.equalToSuperview()
+            make.width.equalToSuperview().inset(16)
+        }
+        
+        DispatchQueue.main.async {
+            let lineHeight = UIFont(name: "NanumPenOTF", size: 48)?.lineHeight ?? 52.8
+            
+            if self.memoLabel.frame.height + lineHeight <= self.scrollView.frame.height {
+                self.memoLabel.snp.makeConstraints { make in
+                    make.edges.equalToSuperview().inset(16)
+                    make.width.equalToSuperview().inset(16)
+                    make.centerY.equalToSuperview()
+                }
+            }
         }
     }
     
@@ -212,10 +242,10 @@ class HeartV1MineModalViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        output.errorAlertMessage
+        output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showCriticalErrorAlert(message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -228,13 +258,6 @@ class HeartV1MineModalViewController: UIViewController {
             self.dismiss(animated: true)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
         }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 오류 알림창
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }
     

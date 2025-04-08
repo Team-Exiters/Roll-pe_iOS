@@ -47,6 +47,14 @@ class HeartV1ViewModalViewController: UIViewController {
         return view
     }()
     
+    // 스크롤 뷰
+    private let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        
+        return scrollView
+    }()
+    
     // 메모 텍스트
     private lazy var memoLabel: UILabel = {
         let label = UILabel()
@@ -83,6 +91,7 @@ class HeartV1ViewModalViewController: UIViewController {
         
         // UI 설정
         setupMemoView()
+        setupScrollView()
         setupMemoLabel()
         setupReportButton()
         addCloseButton()
@@ -117,13 +126,34 @@ class HeartV1ViewModalViewController: UIViewController {
         }
     }
     
+    // 스크롤 뷰
+    private func setupScrollView() {
+        memoView.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     // 메모지 라벨
     private func setupMemoLabel() {
-        memoView.addSubview(memoLabel)
+        scrollView.addSubview(memoLabel)
         
         memoLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
-            make.center.equalToSuperview()
+            make.width.equalToSuperview().inset(16)
+        }
+        
+        DispatchQueue.main.async {
+            let lineHeight = UIFont(name: "NanumPenOTF", size: 48)?.lineHeight ?? 52.8
+            
+            if self.memoLabel.frame.height + lineHeight <= self.scrollView.frame.height {
+                self.memoLabel.snp.makeConstraints { make in
+                    make.edges.equalToSuperview().inset(16)
+                    make.width.equalToSuperview().inset(16)
+                    make.centerY.equalToSuperview()
+                }
+            }
         }
     }
     

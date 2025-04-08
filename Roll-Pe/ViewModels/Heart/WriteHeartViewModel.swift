@@ -59,15 +59,32 @@ class WriteHeartViewModel {
             "location": location
         ]
         
-        print(body)
-        
-        apiService.requestDecodable("/api/heart", method: .post, parameters: body, decodeType: ResponseNoDataModel.self)
-            .subscribe(onNext: { model in
-                self.successAlertMessage.onNext(model.message)
+        apiService.request("/api/heart", method: .post, parameters: body)
+            .subscribe(onNext: { response, data in
+                let decoder = JSONDecoder()
+                
+                do {
+                    let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+                    
+                    if (200..<300).contains(response.statusCode) {
+                        self.successAlertMessage.onNext(model.message)
+                    } else {
+                        self.criticalAlertMessage.onNext(model.message)
+                    }
+                } catch {
+                    print("ResponseNoDataModel 변환 실패")
+                    print(String(data: data, encoding: .utf8) ?? "")
+                    
+                    self.onError()
+                }
             }, onError: { error in
                 print("마음 남기는 중 오류 발생: \(error)")
-                self.errorAlertMessage.onNext("오류가 발생하였습니다.")
+                self.onError()
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func onError() {
+        self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
     }
 }
