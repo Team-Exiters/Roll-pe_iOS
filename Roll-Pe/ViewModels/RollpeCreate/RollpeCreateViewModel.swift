@@ -15,9 +15,9 @@ class RollpeCreateViewModel {
     private let keychain = Keychain.shared
     
     private let isLoading = BehaviorSubject<Bool>(value: false)
+    private let successAlertMessage = PublishSubject<String?>()
     private let errorAlertMessage = PublishSubject<String?>()
     private let criticalAlertMessage = PublishSubject<String?>()
-    private let response = PublishSubject<Bool>()
     
     // 비율
     let ratios = BehaviorRelay<[QueryIndexDataModel]>(value: [])
@@ -53,9 +53,9 @@ class RollpeCreateViewModel {
         let selectedUser: Driver<SearchUserResultModel?>
         let isCreateEnabled: Driver<Bool>
         let isLoading: Driver<Bool>
+        let successAlertMessage: Driver<String?>
         let errorAlertMessage: Driver<String?>
         let criticalAlertMessage: Driver<String?>
-        let response: Driver<Bool>
     }
     
     func transform(_ input: Input) -> Output {
@@ -159,9 +159,9 @@ class RollpeCreateViewModel {
             selectedUser: selectedUser.asDriver(),
             isCreateEnabled: isCreateEnabled,
             isLoading: isLoading.asDriver(onErrorJustReturn: false),
+            successAlertMessage: successAlertMessage.asDriver(onErrorJustReturn: nil),
             errorAlertMessage: errorAlertMessage.asDriver(onErrorJustReturn: nil),
-            criticalAlertMessage: criticalAlertMessage.asDriver(onErrorJustReturn: nil),
-            response: response.asDriver(onErrorJustReturn: false)
+            criticalAlertMessage: criticalAlertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     
@@ -190,7 +190,7 @@ class RollpeCreateViewModel {
                 self.ratios.accept(ratios)
             }, onError: { error in
                 print("index 가져오는 중 오류 발생: \(error)")
-                self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
+                self.onError()
             })
             .disposed(by: disposeBag)
     }
@@ -213,7 +213,7 @@ class RollpeCreateViewModel {
                   let theme = theme,
                   let size = size,
                   let ratio = ratio else {
-                self.response.onNext(false)
+                onError()
                 return
             }
             
@@ -237,14 +237,33 @@ class RollpeCreateViewModel {
                 .do(onSubscribe: {
                     self.isLoading.onNext(true)
                 })
-                .subscribe(onNext: { data in
-                    self.response.onNext(true)
+                .subscribe(onNext: { response, data in
+                    let decoder = JSONDecoder()
+                    
+                    do {
+                        let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+                        
+                        if (200..<300).contains(response.statusCode) {
+                            self.successAlertMessage.onNext(model.message)
+                        } else {
+                            self.criticalAlertMessage.onNext(model.message)
+                        }
+                    } catch {
+                        print("ResponseNoDataModel 변환 실패")
+                        print(String(data: data, encoding: .utf8) ?? "")
+                        
+                        self.onError()
+                    }
                 }, onError: { error in
                     print("롤페 만드는 중 오류 발생: \(error)")
-                    self.response.onNext(false)
+                    self.onError()
                 }, onDisposed: {
                     self.isLoading.onNext(false)
                 })
                 .disposed(by: disposeBag)
         }
+    
+    private func onError() {
+        self.criticalAlertMessage.onNext("오류가 발생하였습니다.")
+    }
 }

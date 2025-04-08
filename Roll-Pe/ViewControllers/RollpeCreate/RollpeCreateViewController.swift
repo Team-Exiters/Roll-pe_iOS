@@ -614,19 +614,17 @@ class RollpeCreateViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
-        output.response
-            .drive(onNext: { success in
-                if success {
-                    self.showSuccessAlert(message: "롤페가 만들어졌습니다!\n공유하여 마음을 작성해봐요!")
-                } else {
-                    self.showErrorAlert(message: "롤페 만들기를 실패하였습니다.")
-                }
-            })
-            .disposed(by: disposeBag)
-        
         output.isLoading
             .drive(onNext: { isLoading in
                 self.loadingView.isHidden = !isLoading
+            })
+            .disposed(by: disposeBag)
+        
+        output.successAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showSuccessAlert(message: message)
+                }
             })
             .disposed(by: disposeBag)
         
