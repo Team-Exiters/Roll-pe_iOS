@@ -55,7 +55,7 @@ class WriteHeartViewModel {
         let body: [String: Any] = [
             "paperFK": paperFK,
             "color": color.replacingOccurrences(of: "#", with: ""),
-            "context": context,
+            "context": context.replacingOccurrences(of: "\n", with: ""),
             "location": location
         ]
         

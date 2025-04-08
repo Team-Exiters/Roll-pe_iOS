@@ -56,7 +56,7 @@ class EditHeartViewModel {
             "heartPK": heartPK,
             "paperFK": paperFK,
             "color": color.replacingOccurrences(of: "#", with: ""),
-            "context": context,
+            "context": context.replacingOccurrences(of: "\n", with: ""),
             "location": location
         ]
         
