@@ -72,25 +72,23 @@ class HeartV1HostModalViewController: UIViewController {
     }()
     
     // 신고 버튼
-    private let reportButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("신고", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeBlack, for: .normal)
-        button.setTitleColor(.rollpeBlack, for: .highlighted)
+    private let reportLabel: UILabel = {
+        let label = UILabel()
+        label.text = "신고"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeBlack
         
-        return button
+        return label
     }()
     
     // 삭제 버튼
-    private let deleteButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("삭제", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeStatusDanger, for: .normal)
-        button.setTitleColor(.rollpeStatusDanger, for: .highlighted)
+    private let deleteLabel: UILabel = {
+        let label = UILabel()
+        label.text = "삭제"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeStatusDanger
         
-        return button
+        return label
     }()
     
     
@@ -107,8 +105,8 @@ class HeartV1HostModalViewController: UIViewController {
         setupMemoView()
         setupScrollView()
         setupMemoLabel()
-        setupReportButton()
-        setupDeleteButton()
+        setupReportLabel()
+        setupDeleteLabel()
         addCloseButton()
         
         // bind
@@ -174,20 +172,20 @@ class HeartV1HostModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupReportButton() {
-        memoView.addSubview(reportButton)
+    private func setupReportLabel() {
+        memoView.addSubview(reportLabel)
         
-        reportButton.snp.makeConstraints { make in
+        reportLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.bottom.equalToSuperview().offset(-20)
         }
     }
     
     // 삭제 버튼
-    private func setupDeleteButton() {
-        memoView.addSubview(deleteButton)
+    private func setupDeleteLabel() {
+        memoView.addSubview(deleteLabel)
         
-        deleteButton.snp.makeConstraints { make in
+        deleteLabel.snp.makeConstraints { make in
             make.trailing.bottom.equalToSuperview().offset(-20)
         }
     }
@@ -205,16 +203,18 @@ class HeartV1HostModalViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 신고 버튼
-        reportButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+        reportLabel.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
             })
             .disposed(by: disposeBag)
         
         // 삭제 버튼
-        deleteButton.rx.tap
+        deleteLabel.rx.tapGesture()
+            .when(.recognized)
             .observe(on: MainScheduler.instance)
-            .flatMap {
+            .flatMap { _ in
                 self.showConfirmAlert(title: "알림", message: "마음을 삭제하시겠습니까?")
             }
             .subscribe(onNext: { [weak self] in

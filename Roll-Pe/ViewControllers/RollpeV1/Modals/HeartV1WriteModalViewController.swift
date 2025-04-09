@@ -45,14 +45,13 @@ class HeartV1WriteModalViewController: UIViewController {
     }()
     
     // 완료 버튼
-    private let doneButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("완료", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeWhite, for: .normal)
-        button.setTitleColor(.rollpeWhite, for: .highlighted)
+    private let doneLabel: UILabel = {
+        let label = UILabel()
+        label.text = "완료"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeWhite
         
-        return button
+        return label
     }()
     
     // 내부 뷰
@@ -134,7 +133,7 @@ class HeartV1WriteModalViewController: UIViewController {
         setupTextView()
         setupColorsView()
         addCloseButton()
-        addDoneButton()
+        addDoneLabel()
         
         // bind
         bind()
@@ -154,10 +153,10 @@ class HeartV1WriteModalViewController: UIViewController {
     }
     
     // 완료
-    private func addDoneButton() {
-        view.addSubview(doneButton)
+    private func addDoneLabel() {
+        view.addSubview(doneLabel)
         
-        doneButton.snp.makeConstraints { make in
+        doneLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             make.trailing.equalToSuperview().offset(-20)
         }
@@ -235,9 +234,10 @@ class HeartV1WriteModalViewController: UIViewController {
         let isTextValid = textView.rx.text.orEmpty.map { !$0.isEmpty }
         let isColorValid = viewModel.selectedColor.map { $0?.name != nil }
         
-        doneButton.rx.tap
+        doneLabel.rx.tapGesture()
+            .when(.recognized)
             .observe(on: MainScheduler.instance)
-            .flatMap {
+            .flatMap { _ in
                 self.showConfirmAlert(title: "알림", message: "마음을 작성하시겠습니까?")
             }
             .withLatestFrom(Observable.combineLatest(isTextValid, isColorValid, textView.rx.text.orEmpty))

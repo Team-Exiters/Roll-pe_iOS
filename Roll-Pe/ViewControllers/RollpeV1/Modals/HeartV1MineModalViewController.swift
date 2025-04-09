@@ -74,25 +74,23 @@ class HeartV1MineModalViewController: UIViewController {
     }()
     
     // 수정 버튼
-    private let editButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("수정", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeBlack, for: .normal)
-        button.setTitleColor(.rollpeBlack, for: .highlighted)
+    private let editLabel: UILabel = {
+        let label = UILabel()
+        label.text = "수정"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeBlack
         
-        return button
+        return label
     }()
     
     // 삭제 버튼
-    private let deleteButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("삭제", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeBlack, for: .normal)
-        button.setTitleColor(.rollpeBlack, for: .highlighted)
+    private let deleteLabel: UILabel = {
+        let label = UILabel()
+        label.text = "삭제"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeBlack
         
-        return button
+        return label
     }()
     
     
@@ -109,8 +107,8 @@ class HeartV1MineModalViewController: UIViewController {
         setupMemoView()
         setupScrollView()
         setupMemoLabel()
-        setupEditButton()
-        setupDeleteButton()
+        setupEditLabel()
+        setupDeleteLabel()
         addCloseButton()
         
         // bind
@@ -175,20 +173,20 @@ class HeartV1MineModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupEditButton() {
-        memoView.addSubview(editButton)
+    private func setupEditLabel() {
+        memoView.addSubview(editLabel)
         
-        editButton.snp.makeConstraints { make in
+        editLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.bottom.equalToSuperview().offset(-20)
         }
     }
     
     // 삭제 버튼
-    private func setupDeleteButton() {
-        memoView.addSubview(deleteButton)
+    private func setupDeleteLabel() {
+        memoView.addSubview(deleteLabel)
         
-        deleteButton.snp.makeConstraints { make in
+        deleteLabel.snp.makeConstraints { make in
             make.trailing.bottom.equalToSuperview().offset(-20)
         }
     }
@@ -206,8 +204,9 @@ class HeartV1MineModalViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 수정 버튼
-        editButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+        editLabel.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
                 self.navigationController?.pushViewController(
@@ -222,9 +221,10 @@ class HeartV1MineModalViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 완료 버튼
-        deleteButton.rx.tap
+        deleteLabel.rx.tapGesture()
+            .when(.recognized)
             .observe(on: MainScheduler.instance)
-            .flatMap {
+            .flatMap { _ in
                 self.showConfirmAlert(title: "알림", message: "마음을 삭제하시겠습니까?")
             }
             .subscribe(onNext: { [weak self] in

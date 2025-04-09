@@ -69,14 +69,13 @@ class HeartV1ViewModalViewController: UIViewController {
     }()
     
     // 신고 버튼
-    private let reportButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("신고", for: .normal)
-        button.titleLabel?.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        button.setTitleColor(.rollpeBlack, for: .normal)
-        button.setTitleColor(.rollpeBlack, for: .highlighted)
+    private let reportLabel: UILabel = {
+        let label = UILabel()
+        label.text = "신고"
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.textColor = .rollpeBlack
         
-        return button
+        return label
     }()
     
     
@@ -93,7 +92,7 @@ class HeartV1ViewModalViewController: UIViewController {
         setupMemoView()
         setupScrollView()
         setupMemoLabel()
-        setupReportButton()
+        setupReportLabel()
         addCloseButton()
         
         // bind
@@ -158,10 +157,10 @@ class HeartV1ViewModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupReportButton() {
-        memoView.addSubview(reportButton)
+    private func setupReportLabel() {
+        memoView.addSubview(reportLabel)
         
-        reportButton.snp.makeConstraints { make in
+        reportLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
         }
@@ -178,8 +177,9 @@ class HeartV1ViewModalViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 신고 버튼
-        reportButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+        reportLabel.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
             })
             .disposed(by: disposeBag)
