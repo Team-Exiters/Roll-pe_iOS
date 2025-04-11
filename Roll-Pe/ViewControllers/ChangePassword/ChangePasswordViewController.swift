@@ -6,66 +6,83 @@
 //
 
 import UIKit
+import SnapKit
 import SwiftUI
 import RxSwift
 
 class ChangePasswordViewController: UIViewController {
     private let disposeBag = DisposeBag()
-    
+    private let changePasswordViewModel = ChangePasswordViewModel()
     private let userViewModel = UserViewModel()
     
-    private var equalToCurrentPassword : Bool = false
+    // MARK: - 요소
     
-    private let navigationBar : NavigationBar = {
+    // 네비게이션 바
+    private let navigationBar: NavigationBar = {
         let navigationBar = NavigationBar()
         navigationBar.menuIndex = 4
         navigationBar.showSideMenu = true
+        
         return navigationBar
     }()
     
+    // 제목
     private let titleLabel : UILabel = {
         let label = UILabel()
         label.text = "비밀번호 변경"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
         } else {
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
+        
         return label
     }()
     
-    private let changePasswordTextField : RoundedBorderTextField = {
+    // 비밀번호 text field
+    private let changePasswordTextField: RoundedBorderTextField = {
         let textField = RoundedBorderTextField()
-        textField.placeholder = "비밀번호"
+        textField.placeholder = "새 비밀번호"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
+        
         return textField
     }()
     
-    private let confirmPasswordTextField : RoundedBorderTextField = {
+    // 비밀번호 확인 text field
+    private let confirmPasswordTextField: RoundedBorderTextField = {
         let textField = RoundedBorderTextField()
-        textField.placeholder = "비밀번호 확인"
+        textField.placeholder = "새 비밀번호 확인"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
+        
         return textField
     }()
     
+    // 변경 버튼
     private let changeConfirmButton = PrimaryButton(title: "변경하기")
-
+    
+    // 로딩 뷰
+    private let loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // 네비게이션 및 배경 설정
-        navigationItem.hidesBackButton = true
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         
         // Bind 설정
-        bindData()
-        bindPasswordTextField()
+        bind()
         
         // UI 설정
         setupNavigationBar()
@@ -73,134 +90,147 @@ class ChangePasswordViewController: UIViewController {
         setupChangePasswordTextField()
         setupConfirmPasswordTextField()
         setupChangeConfirmButton()
-      
+        
+        addLoadingView()
+    }
+    
+    // MARK: - UI 설정
+    
+    // 로딩 뷰
+    private func addLoadingView() {
+        view.addSubview(loadingView)
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     private func setupNavigationBar() {
         view.addSubview(navigationBar)
+        
         navigationBar.parentViewController = self
-            navigationBar.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview().inset(20)
-                make.top.equalTo(safeareaTop + 40)
-            }
+        
+        navigationBar.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.horizontalEdges.equalToSuperview().inset(20)
+        }
     }
     
     private func setupTitleLabel() {
         view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints{make in
+        
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(76)
             make.centerX.equalToSuperview()
-            make.top.equalTo(navigationBar.snp.bottom).offset(28)
         }
     }
     
     private func setupChangePasswordTextField() {
         view.addSubview(changePasswordTextField)
-        changePasswordTextField.snp.makeConstraints{make in
+        
+        changePasswordTextField.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(52)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.top.equalTo(titleLabel.snp.bottom).offset(52)
         }
     }
     
     private func setupConfirmPasswordTextField() {
         view.addSubview(confirmPasswordTextField)
-        confirmPasswordTextField.snp.makeConstraints{make in
+        
+        confirmPasswordTextField.snp.makeConstraints { make in
+            make.top.equalTo(changePasswordTextField.snp.bottom).offset(8)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.top.equalTo(changePasswordTextField.snp.bottom).offset(8)
         }
     }
     
     private func setupChangeConfirmButton(){
         view.addSubview(changeConfirmButton)
-        changeConfirmButton.addTarget(self, action: #selector(changeConfirmButtonTapped), for: .touchUpInside)
-        changeConfirmButton.snp.makeConstraints{ make in
+        
+        changeConfirmButton.snp.makeConstraints { make in
+            make.top.equalTo(confirmPasswordTextField.snp.bottom).offset(32)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.top.equalTo(confirmPasswordTextField.snp.bottom).offset(32)
         }
     }
     
-    private func bindPasswordTextField() {
-          changePasswordTextField.rx.text.orEmpty
-              .debounce(.seconds(1), scheduler: MainScheduler.instance) //1초간 입력변화 없으면 호출
-              .distinctUntilChanged()
-              .subscribe(onNext: { [weak self] text in
-                  self?.userViewModel.checkPassword(password: text)
-              })
-              .disposed(by: disposeBag)
-      }
+    // MARK: - Bind
     
-    private func bindData(){
-        userViewModel.equalToCurrentPassword
-            .subscribe(onNext:{[weak self] model in
-                self?.equalToCurrentPassword = model ?? false
+    private func bind() {
+        let input = ChangePasswordViewModel.Input(
+            password: changePasswordTextField.rx.text,
+            confirmPassword: confirmPasswordTextField.rx.text,
+            buttonTapEvent: changeConfirmButton.rx.tap
+        )
+        
+        let output = changePasswordViewModel.transform(input)
+        
+        output.isButtonEnabled
+            .drive(onNext: { isEnabled in
+                self.changeConfirmButton.disabled = !isEnabled
             })
             .disposed(by: disposeBag)
         
-        userViewModel.serverResponse
-            .subscribe(onNext:{ [weak self] message in
-                self?.showAlert(title: "성공", message: message ?? "",completion: {
-                    self?.navigationController?.popViewController(animated: true)
-                })
+        output.isLoading
+            .drive(onNext: { isLoading in
+                self.loadingView.isHidden = !isLoading
             })
             .disposed(by: disposeBag)
         
-        userViewModel.serverResponseError
-            .subscribe(onNext:{ message in
-                self.showAlert(title: "오류", message: "오류가 발생했습니다",completion: nil)
+        output.successAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showSuccessAlert(message: message)
+                }
             })
             .disposed(by: disposeBag)
         
+        output.errorAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.criticalAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showCriticalErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
-    @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+    // 완료 알림창
+    private func showSuccessAlert(message: String) {
+        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.userViewModel.logout()
+        }))
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    @objc private func changeConfirmButtonTapped() {
-        if let changePassword = changePasswordTextField.text {
-            if (changePassword != ""){
-                    if (changePassword != confirmPasswordTextField.text) {
-                        showAlert(title: "오류", message: "비밀번호가 일치하지 않습니다",completion: nil)
-                    }
-                    else {
-                        if (changePassword.contains(" ")) {
-                            showAlert(title: "오류", message: "띄어쓰기는 포함될 수 없습니다",completion: nil)
-                        }
-                        else if (!userViewModel.isValidPassword(changePassword)) {
-                            showAlert(title: "오류", message: "비밀번호는 8자 이상, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.",completion: nil)
-                        }
-                        else{
-                            if (equalToCurrentPassword) {
-                                showAlert(title: "오류", message: "현재 비밀번호와 새 비밀번호가 동일합니다.",completion: nil)
-                            }
-                            else {
-                                userViewModel.changePassword(newPassword: changePassword)
-                            }
-                        }
-                    }
-            }
-            else{
-                showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요", completion: nil)
-            }
-        }
-        else{
-            showAlert(title: "오류", message: "변경할 비밀번호를 입력해주세요",completion: nil)
-        }
+    // 오류 알림창
+    private func showErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
     }
     
-    private func showAlert(title: String, message: String, completion: (() -> Void)?) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "확인", style: .default){ _ in
-             completion?()
-        }
-        alert.addAction(okAction)
-        present(alert, animated: true, completion: nil)
+    // 심각한 오류 알림창
+    private func showCriticalErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        self.present(alertController, animated: true, completion: nil)
     }
-
+    
 }
 
+#if DEBUG
 struct ChangePasswordViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
@@ -208,3 +238,4 @@ struct ChangePasswordViewControllerPreview: PreviewProvider {
         }
     }
 }
+#endif
