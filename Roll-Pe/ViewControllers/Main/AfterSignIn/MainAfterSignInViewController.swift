@@ -30,7 +30,6 @@ class MainAfterSignInViewController: UIViewController {
         
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
             print("커스텀 폰트를 로드하지 못했습니다.")
             label.font = UIFont.systemFont(ofSize: 24)
@@ -38,33 +37,9 @@ class MainAfterSignInViewController: UIViewController {
         return label
     }()
     
-    private let rollpesLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .rollpeSecondary
-        
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
-            label.font = customFont
-            print("폰트로드완료")
-        } else {
-            label.font = UIFont.systemFont(ofSize: 16)
-            print("커스텀 폰트를 로드하지 못했습니다.")
-        }
-        return label
-    }()
+    private let rollpeCountLabel: CountLabel = CountLabel(type: .rollpe)
     
-    private let heartsLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .rollpeSecondary
-        
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16) {
-            label.font = customFont
-            print("폰트로드완료")
-        } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
-            label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        }
-        return label
-    }()
+    private let heartCountLabel: CountLabel = CountLabel(type: .heart)
     
     private let primaryButton = PrimaryButton(title: "초대받은 롤페")
     
@@ -74,9 +49,9 @@ class MainAfterSignInViewController: UIViewController {
         let label = UILabel()
         label.text = "지금 뜨고있는 롤페"
         label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
-            print("폰트로드완료")
         } else {
             label.font = UIFont.systemFont(ofSize: 24)
             print("커스텀 폰트를 로드하지 못했습니다.")
@@ -187,9 +162,9 @@ class MainAfterSignInViewController: UIViewController {
     
     // 내가 만든 롤페 횟수
     private func setupRollpesLabel(){
-        contentView.addSubview(rollpesLabel)
+        contentView.addSubview(rollpeCountLabel)
         
-        rollpesLabel.snp.makeConstraints { make in
+        rollpeCountLabel.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(8)
             make.leading.equalToSuperview().offset(20)
         }
@@ -197,10 +172,10 @@ class MainAfterSignInViewController: UIViewController {
     
     // 내가 작성한 롤페 횟수
     private func setupHeartsLabel(){
-        contentView.addSubview(heartsLabel)
+        contentView.addSubview(heartCountLabel)
         
-        heartsLabel.snp.makeConstraints { make in
-            make.top.equalTo(rollpesLabel.snp.bottom).offset(4)
+        heartCountLabel.snp.makeConstraints { make in
+            make.top.equalTo(rollpeCountLabel.snp.bottom).offset(4)
             make.leading.equalToSuperview().offset(20)
         }
     }
@@ -210,7 +185,7 @@ class MainAfterSignInViewController: UIViewController {
         contentView.addSubview(primaryButton)
         
         primaryButton.snp.makeConstraints { make in
-            make.top.equalTo(heartsLabel.snp.bottom).offset(40)
+            make.top.equalTo(heartCountLabel.snp.bottom).offset(40)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.centerX.equalToSuperview()
@@ -301,16 +276,16 @@ class MainAfterSignInViewController: UIViewController {
         // 내 상태
         userViewModel.myStatus
             .map { model in
-                return "\(model?.data.host ?? 0)번의 롤페를 만드셨어요."
+                return model?.data.host ?? 0
             }
-            .bind(to: rollpesLabel.rx.text)
+            .bind(to: rollpeCountLabel.rx.count)
             .disposed(by: disposeBag)
         
         userViewModel.myStatus
             .map { model in
-                return "\(model?.data.heart ?? 0)번의 마음을 작성하셨어요."
+                return model?.data.heart ?? 0
             }
-            .bind(to: heartsLabel.rx.text)
+            .bind(to: heartCountLabel.rx.count)
             .disposed(by: disposeBag)
         
         // 지금 뜨는 롤페
