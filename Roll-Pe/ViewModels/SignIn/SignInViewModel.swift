@@ -16,7 +16,6 @@ import AuthenticationServices
 
 class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDelegate {
     private let disposeBag = DisposeBag()
-    private let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
     private let keychain = Keychain.shared
     
     private let isLoading = BehaviorSubject<Bool>(value: false)
@@ -150,19 +149,16 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         // 정보 저장
         if isSuccess, let data = model.data, let userData = model.data?.user {
             keychain.create(key: "ACCESS_TOKEN", value: data.access)
-            print(data.access)
+            keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
             
             keychain.create(key: "NAME", value: userData.name)
             keychain.create(key: "EMAIL", value: userData.email)
             keychain.create(key: "IDENTIFY_CODE", value: userData.identifyCode)
             keychain.create(key: "USER_ID", value: "\(userData.id)")
+            UserDefaults.standard.set(keepSignIn, forKey: "KEEP_SIGN_IN")
             
             if let provider = userData.provider {
                 keychain.create(key: "PROVIDER", value: provider)
-            }
-            
-            if keepSignIn {
-                keychain.create(key: "REFRESH_TOKEN", value: data.refresh)
             }
         }
         

@@ -40,8 +40,7 @@ final class SignUpViewModel {
         // 이메일 검증
         let isEmailValid = input.email.orEmpty
             .map { email in
-                let regex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
-                return email.range(of: regex, options: .regularExpression) != nil
+                return email.range(of: emailRegex, options: .regularExpression) != nil
             }
         
         // 닉네임 검증
@@ -51,8 +50,7 @@ final class SignUpViewModel {
         // 비밀번호 검증
         let isPasswordValid = input.password.orEmpty
             .map { password in
-                let regex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$"
-                return password.range(of: regex, options: .regularExpression) != nil
+                return password.range(of: passwordRegex, options: .regularExpression) != nil
             }
         
         // 비밀번호 확인 검증
@@ -118,8 +116,6 @@ final class SignUpViewModel {
     
     // 회원가입 API
     private func signUp(name: String, email: String, password: String) {
-        let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
-        
         // 헤더
         let headers: HTTPHeaders = [
             .contentType("application/json")
