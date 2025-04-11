@@ -10,11 +10,11 @@
 		8B93961F2D57A34A00BF847F /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 8B93961E2D57A34A00BF847F /* MarqueeLabel */; };
 		E20492DE2D5F9C220035E61A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DD2D5F9C220035E61A /* GoogleSignIn */; };
 		E20492E02D5F9C220035E61A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DF2D5F9C220035E61A /* GoogleSignInSwift */; };
+		E20F1D502D65ED020093FA1C /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */; };
 		E24421A92D495DD700144CB2 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E24421A82D495DD700144CB2 /* RxCocoa */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
 		E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = E24D4C892D3C260400C9ABA5 /* .gitignore */; };
-		E24E29B02D5323F900916E78 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = E24E29A72D5323F900916E78 /* LICENSE.txt */; };
 		E24E29B72D5488E600916E78 /* RxKakaoSDK in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29B62D5488E600916E78 /* RxKakaoSDK */; };
 		E24E29B92D5488E600916E78 /* RxKakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29B82D5488E600916E78 /* RxKakaoSDKAuth */; };
 		E24E29BB2D5488E600916E78 /* RxKakaoSDKCert in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29BA2D5488E600916E78 /* RxKakaoSDKCert */; };
@@ -23,6 +23,7 @@
 		E24E29C12D5488E600916E78 /* RxKakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29C02D5488E600916E78 /* RxKakaoSDKShare */; };
 		E24E29C32D5488E600916E78 /* RxKakaoSDKTalk in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29C22D5488E600916E78 /* RxKakaoSDKTalk */; };
 		E24E29C52D5488E600916E78 /* RxKakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = E24E29C42D5488E600916E78 /* RxKakaoSDKUser */; };
+		E257932A2D8DCF89002204F2 /* RxGesture in Frameworks */ = {isa = PBXBuildFile; productRef = E25793292D8DCF89002204F2 /* RxGesture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,8 +57,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		E24E29A72D5323F900916E78 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F4742CFA437F002ED763 /* Roll-PeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +94,11 @@
 			path = "Roll-PeUITests";
 			sourceTree = "<group>";
 		};
+		E2E7CC992DA64731000F2EFA /* Fonts */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +113,7 @@
 				E24E29B72D5488E600916E78 /* RxKakaoSDK in Frameworks */,
 				E24E29C32D5488E600916E78 /* RxKakaoSDKTalk in Frameworks */,
 				E20492E02D5F9C220035E61A /* GoogleSignInSwift in Frameworks */,
+				E257932A2D8DCF89002204F2 /* RxGesture in Frameworks */,
 				E20492DE2D5F9C220035E61A /* GoogleSignIn in Frameworks */,
 				E24E29C12D5488E600916E78 /* RxKakaoSDKShare in Frameworks */,
 				E24E29BF2D5488E600916E78 /* RxKakaoSDKFriend in Frameworks */,
@@ -140,24 +148,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E24E29AC2D5323F900916E78 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				E24E29A72D5323F900916E78 /* LICENSE.txt */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
 		E264F44B2CFA437D002ED763 = {
 			isa = PBXGroup;
 			children = (
-				E24E29AC2D5323F900916E78 /* Fonts */,
+				E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */,
+				E2E7CC992DA64731000F2EFA /* Fonts */,
 				E24D4C892D3C260400C9ABA5 /* .gitignore */,
 				E264F4562CFA437D002ED763 /* Roll-Pe */,
 				E264F46D2CFA437F002ED763 /* Roll-PeTests */,
 				E264F4772CFA437F002ED763 /* Roll-PeUITests */,
 				E24D4C612D3BD03C00C9ABA5 /* Frameworks */,
 				E264F4552CFA437D002ED763 /* Products */,
+				E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -189,6 +191,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E264F4562CFA437D002ED763 /* Roll-Pe */,
+				E2E7CC992DA64731000F2EFA /* Fonts */,
 			);
 			name = "Roll-Pe";
 			packageProductDependencies = (
@@ -206,6 +209,7 @@
 				E20492DD2D5F9C220035E61A /* GoogleSignIn */,
 				E20492DF2D5F9C220035E61A /* GoogleSignInSwift */,
 				8B93961E2D57A34A00BF847F /* MarqueeLabel */,
+				E25793292D8DCF89002204F2 /* RxGesture */,
 			);
 			productName = "Roll-Pe";
 			productReference = E264F4542CFA437D002ED763 /* Roll-Pe.app */;
@@ -295,6 +299,7 @@
 				E24E29B52D5488E600916E78 /* XCRemoteSwiftPackageReference "kakao-ios-sdk-rx" */,
 				E20492DC2D5F9C220035E61A /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				8B93961D2D57A33C00BF847F /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
+				E25793282D8DCF89002204F2 /* XCRemoteSwiftPackageReference "RxGesture" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E264F4552CFA437D002ED763 /* Products */;
@@ -313,8 +318,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E20F1D502D65ED020093FA1C /* Secrets.xcconfig in Resources */,
 				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
-				E24E29B02D5323F900916E78 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,9 +382,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Roll-Pe/Roll-Pe.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DR8VUQPNSR;
+				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
@@ -412,9 +418,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Roll-Pe/Roll-Pe.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = DR8VUQPNSR;
+				DEVELOPMENT_TEAM = 42NW282TDP;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Roll-Pe/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "롤페";
@@ -444,6 +451,7 @@
 		};
 		E264F4802CFA437F002ED763 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -508,6 +516,7 @@
 		};
 		E264F4812CFA437F002ED763 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -717,6 +726,14 @@
 				minimumVersion = 2.23.0;
 			};
 		};
+		E25793282D8DCF89002204F2 /* XCRemoteSwiftPackageReference "RxGesture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxGesture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -789,6 +806,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E24E29B52D5488E600916E78 /* XCRemoteSwiftPackageReference "kakao-ios-sdk-rx" */;
 			productName = RxKakaoSDKUser;
+		};
+		E25793292D8DCF89002204F2 /* RxGesture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E25793282D8DCF89002204F2 /* XCRemoteSwiftPackageReference "RxGesture" */;
+			productName = RxGesture;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

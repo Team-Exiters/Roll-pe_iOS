@@ -12,5 +12,4 @@ struct ResponseNoDataModel: Decodable {
     let message: String
     let code: String
     let link: String?
-    let data: String?
 }

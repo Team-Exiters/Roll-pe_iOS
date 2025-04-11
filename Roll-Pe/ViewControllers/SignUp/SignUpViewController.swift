@@ -9,12 +9,16 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 import SwiftUI
 import SafariServices
 
 class SignUpViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let viewModel = SignUpViewModel()
+    
+    // 탭 제스쳐
+    private let tapGesture = UITapGestureRecognizer()
     
     // MARK: - 컴포넌트
     
@@ -24,6 +28,7 @@ class SignUpViewController: UIViewController {
         label.textColor = .rollpeSecondary
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
         label.text = text
+        label.addGestureRecognizer(tapGesture)
         
         return label
     }
@@ -34,6 +39,7 @@ class SignUpViewController: UIViewController {
         label.text = "보기"
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14)
         label.textColor = .rollpeGray
+        label.addGestureRecognizer(tapGesture)
         
         return label
     }
@@ -54,7 +60,7 @@ class SignUpViewController: UIViewController {
     }()
     
     // 로고 이미지
-        private let logoImage = UIImage.imgLogo
+    private let logoImage = UIImage.imgLogo
     
     // 제목
     private let titleLabel: UILabel = {
@@ -75,8 +81,8 @@ class SignUpViewController: UIViewController {
     }()
     
     // 이메일
-    private let email: TextField = {
-        let textField = TextField()
+    private let email: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "이메일"
         textField.textContentType = .emailAddress
         textField.keyboardType = .emailAddress
@@ -85,8 +91,8 @@ class SignUpViewController: UIViewController {
     }()
     
     // 닉네임
-    private let name: TextField = {
-        let textField = TextField()
+    private let name: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "닉네임(2-6자)"
         textField.maxLength = 6
         
@@ -94,8 +100,8 @@ class SignUpViewController: UIViewController {
     }()
     
     // 비밀번호
-    private let password: TextField = {
-        let textField = TextField()
+    private let password: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
@@ -104,8 +110,8 @@ class SignUpViewController: UIViewController {
     }()
     
     // 비밀번호 확인
-    private let passwordConfirm: TextField = {
-        let textField = TextField()
+    private let passwordConfirm: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "비밀번호 확인"
         textField.textContentType = .password
         textField.isSecureTextEntry = true
@@ -349,8 +355,10 @@ class SignUpViewController: UIViewController {
         
         let linkToTerms = linkLabel()
         
-        linkToTerms.rx.tap
-            .subscribe(onNext: {
+        linkToTerms.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
@@ -378,8 +386,10 @@ class SignUpViewController: UIViewController {
         
         let linkToPrivacy: UILabel = linkLabel()
         
-        linkToPrivacy.rx.tap
-            .subscribe(onNext: {
+        linkToPrivacy.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)

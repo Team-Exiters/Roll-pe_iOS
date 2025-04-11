@@ -44,8 +44,8 @@ class ForgotPasswordViewController: UIViewController {
     }()
     
     // 이메일
-    private let email: TextField = {
-        let textField = TextField()
+    private let email: RoundedBorderTextField = {
+        let textField = RoundedBorderTextField()
         textField.placeholder = "이메일"
         textField.textContentType = .emailAddress
         textField.keyboardType = .emailAddress

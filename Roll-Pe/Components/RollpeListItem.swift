@@ -48,10 +48,10 @@ func RollpeListItem(_ model: RollpeListItemModel) -> UIStackView {
         switch model.theme {
         case "화이트":
             return themeWhite()
-        case "블랙":
-            return themeBlack()
-        case "생일":
-            return themeBirthday()
+        case "추모":
+            return themeMemorial()
+        case "축하":
+            return themeCongrats()
         default:
             return themeWhite()
         }
@@ -199,8 +199,8 @@ class RollpeListItem: UIStackView {
         themeView = {
             switch model.theme {
             case "화이트": return themeWhite()
-            case "블랙": return themeBlack()
-            case "생일": return themeBirthday()
+            case "추모": return themeMemorial()
+            case "축하": return themeCongrats()
             default: return themeWhite()
             }
         }()
@@ -301,8 +301,8 @@ class RollpeSearchListItem: UIStackView {
         themeView = {
             switch model.theme {
             case "화이트": return themeWhite()
-            case "블랙": return themeBlack()
-            case "생일": return themeBirthday()
+            case "추모": return themeMemorial()
+            case "축하": return themeCongrats()
             default: return themeWhite()
             }
         }()

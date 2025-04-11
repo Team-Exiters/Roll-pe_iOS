@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 import SafariServices
 
 class SidemenuView: UIView {
@@ -157,8 +158,10 @@ class SidemenuView: UIView {
         let home = menuText(menu: "홈", index: 0)
         menusView.addArrangedSubview(home)
         
-        home.rx.tap
-            .subscribe(onNext: {
+        home.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 if menuIndex != 0 {
                     self.closeMenu()
                     self.switchViewController(vc: MainAfterSignInViewController())
@@ -170,8 +173,10 @@ class SidemenuView: UIView {
         let search = menuText(menu: "검색", index: 1)
         menusView.addArrangedSubview(search)
         
-        search.rx.tap
-            .subscribe(onNext: {
+        search.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 if menuIndex != 1 {
                     self.closeMenu()
                     self.switchViewController(vc: SearchViewController())
@@ -187,8 +192,10 @@ class SidemenuView: UIView {
         let inquiry = menuText(menu: "1:1 문의", index: 3)
         menusView.addArrangedSubview(inquiry)
         
-        inquiry.rx.tap
-            .subscribe(onNext: {
+        inquiry.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 guard let url = URL(string: "https://forms.gle/WGC7ibNBgTnomRgZ7") else {
                     return
                 }
@@ -201,8 +208,10 @@ class SidemenuView: UIView {
         let mypage = menuText(menu: "마이페이지", index: 4)
         menusView.addArrangedSubview(mypage)
         
-        mypage.rx.tap
-            .subscribe(onNext: {
+        mypage.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 if menuIndex != 4 {
                     self.closeMenu()
                     self.switchViewController(vc: MyPageViewController())
@@ -223,8 +232,10 @@ class SidemenuView: UIView {
         let termsOfService = policyText(text: "서비스 이용약관")
         policiesView.addArrangedSubview(termsOfService)
         
-        termsOfService.rx.tap
-            .subscribe(onNext: {
+        termsOfService.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 guard let url = URL(string: "https://haren-dev2.defcon.or.kr/terms-of-service") else {
                     return
                 }
@@ -237,8 +248,10 @@ class SidemenuView: UIView {
         let privacyPolicy = policyText(text: "개인정보처리방침")
         policiesView.addArrangedSubview(privacyPolicy)
         
-        privacyPolicy.rx.tap
-            .subscribe(onNext: {
+        privacyPolicy.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 guard let url = URL(string: "https://haren-dev2.defcon.or.kr/privacy-policy") else {
                     return
                 }

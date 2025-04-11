@@ -120,10 +120,10 @@ class RollpeItemView: UIView {
         switch theme {
         case "화이트":
             topSection.backgroundColor = .rollpeWhite
-        case "블랙":
-            topSection.backgroundColor = .rollpeBlack
-        case "생일":
-            topSection.backgroundColor = .rollpePink
+        case "추모":
+            topSection.backgroundColor = .rollpeThemeMemorial
+        case "축하":
+            topSection.backgroundColor = .rollpeThemeCongrats
             imageView.image = .iconBirthdayCake
             topSection.addSubview(imageView)
             

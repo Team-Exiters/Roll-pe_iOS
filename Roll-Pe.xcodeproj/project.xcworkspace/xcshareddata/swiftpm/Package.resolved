@@ -1,5 +1,5 @@
 {
-  "originHash" : "b1631d897194fff1070539acf816a5c0621006c4751bd10ef2fd1ccef3922f3a",
+  "originHash" : "0be663d2f0ac7e735f3dc082699b57e3b7c5ce03754399f7d3b08ac6bc68f95c",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -83,6 +83,15 @@
       }
     },
     {
+      "identity" : "marqueelabel",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cbpowell/MarqueeLabel",
+      "state" : {
+        "revision" : "877e810534cda9afabb8143ae319b7c3341b121b",
+        "version" : "4.5.0"
+      }
+    },
+    {
       "identity" : "ohhttpstubs",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/AliSoftware/OHHTTPStubs.git",
@@ -110,12 +119,12 @@
       }
     },
     {
-      "identity" : "marqueelabel",
+      "identity" : "rxgesture",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/cbpowell/MarqueeLabel",
+      "location" : "https://github.com/RxSwiftCommunity/RxGesture",
       "state" : {
-        "revision" : "877e810534cda9afabb8143ae319b7c3341b121b",
-        "version" : "4.5.0"
+        "revision" : "1b137c576b4aaaab949235752278956697c9e4a0",
+        "version" : "4.0.4"
       }
     },
     {

@@ -10,19 +10,66 @@ import SnapKit
 
 fileprivate let BORDER_WIDTH: CGFloat = 2
 
-class TextField: UITextField, UITextFieldDelegate {
-    var maxLength = 50 {
-        didSet {
-            setup()
-        }
+// text field 뼈대
+class BaseTextField: UITextField, UITextFieldDelegate {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
     }
     
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    // placeholder
     override var placeholder: String? {
         didSet {
-            self.attributedPlaceholder = NSAttributedString(string: placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.rollpeGray])
+            setupPlaceholder()
         }
     }
     
+    var placeholderColor: UIColor = .rollpeGray {
+        didSet {
+            setupPlaceholder()
+        }
+    }
+    
+    
+    // 글자 수 제한
+    var maxLength = 50 {
+        didSet {
+            self.delegate = self
+        }
+    }
+    
+    private func setup() {
+        self.delegate = self
+        
+        // 입력 설정
+        self.autocorrectionType = .no
+        self.spellCheckingType = .no
+        self.autocapitalizationType = .none
+        self.contentVerticalAlignment = .center
+        self.clearButtonMode = .never
+    }
+    
+    // placeholder 설정
+    private func setupPlaceholder() {
+        self.attributedPlaceholder = NSAttributedString(string: placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+    }
+    
+    // 글자 수 제한
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentString = (textField.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: string)
+        
+        return newString.count <= maxLength
+    }
+}
+
+// text field
+class RoundedBorderTextField: BaseTextField {
     override var text: String? {
         didSet {
             updateBorderColor()
@@ -40,26 +87,15 @@ class TextField: UITextField, UITextFieldDelegate {
     }
     
     private func setup() {
-        self.delegate = self
-        
-        // 입력 설정
-        self.autocorrectionType = .no
-        self.spellCheckingType = .no
-        self.autocapitalizationType = .none
-        
-        self.contentVerticalAlignment = .center
-        
         // 스타일
         self.backgroundColor = .rollpePrimary
-        self.textColor = UIColor.rollpeSecondary
+        self.textColor = .rollpeSecondary
         self.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         self.layer.masksToBounds = true
         
         self.layer.cornerRadius = 16
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.rollpeGray.cgColor
-        
-        self.clearButtonMode = .never
         
         // focus에 따라 스타일 변화
         self.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
@@ -94,14 +130,6 @@ class TextField: UITextField, UITextFieldDelegate {
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
-    }
-    
-    // 글자수 제한
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentString = (textField.text ?? "") as NSString
-        let newString = currentString.replacingCharacters(in: range, with: string)
-        
-        return newString.count <= maxLength
     }
     
     // 최소 높이 설정
@@ -116,108 +144,20 @@ class TextField: UITextField, UITextFieldDelegate {
     }
 }
 
-// picker 전용 textfield
-class TextFieldForPicker: UITextField, UITextFieldDelegate {
-    override var placeholder: String? {
-        didSet {
-            self.attributedPlaceholder = NSAttributedString(string: placeholder ?? "", attributes: [NSAttributedString.Key.foregroundColor: UIColor.rollpeGray])
-        }
-    }
-    
-    override var text: String? {
-        didSet {
-            updateBorderColor()
-        }
-    }
-    
-    override init(frame: CGRect = .zero) {
-        super.init(frame: frame)
-        setup()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setup() {
-        self.delegate = self
-        
-        // 입력 설정
-        self.autocorrectionType = .no
-        self.spellCheckingType = .no
-        self.autocapitalizationType = .none
-        
-        self.contentVerticalAlignment = .center
-        
-        // 스타일
-        self.backgroundColor = .rollpePrimary
-        self.textColor = UIColor.rollpeSecondary
-        self.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        self.layer.masksToBounds = true
-        
-        self.layer.cornerRadius = 16
-        self.layer.borderWidth = 2
-        self.layer.borderColor = UIColor.rollpeGray.cgColor
-        
-        self.clearButtonMode = .never
-        
-        // focus에 따라 스타일 변화
-        self.addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
-        self.addTarget(self, action: #selector(editingDidEnd), for: .editingDidEnd)
-        
-        updateBorderColor()
-    }
-    
-    // focus
-    @objc private func editingDidBegin() {
-        self.layer.borderColor = UIColor.rollpeSecondary.cgColor
-    }
-    
-    // unfocus
-    @objc private func editingDidEnd() {
-        updateBorderColor()
-    }
-    
-    // text 유무에 따른 border update
-    private func updateBorderColor() {
-        if let text = self.text, !text.isEmpty {
-            self.layer.borderColor = UIColor.rollpeSecondary.cgColor
-        } else {
-            self.layer.borderColor = UIColor.rollpeGray.cgColor
-        }
-    }
-    
-    // 여백
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
-    }
-    
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
-    }
-    
+// 수정 방지 전용 textfield
+class RoundedBorderTextFieldPicker: RoundedBorderTextField {
     // 입력 방지
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         return false
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return false
-    }
-    
-    // 최소 높이 설정
-    override var intrinsicContentSize: CGSize {
-        let baseSize = super.intrinsicContentSize
-        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
-        let minimumHeight = font.lineHeight + 16 + 16
-        return CGSize(
-            width: baseSize.width,
-            height: ((text?.isEmpty) != nil) ? minimumHeight : max(baseSize.height, minimumHeight)
-        )
     }
 }
 
-class Picker: UIButton {
+// picker
+class RoundedBorderPicker: UIButton {
     var text: String = "" {
         didSet {
             updateText()
@@ -238,9 +178,10 @@ class Picker: UIButton {
     }
     
     private func setup() {
-        layer.cornerRadius = 16
-        backgroundColor = .rollpePrimary
-        layer.borderWidth = 2
+        self.layer.cornerRadius = 16
+        self.layer.borderWidth = 2
+        self.layer.borderColor = UIColor.rollpeGray.cgColor
+        self.backgroundColor = .rollpePrimary
         
         var config = UIButton.Configuration.plain()
         config.contentInsets = .init(top: 16, leading: 16, bottom: 16, trailing: 16)
@@ -256,7 +197,7 @@ class Picker: UIButton {
         )
         
         self.configuration = config
-        contentHorizontalAlignment = .left
+        self.contentHorizontalAlignment = .left
     }
     
     private func updateText() {

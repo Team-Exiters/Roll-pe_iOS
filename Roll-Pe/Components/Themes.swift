@@ -33,8 +33,8 @@ class themeWhite: UIView {
     }
 }
 
-// 블랙
-class themeBlack: UIView {
+// 추모
+class themeMemorial: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -46,7 +46,7 @@ class themeBlack: UIView {
     }
     
     private func setup() {
-        self.backgroundColor = .rollpeBlack
+        self.backgroundColor = .rollpeThemeMemorial
         self.layer.cornerRadius = 24
         self.layer.masksToBounds = true
         
@@ -56,8 +56,8 @@ class themeBlack: UIView {
     }
 }
 
-// 생일
-class themeBirthday: UIView {
+// 축하
+class themeCongrats: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -69,12 +69,12 @@ class themeBirthday: UIView {
     }
     
     private func setup() {
-        self.backgroundColor = .rollpePink
+        self.backgroundColor = .rollpeThemeCongrats
         self.layer.cornerRadius = 24
         self.layer.masksToBounds = true
         
         let iconView: UIImageView = UIImageView()
-        let icon: UIImage = UIImage.iconBirthdayCake
+        let icon: UIImage = .iconBirthdayCake
         iconView.image = icon
         iconView.contentMode = .scaleAspectFit
         

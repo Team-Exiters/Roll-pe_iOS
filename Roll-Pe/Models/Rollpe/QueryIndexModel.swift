@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct QueryIndexModel: Decodable {
+struct QueryIndexResponseModel: Decodable {
     let status_code: Int
     let message: String
     let code: String

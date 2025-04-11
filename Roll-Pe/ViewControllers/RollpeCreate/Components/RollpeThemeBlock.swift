@@ -93,21 +93,21 @@ class RollpeThemeBlock: UIButton {
                 preview.backgroundColor = .rollpeWhite
                 preview.layer.borderColor = UIColor.rollpeBlack.cgColor
                 preview.layer.borderWidth = 2
-            case "블랙":
-                preview.backgroundColor = .rollpeBlack
-            case "생일":
-                preview.backgroundColor = .rollpePink
-                let birthdayIcon: UIImageView = UIImageView()
-                let birthdayIconImage: UIImage = .iconBirthdayCake
+            case "추모":
+                preview.backgroundColor = .rollpeThemeMemorial
+            case "축하":
+                preview.backgroundColor = .rollpeThemeCongrats
+                let congratsIcon: UIImageView = UIImageView()
+                let congratsIconImage: UIImage = .iconBirthdayCake
                 
-                birthdayIcon.image = birthdayIconImage
-                birthdayIcon.contentMode = .scaleAspectFit
-                preview.addSubview(birthdayIcon)
+                congratsIcon.image = congratsIconImage
+                congratsIcon.contentMode = .scaleAspectFit
+                preview.addSubview(congratsIcon)
                 
-                birthdayIcon.snp.makeConstraints { make in
+                congratsIcon.snp.makeConstraints { make in
                     make.center.equalToSuperview()
                     make.width.equalToSuperview().multipliedBy(0.575)
-                    make.height.equalTo(birthdayIcon.snp.width).dividedBy(getImageRatio(image: birthdayIconImage))
+                    make.height.equalTo(congratsIcon.snp.width).dividedBy(getImageRatio(image: congratsIconImage))
                 }
             default: break
             }
