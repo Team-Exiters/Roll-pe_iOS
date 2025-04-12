@@ -24,8 +24,7 @@ class BadgeDDay: UILabel {
     private func setup() {
         if let font = UIFont(name: "Hakgyoansim-Dunggeunmiso-R", size: 12) {
             self.font = font
-        }
-        else{
+        } else{
             self.font = UIFont.systemFont(ofSize: 12)
         }
         self.textColor = .rollpePrimary
@@ -33,6 +32,10 @@ class BadgeDDay: UILabel {
         self.backgroundColor = .rollpeMain
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
+        
+        // 우선순위 최대로 적용
+        self.setContentCompressionResistancePriority(.required, for: .horizontal)
+        self.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     override func drawText(in rect: CGRect) {
@@ -72,6 +75,10 @@ class BadgePublic: UILabel {
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         self.text = "공개"
+        
+        // 우선순위 최대로 적용
+        self.setContentCompressionResistancePriority(.required, for: .horizontal)
+        self.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     override func drawText(in rect: CGRect) {
@@ -110,6 +117,10 @@ class BadgePrivate: UILabel {
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         self.text = "비공개"
+        
+        // 우선순위 최대로 적용
+        self.setContentCompressionResistancePriority(.required, for: .horizontal)
+        self.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     override func drawText(in rect: CGRect) {
