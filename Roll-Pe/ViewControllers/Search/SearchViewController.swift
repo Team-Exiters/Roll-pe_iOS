@@ -151,8 +151,8 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         setUI()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
         rollpeTableView.dataSource = nil
         
@@ -211,7 +211,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.bottom.equalToSuperview()
-            make.width.equalToSuperview().inset(20)
+            make.width.equalToSuperview().offset(-40)
             make.height.greaterThanOrEqualTo(UIScreen.main.bounds.height - (safeareaTop + safeareaBottom))
         }
     }
