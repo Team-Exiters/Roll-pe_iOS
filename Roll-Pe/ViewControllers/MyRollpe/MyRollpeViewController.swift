@@ -119,8 +119,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
         
         contentView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalToSuperview()
             make.width.equalToSuperview().offset(-40)
         }
@@ -133,8 +132,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
         
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     

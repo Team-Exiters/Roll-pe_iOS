@@ -186,8 +186,7 @@ class MainAfterSignInViewController: UIViewController {
         
         primaryButton.snp.makeConstraints { make in
             make.top.equalTo(heartCountLabel.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
         
@@ -204,8 +203,7 @@ class MainAfterSignInViewController: UIViewController {
         
         secondaryButton.snp.makeConstraints { make in
             make.top.equalTo(primaryButton.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
         
@@ -249,8 +247,7 @@ class MainAfterSignInViewController: UIViewController {
         
         rollpeCollectionView.snp.makeConstraints { make in
             make.top.equalTo(hotLabel.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(44).priority(.low)
             make.height.equalTo(0)
         }

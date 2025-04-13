@@ -130,8 +130,7 @@ class ChangePasswordViewController: UIViewController {
         
         changePasswordTextField.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(52)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
@@ -140,8 +139,7 @@ class ChangePasswordViewController: UIViewController {
         
         confirmPasswordTextField.snp.makeConstraints { make in
             make.top.equalTo(changePasswordTextField.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
@@ -150,8 +148,7 @@ class ChangePasswordViewController: UIViewController {
         
         changeConfirmButton.snp.makeConstraints { make in
             make.top.equalTo(confirmPasswordTextField.snp.bottom).offset(32)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
