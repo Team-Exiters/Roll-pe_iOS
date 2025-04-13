@@ -99,16 +99,14 @@ class RollpeItemView: UIView {
         bottomSection.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
+            make.horizontalEdges.equalToSuperview().inset(12)
         }
         
         // 이름
         bottomSection.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(2)
-            make.leading.equalToSuperview().offset(12)
-            make.trailing.equalToSuperview().offset(-12)
+            make.horizontalEdges.equalToSuperview().inset(12)
             make.bottom.equalToSuperview().inset(12)
         }
     }

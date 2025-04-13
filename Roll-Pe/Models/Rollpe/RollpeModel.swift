@@ -49,7 +49,7 @@ struct RollpeDataModel: Decodable {
     let id: Int
     let code: String
     let title: String
-    let host: RollpeHostDataModel
+    let host: RollpeUserModel
     let receive: RollpeReceiveDataModel
     let viewStat: Bool
     let theme: String
@@ -72,26 +72,27 @@ struct RollpeV1DataModel: Decodable {
     let id: Int
     let code: String
     let title: String
-    let host: RollpeHostDataModel
+    let host: RollpeUserModel
     let receive: RollpeReceiveDataModel
     let viewStat: Bool
     let theme: String
     let size: String
     let ratio: String
-    let createdAt: String
     let hearts: HeartResponseModel
-}
-
-// 방장
-struct RollpeHostDataModel: Decodable {
-    let id: Int
-    let identifyCode: String
-    let name: String
+    let invitingUser: [RollpeUserModel]
+    let createdAt: String
 }
 
 // 수신자
 struct RollpeReceiveDataModel: Decodable {
-    let receiver: ReceiverDataModel
+    let receiver: RollpeUserModel
     let receivingDate: String
     let receivingStat: Int
+}
+
+// 타 유저모델
+struct RollpeUserModel: Decodable {
+    let id: Int
+    let identifyCode: String
+    let name: String
 }

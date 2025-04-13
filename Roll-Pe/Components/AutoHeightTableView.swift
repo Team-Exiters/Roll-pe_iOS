@@ -5,7 +5,6 @@
 //  Created by 김태은 on 3/7/25.
 //
 
-import Foundation
 import UIKit
 
 class AutoHeightTableView: UITableView {

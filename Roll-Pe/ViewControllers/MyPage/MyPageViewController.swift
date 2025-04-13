@@ -6,105 +6,104 @@
 //
 
 import UIKit
-import SwiftUI
 import SnapKit
 import RxSwift
+import RxGesture
+import SwiftUI
 
-
-//절대 절대 절대  손대지말것  modify자체를 하면 안댐 띄어쓰기도 금지, 필요시 말해서 동혁이가 직접 수정하도록 유도
 class MyPageViewController: UIViewController {
+    private let disposeBag = DisposeBag()
+    private let viewModel = UserViewModel()
+    private let keychain = Keychain.shared
     
-    let disposeBag = DisposeBag()
+    private lazy var provider = keychain.read(key: "PROVIDER")
     
-    let userViewModel = UserViewModel()
+    // MARK: - 요소
     
-    let keychain = Keychain.shared
-    
-    private var myStatus : MyStatusModel? = nil
-    
-    private var userData : UserDataModel? = nil
-    
-    private var myRollpeListData : [RollpeListItemModel]? = nil
-    
-    private var invitedRollpeListData : [RollpeListItemModel]? = nil
-    
-    private let scrollView = UIScrollView()
+    private let scrollView: UIScrollView = {
+        let sv = UIScrollView()
+        sv.bounces = false
+        sv.showsVerticalScrollIndicator = false
+        
+        return sv
+    }()
     
     private let contentView = UIView()
     
+    // 사이드 메뉴
+    private let buttonSideMenu = ButtonSideMenu()
     private let sideMenuView = SidemenuView(menuIndex: 4)
     
-    private let buttonSideMenu = ButtonSideMenu()
-    
+    // 제목
     private let titleLabel : UILabel = {
         let label = UILabel()
         label.text = "마이페이지"
         label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
+        label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
         } else {
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         }
+        
         return label
     }()
-    private let horizontalStackView: UIStackView = {
-         let stackView = UIStackView()
-         stackView.axis = .horizontal
-         stackView.spacing = 8
-         stackView.alignment = .center
-         stackView.distribution = .fill
-         return stackView
-     }()
     
-    private let nicknameLabel : UILabel = {
+    // 닉네임, 소셜로그인 뱃지 stack view
+    private let horizontalStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        
+        return stackView
+    }()
+    
+    // 닉네임
+    private let nicknameLabel: UILabel = {
         let label = UILabel()
-        label.text = ""
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 24) {
             label.font = customFont
         } else {
             label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         }
+        
         return label
     }()
     
-    private let userUIDLabel : UILabel = {
+    private let identifyCodeLabel: UILabel = {
         let label = UILabel()
-        label.text = ""
         label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = UIColor(named: "rollpe_secondary")
+        label.textColor = .rollpeSecondary
+        
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14) {
             label.font = customFont
         } else {
             label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         }
+        
         return label
     }()
     
-    private lazy var rollpeCountLabel: CountLabel = {
-        let count = myStatus?.data.host ?? 0
-        return CountLabel(count: count,type: .rollpe)
-    }()
-
-    private lazy var heartCountLabel : CountLabel = {
-        let count = myStatus?.data.heart ?? 0
-        return CountLabel(count: count, type: .heart)
-    }()
+    private let rollpeCountLabel: CountLabel = CountLabel(type: .rollpe)
+    
+    private let heartCountLabel: CountLabel = CountLabel(type: .heart)
     
     private let verticalStackView: UIStackView = {
-         let stackView = UIStackView()
+        let stackView = UIStackView()
         stackView.axis = .vertical
-         stackView.spacing = 16
+        stackView.spacing = 16
         stackView.alignment = .leading
-         stackView.distribution = .fill
-         return stackView
-     }()
-
+        stackView.distribution = .fill
+        return stackView
+    }()
+    
+    // MARK: - 생명주기
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -112,46 +111,39 @@ class MyPageViewController: UIViewController {
         view.backgroundColor = .rollpePrimary
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
-        // Bind 설정
-        bind()
-        
         // UI 설정
         setupScrollView()
         setupContentView()
-        setupSideMenu()
         setupTitleLabel()
-        setupNicknameAndLoginBadge()
-        setupUserID()
+        setupNicknameAndSocialBadge()
+        setupIdentifyCodeLabel()
         setupRollpeCountLabel()
         setupHeartCountLabel()
         setupListSection()
         setupFooter()
+        
+        addSideMenuButton()
     }
     
-    private func setupScrollView() {
-        view.addSubview(scrollView)
-        scrollView.bounces = false
-        scrollView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.verticalEdges.equalToSuperview()
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Bind 설정
+        bind()
     }
     
-    private func setupContentView() {
-        scrollView.addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-        }
-    }
-
+    // MARK: - UI 설정
     
-    private func setupSideMenu() {
-        contentView.addSubview(buttonSideMenu)
+    // 사이드 메뉴
+    private func addSideMenuButton() {
+        // 사이드 메뉴
+        view.addSubview(buttonSideMenu)
+        
         buttonSideMenu.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(80)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             make.trailing.equalToSuperview().inset(20)
         }
+        
         buttonSideMenu.rx.tap
             .subscribe(onNext: {
                 self.view.addSubview(self.sideMenuView)
@@ -160,25 +152,48 @@ class MyPageViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    // 스크롤 뷰
+    private func setupScrollView() {
+        view.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.horizontalEdges.bottom.equalToSuperview()
+        }
+    }
+    
+    // 내부 뷰
+    private func setupContentView() {
+        scrollView.addSubview(contentView)
+        
+        contentView.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-safeareaBottom)
+            make.width.equalToSuperview()
+            make.height.greaterThanOrEqualToSuperview()
+        }
+    }
+    
+    // 제목
     private func setupTitleLabel(){
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints{ make in
-            make.top.equalTo(buttonSideMenu).offset(28)
+            make.top.equalToSuperview().offset(76)
             make.centerX.equalToSuperview()
         }
     }
     
-    private func setupNicknameAndLoginBadge() {
+    // 닉네임, 소셜뱃지
+    private func setupNicknameAndSocialBadge() {
         let nickname = self.keychain.read(key: "NAME")
-        let provider = self.keychain.read(key: "PROVIDER")
         
         nicknameLabel.text = "\(nickname ?? "")님"
         
         contentView.addSubview(horizontalStackView)
         horizontalStackView.addArrangedSubview(nicknameLabel)
-
+        
         if let provider = provider {
-            horizontalStackView.addArrangedSubview(LoginBadgeView(provider:provider))
+            horizontalStackView.addArrangedSubview(SocialBadgeView(provider: provider))
         }
         
         horizontalStackView.snp.makeConstraints { make in
@@ -187,24 +202,29 @@ class MyPageViewController: UIViewController {
         }
     }
     
-    private func setupUserID(){
-        let userID = self.keychain.read(key: "USER_ID")
-        userUIDLabel.text = userID ?? ""
-        contentView.addSubview(userUIDLabel)
-        userUIDLabel.snp.makeConstraints{make in
+    // identify code 라벨
+    private func setupIdentifyCodeLabel(){
+        let identifyCode = self.keychain.read(key: "IDENTIFY_CODE")
+        identifyCodeLabel.text = identifyCode ?? ""
+        
+        contentView.addSubview(identifyCodeLabel)
+        
+        identifyCodeLabel.snp.makeConstraints{make in
             make.top.equalTo(horizontalStackView.snp.bottom).offset(4)
             make.leading.equalToSuperview().offset(20)
         }
     }
     
+    // 롤페 작성 횟수
     private func setupRollpeCountLabel(){
         contentView.addSubview(rollpeCountLabel)
-        rollpeCountLabel.snp.makeConstraints{make in
-            make.top.equalTo(userUIDLabel.snp.bottom).offset(12)
+        rollpeCountLabel.snp.makeConstraints{ make in
+            make.top.equalTo(identifyCodeLabel.snp.bottom).offset(12)
             make.leading.equalToSuperview().offset(20)
         }
     }
     
+    // 마음 남긴 횟수
     private func setupHeartCountLabel(){
         contentView.addSubview(heartCountLabel)
         heartCountLabel.snp.makeConstraints{ make in
@@ -213,117 +233,191 @@ class MyPageViewController: UIViewController {
         }
     }
     
+    // 메뉴 목록
     private func setupListSection() {
-        contentView.addSubview(verticalStackView)
-        let buttonTitles = [
-            "VIP 구매",
-            "비밀번호 변경",
-            "내 롤페",
-            "초대받은 롤페",
-            "로그아웃",
-            "회원탈퇴"
-        ]
-        for (index, title) in buttonTitles.enumerated() {
-            let button = ListSectionButton(text: title)
-            button.tag = index
-            button.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
-            if title == "회원탈퇴" {
-                button.setTitleColor(UIColor(named: "rollpe_gray"), for: .normal)
-                  }
-            verticalStackView.addArrangedSubview(button)
+        struct buttonStruct {
+            let title: String
+            let tap: () -> Void
         }
+        
+        contentView.addSubview(verticalStackView)
+        
+        let buttons: [buttonStruct] = [
+            // VIP는 현재 제외
+            buttonStruct(title: "비밀번호 변경", tap: changePasswordTapped),
+            buttonStruct(title: "내 롤페", tap: myRollpeTapped),
+            buttonStruct(title: "초대받은 롤페", tap: invitedRollpeTapped),
+            buttonStruct(title: "로그아웃", tap: logoutTapped),
+            buttonStruct(title: "회원탈퇴", tap: withdrawTapped)
+        ]
+        
+        for button in buttons {
+            if button.title == "비밀번호 변경" && provider != nil {
+                continue
+            }
+            
+            let label: UILabel = {
+                let label = UILabel()
+                label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+                label.textColor = .rollpeSecondary
+                label.text = button.title
+                
+                return label
+            }()
+            
+            label.rx.tapGesture()
+                .when(.recognized)
+                .subscribe(onNext: { _ in
+                    button.tap()
+                })
+                .disposed(by: disposeBag)
+            
+            if button.title == "회원탈퇴" {
+                label.textColor = .rollpeGray
+            }
+            
+            verticalStackView.addArrangedSubview(label)
+        }
+        
         verticalStackView.snp.makeConstraints { make in
             make.top.equalTo(heartCountLabel.snp.bottom).offset(48)
             make.leading.equalToSuperview().offset(20)
         }
     }
-
-    @objc private func buttonTapped(_ sender: UIButton) {
-        switch sender.tag {
-        case 0:
-            vipPurchaseTapped()
-        case 1:
-            changePasswordTapped()
-        case 2:
-            myRollpeTapped()
-        case 3:
-            invitedRollpeTapped()
-        case 4:
-            logoutTapped()
-        case 5:
-            withdrawTapped()
-        default:
-            break
-        }
-    }
-
+    
+    // VIP 구매
     private func vipPurchaseTapped() {
-
-    }
-    private func changePasswordTapped() {
-        let changePasswordVC = ChangePasswordViewController()
-        navigationController?.pushViewController(changePasswordVC, animated: true)
-    }
-    private func myRollpeTapped() {
-        let vc = MyRollpeViewController()
-        userViewModel.getMyRollpes()
-        vc.rollpeListData = myRollpeListData ?? []
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    private func invitedRollpeTapped() {
-        let vc = InvitedRollpeViewController()
-        userViewModel.getInvitedRollpes()
-        vc.rollpeListData = invitedRollpeListData ?? []
-        navigationController?.pushViewController(vc, animated: true)
-    }
-    private func logoutTapped() {
-        userViewModel.logout()
-    }
-    private func withdrawTapped() {
-        let alert = UIAlertController(title: "회원 탈퇴", message: "정말 회원 탈퇴를 진행하시겠습니까?", preferredStyle: .alert)
-           let confirmAction = UIAlertAction(title: "확인", style: .destructive) { [weak self] _ in
-               self?.userViewModel.deleteAccount()
-           }
-           let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-           alert.addAction(confirmAction)
-           alert.addAction(cancelAction)
-           self.present(alert, animated: true, completion: nil)
+        
     }
     
-    private func setupFooter() {
+    // 비밀번호 변경
+    private func changePasswordTapped() {
+        let vc = ChangePasswordViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // 내 롤페
+    private func myRollpeTapped() {
+        let vc = MyRollpeViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // 초대받은 롤페
+    private func invitedRollpeTapped() {
+        let vc = InvitedRollpeViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // 로그아웃
+    private func logoutTapped() {
+        let alert = UIAlertController(title: "경고", message: "로그아웃을 하시겠습니까?", preferredStyle: .alert)
+        
+        let confirm = UIAlertAction(title: "확인", style: .destructive) { _ in
+            self.viewModel.logout()
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alert.addAction(confirm)
+        alert.addAction(cancel)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    // 회원탈퇴
+    private func withdrawTapped() {
+        let alert = UIAlertController(title: "경고", message: "정말 회원탈퇴를 진행하시겠습니까?", preferredStyle: .alert)
+        
+        let confirm = UIAlertAction(title: "확인", style: .destructive) { _ in
+            self.viewModel.deleteAccount()
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        alert.addAction(confirm)
+        alert.addAction(cancel)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    // 푸터
+    private func setupFooter(){
+        let spacer = Spacer(axis: .vertical)
+        
+        contentView.addSubview(spacer)
+        
+        spacer.snp.makeConstraints { make in
+            make.top.equalTo(verticalStackView.snp.bottom)
+            make.horizontalEdges.equalToSuperview()
+        }
+        
         let footer = Footer()
         contentView.addSubview(footer)
-        footer.snp.makeConstraints{make in
-            make.top.equalTo(verticalStackView.snp.bottom).offset(164)
-            make.leading.trailing.equalToSuperview()
+        
+        footer.snp.makeConstraints{ make in
+            make.top.equalTo(spacer.snp.bottom)
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
         }
     }
     
+    // MARK: - bind
+    
     private func bind() {
-        userViewModel.getMyStatus()
+        viewModel.getMyStatus()
         
-        userViewModel.myStatus
-            .subscribe(onNext: { [weak self] model in
-                self?.myStatus = model
+        // 내 상태
+        viewModel.myStatus
+            .map { model in
+                return model?.data.host ?? 0
+            }
+            .bind(to: rollpeCountLabel.rx.count)
+            .disposed(by: disposeBag)
+        
+        viewModel.myStatus
+            .map { model in
+                return model?.data.heart ?? 0
+            }
+            .bind(to: heartCountLabel.rx.count)
+            .disposed(by: disposeBag)
+        
+        let output = viewModel.output()
+        
+        output.successAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showWithdrawSuccessAlert(message: message)
+                }
             })
             .disposed(by: disposeBag)
         
-        userViewModel.myRollpe
-            .subscribe(onNext:{[weak self] model in
-                self?.myRollpeListData = model
-            })
-            .disposed(by: disposeBag)
-        
-        userViewModel.invitedRollpe
-            .subscribe(onNext:{ [weak self] model in
-                self?.invitedRollpeListData = model
+        output.errorAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showErrorAlert(message: message)
+                }
             })
             .disposed(by: disposeBag)
     }
     
+    // 회원탈퇴 완료 알림창
+    private func showWithdrawSuccessAlert(message: String) {
+        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.viewModel.logout()
+        }))
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // 오류 알림창
+    private func showErrorAlert(message: String) {
+        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
+#if DEBUG
 struct MyPageViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
@@ -331,16 +425,16 @@ struct MyPageViewControllerPreview: PreviewProvider {
         }
     }
 }
+#endif
 
 //여기서부터 MyPageViewController 전용 컴포넌트
-class LoginBadgeView: UIView {
+class SocialBadgeView: UIView {
     private let imageView = UIImageView()
-    init(provider: String) {
-        super.init(frame: .zero)
+    
+    init(provider: String, frame: CGRect = .zero) {
+        super.init(frame: frame)
         setupView()
-        configureImage(for: provider)
-        configureBackground(for: provider)
-        configureBorder(for: provider)
+        configure(login: provider)
     }
     
     required init?(coder: NSCoder) {
@@ -350,8 +444,8 @@ class LoginBadgeView: UIView {
     
     private func setupView() {
         self.snp.makeConstraints { make in
-              make.width.height.equalTo(20)
-          }
+            make.size.equalTo(20)
+        }
         self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         
@@ -361,79 +455,25 @@ class LoginBadgeView: UIView {
         
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(8)
+            make.size.equalTo(8)
         }
     }
     
-    private func configureImage(for login: String) {
-        switch login.lowercased() {
+    private func configure(login: String) {
+        switch login {
         case "kakao":
             imageView.image = UIImage(named: "icon_kakao")
+            self.backgroundColor = .kakao
         case "google":
             imageView.image = UIImage(named: "icon_google")
+            self.backgroundColor = .rollpeWhite
+            self.layer.borderWidth = 1
+            self.layer.borderColor = UIColor.rollpeBlack.cgColor
         case "apple":
             imageView.image = UIImage(named: "icon_apple")
+            self.backgroundColor = .rollpeBlack
         default:
             print("이미지 없음")
         }
     }
-    
-    private func configureBackground(for login: String) {
-        switch login.lowercased() {
-        case "kakao":
-            self.backgroundColor = .kakao
-        case "google":
-            self.backgroundColor = .rollpePrimary
-        case "apple":
-            self.backgroundColor = .rollpeSecondary
-        default:
-           print("로그인데이터 없음")
-        }
-    }
-    
-    private func configureBorder(for login: String) {
-          if login.lowercased() == "google" {
-              self.layer.borderWidth = 1
-              self.layer.borderColor = UIColor(named: "rollpe_secondary")?.cgColor
-          } else {
-              self.layer.borderWidth = 0
-              self.layer.borderColor = nil
-          }
-      }
 }
-
-class ListSectionButton: UIButton {
-    
-    init(text: String) {
-        super.init(frame: .zero)
-        setupButton()
-        self.setTitle(text, for: .normal) // 버튼 타이틀 설정
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupButton()
-    }
-    
-    private func setupButton() {
-        self.setTitleColor(UIColor(named: "rollpe_secondary"), for: .normal)
-        self.titleLabel?.numberOfLines = 1
-        self.contentHorizontalAlignment = .left
-        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
-            self.titleLabel?.font = customFont
-            print("폰트로드완료")
-        } else {
-            print("커스텀 폰트를 로드하지 못했습니다.")
-            self.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        }
-    }
-}
-
-extension UIViewController {
-    func setupDefaultAppearance() {
-        navigationItem.hidesBackButton = true
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        view.backgroundColor = .rollpePrimary
-    }
-}
-

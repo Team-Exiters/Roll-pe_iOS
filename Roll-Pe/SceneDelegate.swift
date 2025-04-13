@@ -18,25 +18,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let keychain = Keychain.shared
         
+        print(keychain.read(key: "ACCESS_TOKEN"))
+        
         window = UIWindow(windowScene: windowScene)
         
-        if keychain.read(key: "REFRESH_TOKEN") != nil {
-            let vc = MainAfterSignInViewController()
-            let navVC = UINavigationController(rootViewController: vc)
-            navVC.navigationBar.isHidden = true
-            navVC.hideKeyboardWhenTappedAround()
-            
-            window?.rootViewController = navVC
-            window?.makeKeyAndVisible()
+        let navVC: UINavigationController
+        
+        if let keepSignIn = UserDefaults.standard.object(forKey: "KEEP_SIGN_IN") as? Bool {
+            if keepSignIn, keychain.read(key: "REFRESH_TOKEN") != nil {
+                let vc = MainAfterSignInViewController()
+                navVC = UINavigationController(rootViewController: vc)
+            } else {
+                let userViewModel = UserViewModel()
+                userViewModel.logout()
+                
+                let vc = MainBeforeSignInViewController()
+                navVC = UINavigationController(rootViewController: vc)
+            }
         } else {
             let vc = MainBeforeSignInViewController()
-            let navVC = UINavigationController(rootViewController: vc)
-            navVC.navigationBar.isHidden = true
-            navVC.hideKeyboardWhenTappedAround()
-            
-            window?.rootViewController = navVC
-            window?.makeKeyAndVisible()
+            navVC = UINavigationController(rootViewController: vc)
         }
+        
+        navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
+        window?.rootViewController = navVC
+        window?.makeKeyAndVisible()
         
         // 토큰 만료시
         NotificationCenter.default.addObserver(self, selector: #selector(moveToMainBeforeSignInView), name: Notification.Name(rawValue: "LOGOUT"), object: nil)

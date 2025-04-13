@@ -22,6 +22,12 @@ let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
 // 서버 IP 주소
 let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
 
+// 이메일 정규식
+let emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
+
+// 비밀번호 정규식(8자 이상, 대소문자, 숫자, 특수문자를 포함)
+let passwordRegex = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}$"
+
 // 이미지 비율 계산
 func getImageRatio(image: UIImage) -> CGFloat {
     return image.size.width / image.size.height

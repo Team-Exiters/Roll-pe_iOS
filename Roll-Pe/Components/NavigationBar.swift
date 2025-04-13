@@ -9,9 +9,10 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 
 class NavigationBar: UIView {
-    let disposeBag: DisposeBag = DisposeBag()
+    private let disposeBag: DisposeBag = DisposeBag()
     weak var parentViewController: UIViewController?
     
     var menuIndex: Int = 0
@@ -20,7 +21,7 @@ class NavigationBar: UIView {
     var showSideMenu = false {
         didSet {
             if showSideMenu {
-                setup()
+                updateSideMenu()
             }
         }
     }
@@ -31,7 +32,8 @@ class NavigationBar: UIView {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setup()
     }
     
     private func setup() {
@@ -54,9 +56,10 @@ class NavigationBar: UIView {
             .disposed(by: disposeBag)
         
         // 로고
-        let logo: UIButton = UIButton()
+        let logo: UIImageView = UIImageView()
         let logoImage: UIImage = .imgLogo
-        logo.setImage(logoImage, for: .normal)
+        logo.image = logoImage
+        logo.contentMode = .scaleAspectFit
         
         self.addSubview(logo)
         
@@ -66,35 +69,36 @@ class NavigationBar: UIView {
             make.center.equalToSuperview()
         }
         
-        logo.rx.tap
-            .subscribe(onNext: {
+        logo.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
                 self.goToHome()
             })
             .disposed(by: disposeBag)
         
-        // 사이드 메뉴
-        if showSideMenu {
-            let sideMenuView = SidemenuView(menuIndex: menuIndex)
-            let buttonSideMenu: UIButton = ButtonSideMenu()
-            
-            self.addSubview(buttonSideMenu)
-            
-            buttonSideMenu.snp.makeConstraints { make in
-                make.trailing.equalToSuperview()
-                make.centerY.equalToSuperview()
-            }
-            
-            buttonSideMenu.rx.tap
-                .subscribe(onNext: {
-                    self.parentViewController?.view.addSubview(sideMenuView)
-                    sideMenuView.showMenu()
-                })
-                .disposed(by: disposeBag)
-        }
-        
         self.snp.makeConstraints { make in
             make.height.equalTo(68)
         }
+    }
+    
+    // 사이드 메뉴
+    private func updateSideMenu() {
+        let sideMenuView = SidemenuView(menuIndex: menuIndex)
+        let buttonSideMenu = ButtonSideMenu()
+        
+        self.addSubview(buttonSideMenu)
+        
+        buttonSideMenu.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+        
+        buttonSideMenu.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.parentViewController?.view.addSubview(sideMenuView)
+                sideMenuView.showMenu()
+            })
+            .disposed(by: disposeBag)
     }
     
     // 뒤로가기
@@ -106,6 +110,15 @@ class NavigationBar: UIView {
     
     // 홈으로 가기
     private func goToHome() {
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+            return
+        }
         
+        let navVC = UINavigationController(rootViewController: MainAfterSignInViewController())
+        navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
+        
+        sceneDelegate.window?.rootViewController = navVC
+        sceneDelegate.window?.makeKeyAndVisible()
     }
 }

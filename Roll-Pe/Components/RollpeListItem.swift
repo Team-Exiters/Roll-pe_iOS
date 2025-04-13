@@ -7,92 +7,6 @@
 
 import UIKit
 
-func RollpeListItem(_ model: RollpeListItemModel) -> UIStackView {
-    let view: UIStackView = UIStackView()
-    view.axis = .vertical
-    view.spacing = 12
-    view.alignment = .leading
-    
-    // MARK: - 상태
-    
-    let statusesView: UIStackView = UIStackView()
-    statusesView.axis = .horizontal
-    statusesView.spacing = 4
-    statusesView.alignment = .center
-    
-    view.addArrangedSubview(statusesView)
-    
-    // 공개 야부
-    let privacy: UILabel = model.isPublic ? BadgePublic() : BadgePrivate()
-    
-    statusesView.addArrangedSubview(privacy)
-    
-    // d-day
-    let dday = BadgeDDay()
-    dday.text = dateToDDay(model.receiverDate)
-    
-    statusesView.addArrangedSubview(dday)
-    
-    
-    // MARK: - 정보
-    
-    let contentView: UIStackView = UIStackView()
-    contentView.axis = .horizontal
-    contentView.spacing = 12
-    contentView.alignment = .center
-    
-    view.addArrangedSubview(contentView)
-    
-    // 테마
-    let theme: UIView = {
-        switch model.theme {
-        case "화이트":
-            return themeWhite()
-        case "추모":
-            return themeMemorial()
-        case "축하":
-            return themeCongrats()
-        default:
-            return themeWhite()
-        }
-    }()
-    
-    contentView.addArrangedSubview(theme)
-    
-    // 정보
-    let infoView: UIStackView = UIStackView()
-    infoView.axis = .vertical
-    infoView.spacing = 8
-    infoView.alignment = .leading
-    infoView.clipsToBounds = true
-    
-    contentView.addArrangedSubview(infoView)
-    
-    // 제목
-    let title: UILabel = UILabel()
-    title.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-    title.textColor = .rollpeSecondary
-    title.textAlignment = .left
-    title.text = model.title
-    title.numberOfLines = 0
-    title.lineBreakMode = .byTruncatingTail
-    
-    infoView.addArrangedSubview(title)
-    
-    // 내용
-    let description: UILabel = UILabel()
-    description.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
-    description.textColor = .rollpeGray
-    description.textAlignment = .left
-    description.text = "\(model.createdUser) 주최 | \(dateToYYYYMD(model.createdAt)) 생성"
-    
-    infoView.addArrangedSubview(description)
-    
-    return view
-}
-
-// 이걸로 변경
-/*
 class RollpeListItem: UIStackView {
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -108,7 +22,7 @@ class RollpeListItem: UIStackView {
     private var viewStatView: UIView = UIView()
     
     // 테마
-    private var themeView: UIView = UIView()
+    private var themeView: UIView = themeWhite()
     
     // 상태
     private let statusesView: UIStackView = {
@@ -150,7 +64,7 @@ class RollpeListItem: UIStackView {
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeSecondary
         label.textAlignment = .left
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         
         return label
@@ -162,6 +76,8 @@ class RollpeListItem: UIStackView {
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         label.textColor = .rollpeGray
         label.textAlignment = .left
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
         
         return label
     }()
@@ -175,6 +91,8 @@ class RollpeListItem: UIStackView {
         statusesView.addArrangedSubview(dday)
         
         self.addArrangedSubview(contentView)
+        
+        contentView.addArrangedSubview(themeView)
         
         contentView.addArrangedSubview(infoView)
         infoView.addArrangedSubview(title)
@@ -194,7 +112,7 @@ class RollpeListItem: UIStackView {
         
         // 테마
         contentView.removeArrangedSubview(themeView)
-        themeView.removeFromSuperview()
+        contentView.removeArrangedSubview(infoView)
         
         themeView = {
             switch model.theme {
@@ -206,6 +124,7 @@ class RollpeListItem: UIStackView {
         }()
         
         contentView.addArrangedSubview(themeView)
+        contentView.addArrangedSubview(infoView)
         
         // 제목
         title.text = model.title
@@ -217,7 +136,6 @@ class RollpeListItem: UIStackView {
         desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
     }
 }
-*/
 
 class RollpeSearchListItem: UIStackView {
     override init(frame: CGRect) {
@@ -263,7 +181,7 @@ class RollpeSearchListItem: UIStackView {
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeSecondary
         label.textAlignment = .left
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         
         return label
@@ -275,6 +193,8 @@ class RollpeSearchListItem: UIStackView {
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         label.textColor = .rollpeGray
         label.textAlignment = .left
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
         
         return label
     }()
@@ -320,5 +240,62 @@ class RollpeSearchListItem: UIStackView {
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
         desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
+    }
+}
+
+// table view cell
+class RollpeListTableViewCell: UITableViewCell {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+    
+    private let rollpeListItem = RollpeListItem()
+    
+    private let separatorView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .rollpeGray
+        view.layer.cornerRadius = 1
+        
+        return view
+    }()
+    
+    private func setup() {
+        self.selectionStyle = .none
+        self.backgroundColor = .clear
+        
+        contentView.addSubview(rollpeListItem)
+    }
+    
+    func configure(model: RollpeDataModel, isLast: Bool) {
+        rollpeListItem.configure(model: model)
+        separatorView.removeFromSuperview()
+        
+        if isLast {
+            rollpeListItem.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+                make.verticalEdges.equalToSuperview().offset(24)
+            }
+            
+        } else {
+            rollpeListItem.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(24)
+                make.horizontalEdges.equalToSuperview()
+            }
+            
+            contentView.addSubview(separatorView)
+            
+            separatorView.snp.remakeConstraints { make in
+                make.top.equalTo(rollpeListItem.snp.bottom).offset(24)
+                make.horizontalEdges.equalToSuperview()
+                make.bottom.equalToSuperview().priority(.low)
+                make.height.equalTo(2)
+            }
+        }
     }
 }

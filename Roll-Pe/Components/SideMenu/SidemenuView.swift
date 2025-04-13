@@ -261,6 +261,7 @@ class SidemenuView: UIView {
             .disposed(by: disposeBag)
         
         // MARK: - 제스쳐
+        
         let panGesture = UIPanGestureRecognizer()
         menuView.addGestureRecognizer(panGesture)
         

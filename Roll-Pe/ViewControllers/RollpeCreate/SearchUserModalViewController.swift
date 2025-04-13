@@ -137,8 +137,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         view.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.center.equalToSuperview()
             make.height.equalTo(UIScreen.main.bounds.height * 0.62)
         }
@@ -177,8 +176,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         
         searchBar.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(28)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
@@ -190,8 +188,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(20)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
@@ -202,8 +199,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         sendButton.snp.makeConstraints{ make in
             make.top.equalTo(tableView.snp.bottom).offset(28)
             make.bottom.equalToSuperview().inset(20)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
@@ -344,8 +340,7 @@ class SearchUserModalTableViewCell: UITableViewCell {
             
             separatorView.snp.remakeConstraints { make in
                 make.top.equalTo(titleLabel.snp.bottom).offset(12)
-                make.leading.equalToSuperview().offset(16)
-                make.trailing.equalToSuperview().offset(-16)
+                make.horizontalEdges.equalToSuperview().inset(16)
                 make.bottom.equalToSuperview().priority(.low)
                 make.height.equalTo(2)
             }

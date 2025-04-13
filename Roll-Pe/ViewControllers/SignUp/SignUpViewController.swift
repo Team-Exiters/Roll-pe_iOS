@@ -72,14 +72,6 @@ class SignUpViewController: UIViewController {
         return label
     }()
     
-    // Spacer
-    private let spacer: UIView = {
-        let view = UIView()
-        view.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
-        return view
-    }()
-    
     // 이메일
     private let email: RoundedBorderTextField = {
         let textField = RoundedBorderTextField()
@@ -160,6 +152,9 @@ class SignUpViewController: UIViewController {
         
         return sv
     }()
+    
+    // Spacer
+    private let spacer = Spacer(axis: .horizontal)
     
     private let checkboxConfirmPrivacy: Checkbox = {
         let checkbox = Checkbox()
@@ -254,8 +249,7 @@ class SignUpViewController: UIViewController {
         
         contentView.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
     }

@@ -167,8 +167,7 @@ class HeartV1WriteModalViewController: UIViewController {
         view.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.center.equalToSuperview()
         }
     }

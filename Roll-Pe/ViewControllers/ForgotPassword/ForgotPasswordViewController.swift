@@ -134,8 +134,7 @@ class ForgotPasswordViewController: UIViewController {
         
         contentView.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
         }
     }

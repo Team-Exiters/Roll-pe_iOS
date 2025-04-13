@@ -16,7 +16,7 @@ struct HeartModel: Decodable {
     let id: Int
     let code: String
     let index: Int
-    let author: ReceiverDataModel;
+    let author: RollpeUserModel;
     let content: String
     let createdAt: String
     let color: String
