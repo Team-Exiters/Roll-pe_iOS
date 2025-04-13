@@ -18,10 +18,10 @@ struct SignInModel: Decodable {
 struct SignInDataStructure: Decodable {
     let refresh: String
     let access: String
-    let user: SignIngDataUserStructure?
+    let user: SignInDataUserStructure?
 }
 
-struct SignIngDataUserStructure: Decodable {
+struct SignInDataUserStructure: Decodable {
     let name: String
     let email: String
     let identifyCode: String
