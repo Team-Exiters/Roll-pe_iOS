@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import SwiftUI
 import RxSwift
 
 class SearchUserModalViewController: UIViewController, UITableViewDelegate {
@@ -103,7 +102,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         tv.separatorStyle = .none
         
         // 내용 여백
-        tv.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        tv.contentInset = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
         
         return tv
     }()
@@ -279,7 +278,7 @@ class SearchUserModalTableViewCell: UITableViewCell {
         return imageView
     }()
     
-    private let titleLabel: UILabel = {
+    private let label: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeSecondary
@@ -307,13 +306,11 @@ class SearchUserModalTableViewCell: UITableViewCell {
             make.size.equalTo(10)
         }
         
-        contentView.addSubview(titleLabel)
-        
-        contentView.addSubview(separatorView)
+        contentView.addSubview(label)
     }
     
     func configure(model: SearchUserResultModel, isLast: Bool) {
-        titleLabel.text = "\(model.name)(\(model.identifyCode))"
+        label.text = "\(model.name)(\(model.identifyCode))"
         iconCheck.isHidden = !(model.isSelected ?? false)
         
         iconCheck.snp.updateConstraints { make in
@@ -322,24 +319,21 @@ class SearchUserModalTableViewCell: UITableViewCell {
         
         separatorView.removeFromSuperview()
         
-        if isLast {
-            titleLabel.snp.remakeConstraints { make in
-                make.top.equalToSuperview().offset(12)
-                make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
-                make.trailing.equalToSuperview().offset(-16)
+        label.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
+            make.trailing.equalToSuperview().offset(-16)
+            
+            if isLast {
                 make.bottom.equalToSuperview().inset(12)
             }
-        } else {
+        }
+        
+        if !isLast {
             contentView.addSubview(separatorView)
             
-            titleLabel.snp.remakeConstraints { make in
-                make.top.equalToSuperview().offset(12)
-                make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
-                make.trailing.equalToSuperview().offset(-16)
-            }
-            
-            separatorView.snp.remakeConstraints { make in
-                make.top.equalTo(titleLabel.snp.bottom).offset(12)
+            separatorView.snp.makeConstraints { make in
+                make.top.equalTo(label.snp.bottom).offset(12)
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.bottom.equalToSuperview().priority(.low)
                 make.height.equalTo(2)
@@ -349,10 +343,12 @@ class SearchUserModalTableViewCell: UITableViewCell {
 }
 
 #if DEBUG
+import SwiftUI
+
 struct PreviewSearchUserModalViewController: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            SendRollpeViewController()
+            SearchUserModalViewController()
         }
     }
 }
