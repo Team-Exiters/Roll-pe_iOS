@@ -1,5 +1,5 @@
 //
-//  RollpeCreateViewModel.swift
+//  CreateRollpeViewModel.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 2/19/25.
@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class RollpeCreateViewModel {
+class CreateRollpeViewModel {
     private let disposeBag = DisposeBag()
     private let apiService = APIService.shared
     private let keychain = Keychain.shared

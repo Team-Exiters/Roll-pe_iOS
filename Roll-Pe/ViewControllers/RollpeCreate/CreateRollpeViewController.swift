@@ -1,5 +1,5 @@
 //
-//  RollpeCreateViewController.swift
+//  CreateRollpeViewController.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 1/30/25.
@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 import SwiftUI
 
-class RollpeCreateViewController: UIViewController {
+class CreateRollpeViewController: UIViewController {
     private let disposeBag: DisposeBag = DisposeBag()
-    private let viewModel = RollpeCreateViewModel()
+    private let viewModel = CreateRollpeViewModel()
     
     // MARK: - 요소
     
@@ -463,7 +463,7 @@ class RollpeCreateViewController: UIViewController {
     private func bind() {
         viewModel.getIndexes()
         
-        let input = RollpeCreateViewModel.Input(
+        let input = CreateRollpeViewModel.Input(
             title: textFieldTitle.rx.text,
             privacyIndex: controlPrivate.control.rx.selectedSegmentIndex,
             password: password.rx.text,
@@ -675,7 +675,7 @@ class RollpeCreateViewController: UIViewController {
 struct RollCreateViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            RollpeCreateViewController()
+            CreateRollpeViewController()
         }
     }
 }

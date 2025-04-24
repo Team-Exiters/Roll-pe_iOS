@@ -192,7 +192,7 @@ class MainAfterSignInViewController: UIViewController {
         
         primaryButton.rx.tap
             .subscribe(onNext: {
-                
+                self.navigationController?.pushViewController(InvitedRollpeViewController(), animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -209,7 +209,7 @@ class MainAfterSignInViewController: UIViewController {
         
         secondaryButton.rx.tap
             .subscribe(onNext: {
-                self.navigationController?.pushViewController(RollpeCreateViewController(), animated: true)
+                self.navigationController?.pushViewController(CreateRollpeViewController(), animated: true)
             })
             .disposed(by: disposeBag)
     }
