@@ -9,22 +9,432 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import SwiftUI
 
 class CreateRollpeViewController: UIViewController {
     private let disposeBag: DisposeBag = DisposeBag()
     private let viewModel = CreateRollpeViewModel()
     
+    // MARK: - 샘플 Model
+    
+    private lazy var sampleRollpeV1Model = RollpeV1DataModel(
+        id: -1,
+        code: "",
+        title: "제목을 입력하세요.",
+        host: RollpeUserModel(
+            id: -1,
+            identifyCode: "",
+            name: ""
+        ),
+        receive: RollpeReceiveDataModel(
+            receiver: RollpeUserModel(
+                id: -1,
+                identifyCode: "",
+                name: ""
+            ),
+            receivingDate: "",
+            receivingStat: -1
+        ),
+        viewStat: true,
+        theme: "",
+        size: "",
+        ratio: "",
+        hearts: HeartResponseModel(
+            count: -1,
+            data: [
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 0,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트1"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F228D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 1,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트2"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F2EB28",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 2,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트3"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F2EB28",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 3,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트4"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#28E8F2",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 4,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트5"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F2EB28",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 5,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트6"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#28E8F2",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 6,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트7"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F228D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 7,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트8"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F2EB28",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 8,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트9"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#28E8F2",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 9,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트10"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F228D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 10,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트11"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#F228D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 11,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트12"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#28E8F2",
+                    version: ""
+                )
+            ]
+        ),
+        invitingUser: [],
+        createdAt: ""
+    )
+    
+    private lazy var sampleRollpeV1MonoModel = RollpeV1DataModel(
+        id: -1,
+        code: "",
+        title: "제목을 입력하세요.",
+        host: RollpeUserModel(
+            id: -1,
+            identifyCode: "",
+            name: ""
+        ),
+        receive: RollpeReceiveDataModel(
+            receiver: RollpeUserModel(
+                id: -1,
+                identifyCode: "",
+                name: ""
+            ),
+            receivingDate: "",
+            receivingStat: -1
+        ),
+        viewStat: true,
+        theme: "",
+        size: "",
+        ratio: "",
+        hearts: HeartResponseModel(
+            count: -1,
+            data: [
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 0,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트1"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 1,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트2"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#D3D3D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 2,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트3"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 3,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트4"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 4,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트5"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 5,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트6"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 6,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트7"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#D3D3D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 7,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트8"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 8,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트9"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#D3D3D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 9,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트10"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 10,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트11"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#D3D3D3",
+                    version: ""
+                ),
+                HeartModel(
+                    id: -1,
+                    code: "",
+                    index: 11,
+                    author: RollpeUserModel(
+                        id: -1,
+                        identifyCode: "",
+                        name: "테스트12"
+                    ),
+                    content: "가나다라마바사",
+                    createdAt: "",
+                    color: "#999999",
+                    version: ""
+                )
+            ]
+        ),
+        invitingUser: [],
+        createdAt: ""
+    )
+    
     // MARK: - 요소
     
+    // 비율, 테마, 크기 목록
     private var ratioBlocks: [RollpeRatioBlock] = []
     private var themeBlocks: [RollpeThemeBlock] = []
     private var sizeBlocks: [RollpeSizeBlock] = []
     
+    // 내부 뷰
     private let contentView: UIView = UIView()
     
-    private let pageTitle = UILabel()
+    // 뷰 제목
+    private let viewTitle: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32)
+        label.textColor = .rollpeSecondary
+        label.text = "롤페 만들기"
+        
+        return label
+    }()
     
+    // 롤페 제목
     private let textFieldTitle: RoundedBorderTextField = {
         let tf = RoundedBorderTextField()
         tf.placeholder = ""
@@ -63,23 +473,40 @@ class CreateRollpeViewController: UIViewController {
         return sv
     }()
     
-    private let controlPrivate = SegmentControl(items: ["공개", "비공개"])
+    private let controlPrivate = {
+        let sc = SegmentControl(items: ["공개", "비공개"])
+        sc.control.selectedSegmentIndex = 1
+        
+        return sc
+    }()
     
-    private let password = RoundedBorderTextField()
+    private let password = {
+        let tf = RoundedBorderTextField()
+        tf.placeholder = "비밀번호"
+        
+        return tf
+    }()
     
-    private lazy var subjectSendDate: UILabel = LabelSubject()
+    private lazy var titleSendDate: UILabel = {
+        let label = titleLabel()
+        label.text = "전달일을 지정해주세요"
+        
+        return label
+    }()
     
     private let textFieldSendDate = RoundedBorderTextFieldPicker()
     
     private let pickerUser = RoundedBorderTextField()
     
-    private let imageViewPreview = UIImageView()
+    private lazy var descPreview = descLabel()
+    
+    private var rollpeView: RollpeV1Types?
     
     private let createButton = PrimaryButton(title: "만들기")
     
     // 컴포넌트
     // 주제 텍스트
-    private func LabelSubject() -> UILabel {
+    private func titleLabel() -> UILabel {
         let label: UILabel = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeSecondary
@@ -88,7 +515,7 @@ class CreateRollpeViewController: UIViewController {
     }
     
     // 설명 텍스트
-    private func LabelDesc() -> UILabel {
+    private func descLabel() -> UILabel {
         let label: UILabel = UILabel()
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 12)
         label.textColor = .rollpeSecondary
@@ -151,8 +578,7 @@ class CreateRollpeViewController: UIViewController {
         setupPrivate()
         setupSendDate()
         setupUser()
-        setupPreview()
-        setupCreateButton()
+        setupPreviewAndCreateButton()
     }
     
     // 네비게이션 바
@@ -197,15 +623,11 @@ class CreateRollpeViewController: UIViewController {
         }
     }
     
-    // 페이지 제목
+    // 뷰 제목
     private func setupPageTitle() {
-        pageTitle.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32)
-        pageTitle.textColor = .rollpeSecondary
-        pageTitle.text = "롤페 만들기"
+        contentView.addSubview(viewTitle)
         
-        contentView.addSubview(pageTitle)
-        
-        pageTitle.snp.makeConstraints { make in
+        viewTitle.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(88)
             make.centerX.equalToSuperview()
         }
@@ -213,32 +635,32 @@ class CreateRollpeViewController: UIViewController {
     
     // 롤페 제목 입력
     private func setupTitle() {
-        let subjectTitle: UILabel = LabelSubject()
-        subjectTitle.text = "제목을 입력하세요"
+        let titleRollpeTitle: UILabel = titleLabel()
+        titleRollpeTitle.text = "제목을 입력하세요"
         
-        contentView.addSubview(subjectTitle)
+        contentView.addSubview(titleRollpeTitle)
         
-        subjectTitle.snp.makeConstraints { make in
-            make.top.equalTo(pageTitle.snp.bottom).offset(52)
+        titleRollpeTitle.snp.makeConstraints { make in
+            make.top.equalTo(viewTitle.snp.bottom).offset(52)
             make.leading.equalToSuperview().inset(20)
         }
         
         contentView.addSubview(textFieldTitle)
         
         textFieldTitle.snp.makeConstraints { make in
-            make.top.equalTo(subjectTitle.snp.bottom).offset(20)
+            make.top.equalTo(titleRollpeTitle.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
     }
     
     // 비율 선택
     private func setupRatio() {
-        let subjectRatios: UILabel = LabelSubject()
-        subjectRatios.text = "비율을 선택하세요"
+        let titleRatios: UILabel = titleLabel()
+        titleRatios.text = "비율을 선택하세요"
         
-        contentView.addSubview(subjectRatios)
+        contentView.addSubview(titleRatios)
         
-        subjectRatios.snp.makeConstraints { make in
+        titleRatios.snp.makeConstraints { make in
             make.top.equalTo(textFieldTitle.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
@@ -246,7 +668,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(scrollRatios)
         
         scrollRatios.snp.makeConstraints { make in
-            make.top.equalTo(subjectRatios.snp.bottom).offset(20)
+            make.top.equalTo(titleRatios.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
@@ -261,12 +683,12 @@ class CreateRollpeViewController: UIViewController {
     
     // 테마 선택
     private func setupThemes() {
-        let subjectThemes: UILabel = LabelSubject()
-        subjectThemes.text = "테마를 선택하세요"
+        let titleThemes: UILabel = titleLabel()
+        titleThemes.text = "테마를 선택하세요"
         
-        contentView.addSubview(subjectThemes)
+        contentView.addSubview(titleThemes)
         
-        subjectThemes.snp.makeConstraints { make in
+        titleThemes.snp.makeConstraints { make in
             make.top.equalTo(scrollRatios.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
@@ -274,7 +696,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(scrollThemes)
         
         scrollThemes.snp.makeConstraints { make in
-            make.top.equalTo(subjectThemes.snp.bottom).offset(20)
+            make.top.equalTo(titleThemes.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
@@ -289,12 +711,12 @@ class CreateRollpeViewController: UIViewController {
     
     // 크기 선택
     private func setupSize() {
-        let subjectSizes: UILabel = LabelSubject()
-        subjectSizes.text = "크기를 선택하세요"
+        let titleSizes: UILabel = titleLabel()
+        titleSizes.text = "크기를 선택하세요"
         
-        contentView.addSubview(subjectSizes)
+        contentView.addSubview(titleSizes)
         
-        subjectSizes.snp.makeConstraints { make in
+        titleSizes.snp.makeConstraints { make in
             make.top.equalTo(scrollThemes.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
@@ -302,7 +724,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(scrollSizes)
         
         scrollSizes.snp.makeConstraints { make in
-            make.top.equalTo(subjectSizes.snp.bottom).offset(20)
+            make.top.equalTo(titleSizes.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
@@ -317,29 +739,27 @@ class CreateRollpeViewController: UIViewController {
     
     // 공개 여부 선택
     private func setupPrivate() {
-        let subjectPrivate: UILabel = LabelSubject()
-        subjectPrivate.text = "공개 설정 여부"
+        let titlePrivate: UILabel = titleLabel()
+        titlePrivate.text = "공개 설정 여부"
         
-        contentView.addSubview(subjectPrivate)
+        contentView.addSubview(titlePrivate)
         
-        subjectPrivate.snp.makeConstraints { make in
+        titlePrivate.snp.makeConstraints { make in
             make.top.equalTo(scrollSizes.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
         
-        let descPrivate = LabelDesc()
+        let descPrivate = descLabel()
         descPrivate.text = "링크를 가진 모든 분들이 볼 수 있어요."
         
         contentView.addSubview(descPrivate)
         
         descPrivate.snp.makeConstraints { make in
-            make.top.equalTo(subjectPrivate.snp.bottom).offset(8)
+            make.top.equalTo(titlePrivate.snp.bottom).offset(8)
             make.leading.equalToSuperview().inset(20)
         }
         
         // 공개 설정
-        controlPrivate.control.selectedSegmentIndex = 1
-        
         contentView.addSubview(controlPrivate)
         
         controlPrivate.snp.makeConstraints { make in
@@ -348,16 +768,12 @@ class CreateRollpeViewController: UIViewController {
         }
         
         // 비밀번호
-        password.placeholder = "비밀번호"
-        
         contentView.addSubview(password)
     }
     
     // 전달일 지정
     private func setupSendDate() {
-        subjectSendDate.text = "전달일을 지정해주세요"
-        
-        contentView.addSubview(subjectSendDate)
+        contentView.addSubview(titleSendDate)
         
         // 전달일 선택
         textFieldSendDate.text = "\(dateToYYYYMd(datePicker.minimumDate!)) 오전 10시"
@@ -366,7 +782,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(textFieldSendDate)
         
         textFieldSendDate.snp.makeConstraints { make in
-            make.top.equalTo(subjectSendDate.snp.bottom).offset(20)
+            make.top.equalTo(titleSendDate.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -379,12 +795,12 @@ class CreateRollpeViewController: UIViewController {
     
     // 전달할 사람 지정
     private func setupUser() {
-        let subjectUser: UILabel = LabelSubject()
-        subjectUser.text = "전달할 사람을 지정해주세요"
+        let titleUser: UILabel = titleLabel()
+        titleUser.text = "전달할 사람을 지정해주세요"
         
-        contentView.addSubview(subjectUser)
+        contentView.addSubview(titleUser)
         
-        subjectUser.snp.makeConstraints { make in
+        titleUser.snp.makeConstraints { make in
             make.top.equalTo(textFieldSendDate.snp.bottom).offset(40)
             make.leading.equalToSuperview().inset(20)
         }
@@ -392,7 +808,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(pickerUser)
         
         pickerUser.snp.makeConstraints { make in
-            make.top.equalTo(subjectUser.snp.bottom).offset(20)
+            make.top.equalTo(titleUser.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
@@ -411,56 +827,67 @@ class CreateRollpeViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    // 미리보기
-    private func setupPreview() {
-        let subjectPreview: UILabel = LabelSubject()
-        subjectPreview.text = "종료일을 지정해주세요"
+    // 미리보기, 만들기 커튼
+    private func setupPreviewAndCreateButton() {
+        // 미리보기 제목
+        let titlePreview: UILabel = titleLabel()
+        titlePreview.text = "미리보기"
         
-        contentView.addSubview(subjectPreview)
+        contentView.addSubview(titlePreview)
         
-        subjectPreview.snp.makeConstraints { make in
+        titlePreview.snp.makeConstraints { make in
             make.top.equalTo(pickerUser.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(20)
         }
         
-        let descPreview = LabelDesc()
-        descPreview.text = "최대 \(13)명까지 작성할 수 있어요."
-        
+        // 미리보기 설명
         contentView.addSubview(descPreview)
         
         descPreview.snp.makeConstraints { make in
-            make.top.equalTo(subjectPreview.snp.bottom).offset(8)
+            make.top.equalTo(titlePreview.snp.bottom).offset(8)
             make.leading.equalToSuperview().inset(20)
         }
         
-        let imagePreview: UIImage = .imgPreviewWhiteHorizontal
-        imageViewPreview.image = imagePreview
-        imageViewPreview.contentMode = .scaleAspectFit
-        imageViewPreview.clipsToBounds = true
-        
-        contentView.addSubview(imageViewPreview)
-        
-        imageViewPreview.snp.makeConstraints { make in
-            make.top.equalTo(descPreview.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.height.equalTo(imageViewPreview.snp.width).dividedBy(getImageRatio(image: imagePreview))
-        }
-    }
-    
-    // 만들기
-    private func setupCreateButton() {
         contentView.addSubview(createButton)
         
-        createButton.snp.makeConstraints { make in
-            make.top.equalTo(imageViewPreview.snp.bottom).offset(52)
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
+        if let rollpeView = rollpeView {
+            // 롤페 미리보기
+            rollpeView.isUserInteractionEnabled = false
+            self.view.addSubview(rollpeView)
+            
+            let size = rollpeView.frame.size
+            let ratio = ((UIScreen.main.bounds.width - 40) / size.width)
+            rollpeView.transform = CGAffineTransform(scaleX: ratio, y: ratio)
+            
+            rollpeView.snp.remakeConstraints { make in
+                make.top.equalTo(self.descPreview.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 20)
+                make.centerX.equalToSuperview()
+                make.width.equalTo(size.width)
+                make.height.equalTo(size.height)
+            }
+            
+            addShadow(to: rollpeView)
+            
+            // 버튼 설정
+            createButton.snp.remakeConstraints { make in
+                make.top.equalTo(rollpeView.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 52)
+                make.horizontalEdges.equalToSuperview().inset(20)
+                make.bottom.equalToSuperview()
+            }
+        } else {
+            // 버튼 설정
+            createButton.snp.remakeConstraints { make in
+                make.top.equalTo(descPreview.snp.bottom).offset(52)
+                make.horizontalEdges.equalToSuperview().inset(20)
+                make.bottom.equalToSuperview()
+            }
         }
     }
     
     // MARK: - Bind
     
     private func bind() {
+        // 비율, 테마 크기 목록 불러오기
         viewModel.getIndexes()
         
         let input = CreateRollpeViewModel.Input(
@@ -497,6 +924,7 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 선택한 비윯
         output.selectedRatio
             .drive(onNext: { [weak self] model in
                 guard let self = self else { return }
@@ -531,6 +959,7 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 선택한 테마
         output.selectedTheme
             .drive(onNext: { [weak self] model in
                 guard let self = self else { return }
@@ -565,16 +994,21 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 선택한 크기
         output.selectedSize
             .drive(onNext: { [weak self] model in
-                guard let self = self else { return }
+                guard let self = self,
+                let model = model else { return }
                 
                 self.sizeBlocks.forEach { block in
                     block.isSelected = (model == block.model)
                 }
+                
+                descPreview.text = "최대 \(model.query.max!)명까지 작성할 수 있어요."
             })
             .disposed(by: disposeBag)
         
+        // 비밀번호 입력 표시 여부
         output.isPasswordVisible
             .drive(onNext: { [weak self] visible in
                 guard let self = self else { return }
@@ -587,12 +1021,12 @@ class CreateRollpeViewController: UIViewController {
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
                     
-                    self.subjectSendDate.snp.remakeConstraints { make in
+                    self.titleSendDate.snp.remakeConstraints { make in
                         make.top.equalTo(self.password.snp.bottom).offset(40)
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
                 } else {
-                    self.subjectSendDate.snp.remakeConstraints { make in
+                    self.titleSendDate.snp.remakeConstraints { make in
                         make.top.equalTo(self.controlPrivate.snp.bottom).offset(40)
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
@@ -600,6 +1034,7 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 선택한 유저
         output.selectedUser
             .drive(onNext: { user in
                 if let user {
@@ -608,18 +1043,21 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 만들기 버튼 활성화 여부
         output.isCreateEnabled
-            .drive() { isEnabled in
+            .drive(onNext: { isEnabled in
                 self.createButton.disabled = !isEnabled
-            }
+            })
             .disposed(by: disposeBag)
         
+        // 로딩 창 표시 여부
         output.isLoading
             .drive(onNext: { isLoading in
                 self.loadingView.isHidden = !isLoading
             })
             .disposed(by: disposeBag)
         
+        // 성공 메시지 handle
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
@@ -628,6 +1066,7 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 오류 메시지 handle
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
@@ -636,10 +1075,68 @@ class CreateRollpeViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        // 심각한 오류 메시지 handle
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
                     self.showCriticalErrorAlert(message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 롤페 미리보기
+        Driver.combineLatest(output.selectedRatio, output.selectedTheme, output.selectedSize)
+            .drive(onNext: { ratio, theme, size in
+                guard let ratio = ratio,
+                      let theme = theme,
+                      let size = size else { return }
+                
+                if self.rollpeView?.superview != nil {
+                    self.rollpeView?.removeFromSuperview()
+                }
+                
+                switch (ratio.name, theme.name, size.name) {
+                case ("가로", "화이트", "A4"):
+                    self.rollpeView = WhiteHorizontalRollpeV1()
+                case ("가로", "추모", "A4"):
+                    self.rollpeView = MemorialHorizontalRollpeV1()
+                case ("가로", "축하", "A4"):
+                    self.rollpeView = CongratsHorizontalRollpeV1()
+                case ("세로", "화이트", "A4"):
+                    self.rollpeView = WhiteVerticalRollpeV1()
+                case ("세로", "추모", "A4"):
+                    self.rollpeView = MemorialVerticalRollpeV1()
+                case ("세로", "축하", "A4"):
+                    self.rollpeView = CongratsVerticalRollpeV1()
+                default: break
+                }
+                
+                self.setupPreviewAndCreateButton()
+                
+                guard let rollpeView = self.rollpeView else { return }
+                
+                if ["추모"].contains(theme.name) {
+                    rollpeView.model = self.sampleRollpeV1MonoModel
+                } else {
+                    rollpeView.model = self.sampleRollpeV1Model
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 롤페 미리보기 제목 처리
+        Driver.combineLatest(
+            output.selectedTheme, textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
+            .drive(onNext: { theme, text in
+                guard let theme = theme,
+                      let rollpeView = self.rollpeView else { return }
+                
+                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
+                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
+                
+                if ["추모"].contains(theme.name) {
+                    rollpeView.model = self.sampleRollpeV1MonoModel
+                } else {
+                    rollpeView.model = self.sampleRollpeV1Model
                 }
             })
             .disposed(by: disposeBag)
@@ -672,6 +1169,8 @@ class CreateRollpeViewController: UIViewController {
 }
 
 #if DEBUG
+import SwiftUI
+
 struct RollCreateViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

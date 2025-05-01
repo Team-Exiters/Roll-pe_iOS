@@ -59,7 +59,7 @@ struct RollpeV1ResponseModel: Decodable {
 struct RollpeV1DataModel: Decodable {
     let id: Int
     let code: String
-    let title: String
+    var title: String
     let host: RollpeUserModel
     let receive: RollpeReceiveDataModel
     let viewStat: Bool

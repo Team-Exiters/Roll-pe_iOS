@@ -94,12 +94,8 @@ class RollpeSizeBlock: UIButton {
     
     private func configure() {
         if let model {
-            switch model.name {
-            case "A4": labelMaximum.text = "최대 \(13)명"
-            default: break
-            }
-            
             labelSize.text = model.name
+            labelMaximum.text = "최대 \(model.query.max!)명"
         }
     }
 }

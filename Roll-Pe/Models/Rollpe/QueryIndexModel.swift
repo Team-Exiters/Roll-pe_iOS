@@ -19,5 +19,10 @@ struct QueryIndexDataModel: Decodable, Equatable {
     let id: Int
     let name: String
     let type: String
+    let query: QueryIndexQueryModel
     let is_vip: Bool
+}
+
+struct QueryIndexQueryModel: Decodable, Equatable {
+    let max: Int?
 }
