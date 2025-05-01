@@ -117,17 +117,21 @@ class RollpeV1ViewController: UIViewController {
     // 롤페 뷰 설정
     private func setupRollpeView(dataModel: RollpeV1DataModel) {
         // 롤페 뷰 설정
-        switch dataModel.theme {
-        case "화이트":
-            self.rollpeView = dataModel.ratio == "가로" ? WhiteHorizontalRollpeV1() : WhiteVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        case "추모":
-            self.rollpeView = dataModel.ratio == "가로" ? MemorialHorizontalRollpeV1() : MemorialVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        case "축하":
-            self.rollpeView = dataModel.ratio == "가로" ? CongratsHorizontalRollpeV1() : CongratsVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        default: break
+        switch (dataModel.ratio, dataModel.theme, dataModel.size) {
+        case ("가로", "화이트", "A4"):
+            self.rollpeView = WhiteHorizontalRollpeV1()
+        case ("가로", "추모", "A4"):
+            self.rollpeView = MemorialHorizontalRollpeV1()
+        case ("가로", "축하", "A4"):
+            self.rollpeView = CongratsHorizontalRollpeV1()
+        case ("세로", "화이트", "A4"):
+            self.rollpeView = WhiteVerticalRollpeV1()
+        case ("세로", "추모", "A4"):
+            self.rollpeView = MemorialVerticalRollpeV1()
+        case ("세로", "축하", "A4"):
+            self.rollpeView = CongratsVerticalRollpeV1()
+        default:
+            break
         }
         
         guard let rollpeView = rollpeView else { return }
