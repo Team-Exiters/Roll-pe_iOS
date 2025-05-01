@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class CongratsHorizontalRollpeV1: UIView {
+class CongratsHorizontalRollpeV1: UIControl {
     private let disposeBag = DisposeBag()
     
     var onMemoSelected: ((Int, HeartModel?) -> Void)?

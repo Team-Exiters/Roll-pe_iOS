@@ -321,7 +321,7 @@ class RollpeV1ViewController: UIViewController {
 }
 
 // rollpeView 타입 관련
-protocol RollpeV1Types: UIView {
+protocol RollpeV1Types: UIControl {
     var onMemoSelected: ((Int, HeartModel?) -> Void)? { get set }
     var model: RollpeV1DataModel? { get set }
 }

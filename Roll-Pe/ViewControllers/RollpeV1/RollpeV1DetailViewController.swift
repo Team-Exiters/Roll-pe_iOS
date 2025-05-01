@@ -9,11 +9,23 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 import MarqueeLabel
-import SwiftUI
 
 class RollpeV1DetailViewController: UIViewController {
+    let pCode: String
+    
+    init(pCode: String) {
+        self.pCode = pCode
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let disposeBag = DisposeBag()
+    private let viewModel = RollpeV1ViewModel()
     
     // MARK: - 요소
     
@@ -31,15 +43,6 @@ class RollpeV1DetailViewController: UIViewController {
     // 내부 뷰
     private let contentView = UIView()
     
-    // 미리보기
-    private let presentImage: UIImageView = {
-        let image = UIImageView()
-        image.image = .imgPreviewWhiteHorizontal
-        image.contentMode = .scaleAspectFit
-        
-        return image
-    }()
-    
     // 제목
     private let titleLabel: MarqueeLabel = {
         let label = MarqueeLabel(frame: .zero, duration: 8.0, fadeLength: 10.0)
@@ -47,7 +50,6 @@ class RollpeV1DetailViewController: UIViewController {
         label.numberOfLines = 1
         label.textColor = .rollpeSecondary
         label.type = .continuous
-        label.text = "dd"
         
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
             label.font = customFont
@@ -57,6 +59,9 @@ class RollpeV1DetailViewController: UIViewController {
         
         return label
     }()
+    
+    // 롤페 미리보기
+    private var rollpeView: RollpeV1Types?
     
     // 롤페 미리보기 설명
     private let explainationLabel: UILabel = {
@@ -78,7 +83,7 @@ class RollpeV1DetailViewController: UIViewController {
     // 작성자
     private let writerLabel : UILabel = {
         let label = UILabel()
-        label.text = "작성자(0/13)"
+        label.text = "작성자(0/0)"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
@@ -157,7 +162,6 @@ class RollpeV1DetailViewController: UIViewController {
         
         // UI 설정
         setupNavigationBar()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -165,19 +169,13 @@ class RollpeV1DetailViewController: UIViewController {
         
         // UI 설정
         resetButtonsView()
-        
-        setupHostButtonsView()
-        
+        setupButtonsVStackView()
         setupScrollView()
         setupContentView()
         setupTitle()
-        setupPresentImage()
-        setupExplainationLabel()
-        setupWriterLabel()
-        setupWriterList()
         
-        // 방장 전용
-        setupParticipantsButton()
+        // bind
+        bind()
     }
     
     // MARK: - UI 설정
@@ -189,6 +187,16 @@ class RollpeV1DetailViewController: UIViewController {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.equalToSuperview().inset(20)
+        }
+    }
+    
+    // 하단 버튼 뷰
+    private func setupButtonsVStackView() {
+        self.view.addSubview(buttonsVStackView)
+        
+        buttonsVStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview()
         }
     }
     
@@ -225,21 +233,32 @@ class RollpeV1DetailViewController: UIViewController {
     }
     
     // 미리보기
-    private func setupPresentImage() {
-        contentView.addSubview(presentImage)
+    private func setupRollpeViewAndExplainationLabel() {
+        guard let rollpeView = rollpeView else { return }
         
-        presentImage.snp.makeConstraints{ make in
-            make.top.equalTo(titleLabel).offset(52)
+        rollpeView.addAction(UIAction { _ in
+            self.navigationController?.pushViewController(RollpeV1ViewController(pCode: self.pCode), animated: false)
+        }, for: .touchUpInside)
+        
+        contentView.addSubview(rollpeView)
+        
+        let size = rollpeView.frame.size
+        let ratio = ((UIScreen.main.bounds.width - 40) / size.width)
+        rollpeView.transform = CGAffineTransform(scaleX: ratio, y: ratio)
+        
+        rollpeView.snp.remakeConstraints { make in
+            make.top.equalTo(self.titleLabel.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 52)
             make.centerX.equalToSuperview()
+            make.width.equalTo(size.width)
+            make.height.equalTo(size.height)
         }
-    }
-    
-    // 롤페 미리보기 설명
-    private func setupExplainationLabel() {
+        
+        addShadow(to: rollpeView)
+        
         contentView.addSubview(explainationLabel)
         
-        explainationLabel.snp.makeConstraints{make in
-            make.top.equalTo(presentImage.snp.bottom).offset(16)
+        explainationLabel.snp.makeConstraints { make in
+            make.top.equalTo(rollpeView.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 16)
             make.centerX.equalToSuperview()
         }
     }
@@ -247,7 +266,7 @@ class RollpeV1DetailViewController: UIViewController {
     // 작성자 수
     private func setupWriterLabel() {
         contentView.addSubview(writerLabel)
-        writerLabel.snp.makeConstraints{make in
+        writerLabel.snp.makeConstraints { make in
             make.top.equalTo(explainationLabel.snp.bottom).offset(40)
             make.leading.equalToSuperview()
         }
@@ -256,7 +275,7 @@ class RollpeV1DetailViewController: UIViewController {
     // 작성자 목록
     private func setupWriterList() {
         contentView.addSubview(writerListStack)
-        writerListStack.snp.makeConstraints{make in
+        writerListStack.snp.makeConstraints { make in
             make.top.equalTo(writerLabel.snp.bottom).offset(20)
             make.leading.equalToSuperview()
         }
@@ -276,6 +295,17 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 방장
     private func setupParticipantsButton() {
+        participantListButton.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
+                let modalVC = ParticipantListModalViewController()
+                modalVC.modalPresentationStyle = .overFullScreen
+                modalVC.modalTransitionStyle = .crossDissolve
+                self?.present(modalVC, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
         contentView.addSubview(participantListButton)
         
         participantListButton.snp.makeConstraints { make in
@@ -286,56 +316,137 @@ class RollpeV1DetailViewController: UIViewController {
     }
     
     private func setupHostButtonsView() {
-        self.view.addSubview(buttonsVStackView)
-        
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
         
-        buttonsHStackView.addArrangedSubview(shareButton)
-        buttonsHStackView.addArrangedSubview(editSecondaryButton)
+        // 공유하기
+        shareButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                
+            })
+            .disposed(by: disposeBag)
         
-        buttonsVStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
-        }
+        buttonsHStackView.addArrangedSubview(shareButton)
+        
+        // 수정하기
+        editSecondaryButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                let modalVC = EditRollpeModalViewController()
+                modalVC.modalPresentationStyle = .overFullScreen
+                modalVC.modalTransitionStyle = .crossDissolve
+                self?.present(modalVC, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        buttonsHStackView.addArrangedSubview(editSecondaryButton)
     }
     
     // 방장 - 완료
-    private func setupHostDoneButtonsView() {
-        self.view.addSubview(buttonsVStackView)
-        
+    private func setupDoneButtonsView() {
         buttonsVStackView.addArrangedSubview(imageSaveButton)
-        
-        buttonsVStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
-        }
     }
     
     // 참석자
     private func setupParticipantButtonsView() {
-        self.view.addSubview(buttonsVStackView)
-        
         buttonsVStackView.addArrangedSubview(shareButton)
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
         
         buttonsHStackView.addArrangedSubview(quitButton)
         buttonsHStackView.addArrangedSubview(reportButton)
         
-        buttonsVStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
-        }
-        
         reportButton.snp.makeConstraints { make in
             make.width.equalTo(reportButton.snp.height)
         }
     }
+    
+    // MARK: - Bind
+    
+    private func bind() {
+        viewModel.getRollpeData(pCode: pCode)
+        
+        let output = viewModel.transform()
+        
+        // 롤페 데이터 상호작용
+        output.rollpe
+            .drive(onNext: { model in
+                guard let model = model else { return }
+                
+                let keychain = Keychain.shared
+                guard let rawMyId = keychain.read(key: "USER_ID"),
+                      let myId = Int(rawMyId) else { return }
+                
+                let date = Date()
+                
+                if self.rollpeView?.superview != nil {
+                    self.rollpeView?.removeFromSuperview()
+                }
+                
+                // 롤페 뷰 설정
+                switch (model.ratio, model.theme, model.size) {
+                case ("가로", "화이트", "A4"):
+                    self.rollpeView = WhiteHorizontalRollpeV1()
+                case ("가로", "추모", "A4"):
+                    self.rollpeView = MemorialHorizontalRollpeV1()
+                case ("가로", "축하", "A4"):
+                    self.rollpeView = CongratsHorizontalRollpeV1()
+                case ("세로", "화이트", "A4"):
+                    self.rollpeView = WhiteVerticalRollpeV1()
+                case ("세로", "추모", "A4"):
+                    self.rollpeView = MemorialVerticalRollpeV1()
+                case ("세로", "축하", "A4"):
+                    self.rollpeView = CongratsVerticalRollpeV1()
+                default:
+                    break
+                }
+                
+                guard let rollpeView = self.rollpeView else { return }
+                
+                self.setupRollpeViewAndExplainationLabel()
+                self.setupWriterLabel()
+                self.setupWriterList()
+                
+                // 버튼 설정
+                if convertYYYYMMddToDate(model.receive.receivingDate) > date {
+                    if model.host.id == myId { // 방장
+                        self.setupParticipantsButton()
+                        self.setupHostButtonsView()
+                    } else { // 참석자
+                        self.setupParticipantButtonsView()
+                    }
+                } else { // 완료
+                    if model.host.id == myId || model.receive.receiver.id == myId {
+                        self.setupDoneButtonsView()
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.criticalAlertMessage
+            .drive(onNext: { message in
+                if message != nil {
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+                        return
+                    }
+                    
+                    let navVC = UINavigationController(rootViewController: ErrorHandlerViewController())
+                    navVC.navigationBar.isHidden = true
+                    navVC.hideKeyboardWhenTappedAround()
+                    
+                    sceneDelegate.window?.rootViewController = navVC
+                    sceneDelegate.window?.makeKeyAndVisible()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
 }
+
+#if DEBUG
+import SwiftUI
 
 struct RollpeV1DetailViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            RollpeV1DetailViewController()
+            RollpeV1DetailViewController(pCode: "")
         }
     }
 }
+#endif
