@@ -116,9 +116,9 @@ class RollpeV1ViewController: UIViewController {
     }
     
     // 롤페 뷰 설정
-    private func setupRollpeView(dataModel: RollpeV1DataModel) {
+    private func setupRollpeView(model: RollpeV1DataModel) {
         // 롤페 뷰 설정
-        switch (dataModel.ratio, dataModel.theme, dataModel.size) {
+        switch (model.ratio, model.theme, model.size) {
         case ("가로", "화이트", "A4"):
             self.rollpeView = WhiteHorizontalRollpeV1()
         case ("가로", "추모", "A4"):
@@ -187,7 +187,7 @@ class RollpeV1ViewController: UIViewController {
                 guard let model = model else { return }
                 
                 self.resetRollpeView()
-                self.setupRollpeView(dataModel: model)
+                self.setupRollpeView(model: model)
                 self.bindMemoTap(dataModel: model)
                 self.bindGestures()
                 
