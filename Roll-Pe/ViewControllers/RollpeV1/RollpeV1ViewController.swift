@@ -44,6 +44,7 @@ class RollpeV1ViewController: UIViewController {
         return button
     }()
     
+    // 롤페 뷰
     private var rollpeView: RollpeV1Types?
     
     // 변형 관련
