@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 
 class CreateRollpeViewController: UIViewController {
     private let disposeBag: DisposeBag = DisposeBag()
