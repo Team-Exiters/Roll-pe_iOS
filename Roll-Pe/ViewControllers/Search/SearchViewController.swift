@@ -380,7 +380,7 @@ class SearchRollpeTableViewCell: UITableViewCell {
         contentView.addSubview(rollpeListItem)
     }
     
-    func configure(model: RollpeDataModel, isLast: Bool) {
+    func configure(model: RollpeListDataModel, isLast: Bool) {
         rollpeListItem.configure(model: model)
         separatorView.removeFromSuperview()
         

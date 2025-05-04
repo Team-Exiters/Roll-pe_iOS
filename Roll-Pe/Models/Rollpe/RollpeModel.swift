@@ -13,7 +13,7 @@ struct RollpeResponseListModel: Decodable {
     let message: String
     let code: String
     let link: String?
-    let data: [RollpeDataModel]
+    let data: [RollpeListDataModel]
 }
 
 // 롤페 페이지네이션 적용된 목록 모델
@@ -29,11 +29,11 @@ struct RollpeResponsePagenationListDataModel: Decodable {
     let count: Int
     let next: String?
     let previous: String?
-    let results: [RollpeDataModel]
+    let results: [RollpeListDataModel]
 }
 
-// 롤페 data 모델
-struct RollpeDataModel: Decodable {
+// 롤페 목록 data 모델
+struct RollpeListDataModel: Decodable {
     let id: Int
     let code: String
     let title: String

@@ -13,11 +13,11 @@ class GetRollpeViewModel {
     private let disposeBag = DisposeBag()
     private let apiService = APIService.shared
     
-    let rollpeModels = BehaviorRelay<[RollpeDataModel]?>(value: [])
+    let rollpeModels = BehaviorRelay<[RollpeListDataModel]?>(value: [])
     private let alertMessage = PublishSubject<String?>()
     
     struct Output {
-        let rollpeModels: Driver<[RollpeDataModel]?>
+        let rollpeModels: Driver<[RollpeListDataModel]?>
         let showAlert: Driver<String?>
     }
     

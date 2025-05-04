@@ -331,7 +331,7 @@ class MainAfterSignInGridCell: UICollectionViewCell {
         }
     }
 
-    func configure(model: RollpeDataModel) {
+    func configure(model: RollpeListDataModel) {
         rollpeItemView.configure(model: model)
     }
 }
