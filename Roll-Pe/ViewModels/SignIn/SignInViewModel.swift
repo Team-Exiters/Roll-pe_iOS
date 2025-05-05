@@ -114,7 +114,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             "password": password
         ]
         
-        RxAlamofire.requestData(.post, "\(ip)/api/user/signin", parameters: body, encoding: JSONEncoding.default, headers: headers)
+        RxAlamofire.requestData(.post, "\(API_SERVER_URL)/api/user/signin", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
             .do(onSubscribe: {
                 self.isLoading.onNext(true)
@@ -199,7 +199,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
             "pathCode": "email"
         ]
         
-        RxAlamofire.request(.post, "\(ip)/api/user/verify-email", parameters: body, encoding: JSONEncoding.default, headers: headers)
+        RxAlamofire.request(.post, "\(API_SERVER_URL)/api/user/verify-email", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
             .validate(statusCode: 200..<300)
             .responseData()
@@ -230,7 +230,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
         }
         
         
-        RxAlamofire.requestData(.post, "\(ip)/api/user/social/login/\(social)", parameters: body, encoding: JSONEncoding.default, headers: headers)
+        RxAlamofire.requestData(.post, "\(API_SERVER_URL)/api/user/social/login/\(social)", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
             .do(onSubscribe: { [weak self] in
                 guard let self = self else { return }

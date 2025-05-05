@@ -236,7 +236,7 @@ class SidemenuView: UIView {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                guard let url = URL(string: "https://haren-dev2.defcon.or.kr/terms-of-service") else {
+                guard let url = URL(string: "\(WEBSITE_URL)/terms-of-service") else {
                     return
                 }
                 
@@ -252,7 +252,7 @@ class SidemenuView: UIView {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                guard let url = URL(string: "https://haren-dev2.defcon.or.kr/privacy-policy") else {
+                guard let url = URL(string: "\(WEBSITE_URL)/privacy-policy") else {
                     return
                 }
                 

@@ -10,6 +10,12 @@ import UIKit
 import RxSwift
 import RxCocoa
 
+// API 서버 주소
+let API_SERVER_URL: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+
+// 웹사이트 주소
+let WEBSITE_URL: String = "https://haren-dev2.defcon.or.kr"
+
 // safearea
 let scenes = UIApplication.shared.connectedScenes
 let windowScene = scenes.first as? UIWindowScene
@@ -17,9 +23,6 @@ let window = windowScene?.windows.first
 
 let safeareaTop = window?.safeAreaInsets.top ?? 0
 let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
-
-// 서버 IP 주소
-let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
 
 // 이메일 정규식
 let emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"

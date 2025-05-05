@@ -480,7 +480,7 @@ class SignInViewController: UIViewController {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
+                let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
             })
@@ -492,7 +492,7 @@ class SignInViewController: UIViewController {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
+                let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
             })

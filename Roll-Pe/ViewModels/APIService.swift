@@ -30,7 +30,7 @@ class APIService {
     ) -> Observable<(HTTPURLResponse, Data)> {
         return RxAlamofire.request(
             method,
-            "\(isDomainInclude ? "" : ip)\(url)",
+            "\(isDomainInclude ? "" : API_SERVER_URL)\(url)",
             parameters: parameters,
             encoding: encoding,
             interceptor: AuthInterceptor.shared
@@ -57,7 +57,7 @@ class APIService {
     ) -> Observable<T> {
         return RxAlamofire.request(
             method,
-            "\(isDomainInclude ? "" : ip)\(url)",
+            "\(isDomainInclude ? "" : API_SERVER_URL)\(url)",
             parameters: parameters,
             encoding: encoding,
             interceptor: AuthInterceptor.shared
@@ -146,7 +146,7 @@ final class AuthInterceptor: RequestInterceptor {
         
         let parameters: [String: Any] = ["refresh": refresh]
         
-        AF.request("\(ip)/api/user/token/refresh", method: .post, parameters: parameters, encoding: JSONEncoding.default)
+        AF.request("\(API_SERVER_URL)/api/user/token/refresh", method: .post, parameters: parameters, encoding: JSONEncoding.default)
             .validate(statusCode: 200..<300)
             .responseData { response in
                 switch response.result {
