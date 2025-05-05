@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 import SnapKit
 import RxSwift
 import RxCocoa
@@ -337,6 +336,8 @@ class MainAfterSignInGridCell: UICollectionViewCell {
 }
 
 #if DEBUG
+import SwiftUI
+
 struct MainAfterSignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

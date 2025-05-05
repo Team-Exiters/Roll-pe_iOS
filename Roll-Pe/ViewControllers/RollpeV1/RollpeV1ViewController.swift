@@ -10,7 +10,6 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
-import SwiftUI
 
 let monoThemes: [String] = ["추모"]
 
@@ -198,7 +197,7 @@ class RollpeV1ViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showCriticalErrorAlert(message: message)
+                    self.showAlertAndPop(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -309,15 +308,6 @@ class RollpeV1ViewController: UIViewController {
             self.present(navVC, animated: false, completion: nil)
         }
     }
-    
-    // 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: false)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 // rollpeView 타입 관련
@@ -334,6 +324,8 @@ extension CongratsHorizontalRollpeV1: RollpeV1Types {}
 extension CongratsVerticalRollpeV1: RollpeV1Types {}
 
 #if DEBUG
+import SwiftUI
+
 struct RollpeV1ViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

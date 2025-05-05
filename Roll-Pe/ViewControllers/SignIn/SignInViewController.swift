@@ -10,7 +10,6 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
-import SwiftUI
 import SafariServices
 import GoogleSignIn
 
@@ -530,7 +529,7 @@ class SignInViewController: UIViewController {
                     let vc = MainAfterSignInViewController()
                     self.navigationController?.pushViewController(vc, animated: false)
                 } else {
-                    self.showErrorAlert(message: "로그인에 실패하였습니다.")
+                    self.showAlert(title: "오류", message: "로그인에 실패하였습니다.")
                 }
             })
             .disposed(by: disposeBag)
@@ -544,7 +543,7 @@ class SignInViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -571,15 +570,11 @@ class SignInViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
-    
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 #if DEBUG
+import SwiftUI
+
 struct SignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

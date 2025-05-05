@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import SwiftUI
 import RxSwift
 import RxCocoa
 
@@ -291,7 +290,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -342,12 +341,6 @@ class SearchViewController: UIViewController, UITableViewDelegate {
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -409,6 +402,8 @@ class SearchRollpeTableViewCell: UITableViewCell {
 }
 
 #if DEBUG
+import SwiftUI
+
 struct SearchViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

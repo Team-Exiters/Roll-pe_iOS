@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import SwiftUI
 
 class ForgotPasswordViewController: UIViewController {
     private let disposeBag = DisposeBag()
@@ -207,7 +206,7 @@ class ForgotPasswordViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showSuccessAlert(message: message)
+                    self.showAlertAndPop(title: "알림", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -215,28 +214,16 @@ class ForgotPasswordViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: true)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 #if DEBUG
+import SwiftUI
+
 struct ForgotPasswordViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

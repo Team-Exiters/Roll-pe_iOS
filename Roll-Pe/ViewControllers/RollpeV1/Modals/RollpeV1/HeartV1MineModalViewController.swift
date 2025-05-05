@@ -237,7 +237,8 @@ class HeartV1MineModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showSuccessAlert(message: message)
+                    self.showAlert(title: "알림", message: message)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
                 }
             })
             .disposed(by: disposeBag)
@@ -245,29 +246,10 @@ class HeartV1MineModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showCriticalErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    // 완료 알림창
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 심각한 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
     }
 }

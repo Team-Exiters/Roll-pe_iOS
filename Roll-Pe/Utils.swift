@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import SwiftUI
 import RxSwift
 import RxCocoa
 
@@ -123,9 +122,30 @@ extension UIViewController {
         present(alert, animated: true)
         return result
     }
+    
+    // Alert 표시
+    func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // 뒤로 돌아가는 Alert 표시
+    func showAlertAndPop(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
 // 미리보기
+#if DEBUG
+import SwiftUI
+
 struct UIViewControllerPreview: UIViewControllerRepresentable {
     let viewController: () -> UIViewController
     
@@ -139,6 +159,7 @@ struct UIViewControllerPreview: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
+#endif
 
 // 버튼 여백 수정
 extension UIButton {

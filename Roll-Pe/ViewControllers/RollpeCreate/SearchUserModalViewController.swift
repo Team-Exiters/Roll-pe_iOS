@@ -219,7 +219,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -243,16 +243,10 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
                     self.onUserSelected?(user)
                     self.dismiss(animated: true)
                 } else {
-                    self.showErrorAlert(message: "유저를 선택해주세요.")
+                    self.showAlert(title: "오류", message: "유저를 선택해주세요.")
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
     }
 }
 
