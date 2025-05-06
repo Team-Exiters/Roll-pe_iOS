@@ -883,6 +883,8 @@ class CreateRollpeViewController: UIViewController {
                 make.bottom.equalToSuperview()
             }
         }
+        
+        view.bringSubviewToFront(loadingView)
     }
     
     // MARK: - Bind
