@@ -102,7 +102,7 @@ class RollpeV1ViewController: UIViewController {
         view.addSubview(closeButton)
         
         closeButton.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             make.leading.equalToSuperview().offset(20)
             make.size.equalTo(20)
         }
@@ -136,11 +136,13 @@ class RollpeV1ViewController: UIViewController {
         
         guard let rollpeView = rollpeView else { return }
         
+        rollpeView.model = model
+        
         // 롤페 뷰 디바이스 너비와 높이에 따라 비율 조정
         let size = rollpeView.frame.size
         let ratio = UIScreen.main.bounds.height / size.height
         
-        self.view.addSubview(rollpeView)
+        view.addSubview(rollpeView)
         
         rollpeView.transform = CGAffineTransform(scaleX: ratio, y: ratio)
         
