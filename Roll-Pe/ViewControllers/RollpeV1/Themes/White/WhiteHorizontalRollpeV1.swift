@@ -139,14 +139,14 @@ class WhiteHorizontalRollpeV1: UIControl {
                 .when(.recognized)
                 .subscribe(onNext: { _ in
                     self.onMemoSelected?(
-                        index, model.hearts.data.first { $0.index == index }
+                        index, model.hearts.data?.first { $0.index == index }
                     )
                 })
                 .disposed(by: disposeBag)
         }
         
         // response에 따라 메모에 데이터 입력
-        for heart in model.hearts.data {
+        for heart in model.hearts.data ?? [] {
             memoViews[heart.index].model = heart
         }
     }
