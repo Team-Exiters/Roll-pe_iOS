@@ -39,6 +39,7 @@ class CreateRollpeViewController: UIViewController {
         theme: "",
         size: "",
         ratio: "",
+        maxHeartLength: -1,
         hearts: HeartResponseModel(
             count: -1,
             data: [
@@ -238,6 +239,7 @@ class CreateRollpeViewController: UIViewController {
         theme: "",
         size: "",
         ratio: "",
+        maxHeartLength: -1,
         hearts: HeartResponseModel(
             count: -1,
             data: [
@@ -854,7 +856,7 @@ class CreateRollpeViewController: UIViewController {
         if let rollpeView = rollpeView {
             // 롤페 미리보기
             rollpeView.isUserInteractionEnabled = false
-            self.view.addSubview(rollpeView)
+            view.addSubview(rollpeView)
             
             let size = rollpeView.frame.size
             let ratio = ((UIScreen.main.bounds.width - 40) / size.width)

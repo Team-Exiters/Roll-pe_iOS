@@ -84,8 +84,7 @@ class RollpeV1DetailViewController: UIViewController {
     private let writerLabel : UILabel = {
         let label = UILabel()
         label.text = "작성자(0/0)"
-        label.textAlignment = .center
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.textColor = .rollpeSecondary
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
             label.font = customFont
@@ -174,7 +173,7 @@ class RollpeV1DetailViewController: UIViewController {
         setupContentView()
         setupTitle()
         
-        // bind
+        // Bind
         bind()
     }
     
@@ -182,7 +181,7 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 네비게이션 바
     private func setupNavigationBar() {
-        self.view.addSubview(navigationBar)
+        view.addSubview(navigationBar)
         
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -192,11 +191,11 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 하단 버튼 뷰
     private func setupButtonsVStackView() {
-        self.view.addSubview(buttonsVStackView)
+        view.addSubview(buttonsVStackView)
         
         buttonsVStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
     
@@ -205,9 +204,9 @@ class RollpeV1DetailViewController: UIViewController {
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(88)
+            make.top.equalTo(navigationBar.snp.bottom)
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalTo(buttonsVStackView.snp.top).offset(-40)
+            make.bottom.equalTo(buttonsVStackView.snp.top).inset(40)
         }
     }
     
@@ -226,7 +225,7 @@ class RollpeV1DetailViewController: UIViewController {
         contentView.addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
             make.centerX.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
         }
@@ -266,6 +265,7 @@ class RollpeV1DetailViewController: UIViewController {
     // 작성자 수
     private func setupWriterLabel() {
         contentView.addSubview(writerLabel)
+        
         writerLabel.snp.makeConstraints { make in
             make.top.equalTo(explainationLabel.snp.bottom).offset(40)
             make.leading.equalToSuperview()
@@ -275,6 +275,7 @@ class RollpeV1DetailViewController: UIViewController {
     // 작성자 목록
     private func setupWriterList() {
         contentView.addSubview(writerListStack)
+        
         writerListStack.snp.makeConstraints { make in
             make.top.equalTo(writerLabel.snp.bottom).offset(20)
             make.leading.equalToSuperview()
@@ -376,6 +377,26 @@ class RollpeV1DetailViewController: UIViewController {
                 
                 let date = Date()
                 
+                self.titleLabel.text = model.title
+                
+                self.writerLabel.text = "작성자(\(model.hearts.count)/\(model.maxHeartLength))"
+                
+                self.writerListStack.clear()
+                
+                model.hearts.data?.forEach { heart in
+                    let label = UILabel()
+                    label.numberOfLines = 1
+                    label.textColor = .rollpeSecondary
+                    label.text = "\(heart.author.name)(\(heart.author.identifyCode))"
+                    if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) {
+                        label.font = customFont
+                    } else {
+                        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+                    }
+                    
+                    self.writerListStack.addArrangedSubview(label)
+                }
+                
                 if self.rollpeView?.superview != nil {
                     self.rollpeView?.removeFromSuperview()
                 }
@@ -398,7 +419,9 @@ class RollpeV1DetailViewController: UIViewController {
                     break
                 }
                 
-                guard let rollpeView = self.rollpeView else { return }
+                guard self.rollpeView != nil else { return }
+                
+                self.rollpeView!.model = model
                 
                 self.setupRollpeViewAndExplainationLabel()
                 self.setupWriterLabel()
@@ -413,8 +436,10 @@ class RollpeV1DetailViewController: UIViewController {
                         self.setupParticipantButtonsView()
                     }
                 } else { // 완료
-                    if model.host.id == myId || model.receive.receiver.id == myId {
+                    if model.receive.receiver.id == myId {
                         self.setupDoneButtonsView()
+                    } else {
+                        switchViewController(vc: ErrorHandlerViewController())
                     }
                 }
             })
@@ -423,16 +448,7 @@ class RollpeV1DetailViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if message != nil {
-                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-                        return
-                    }
-                    
-                    let navVC = UINavigationController(rootViewController: ErrorHandlerViewController())
-                    navVC.navigationBar.isHidden = true
-                    navVC.hideKeyboardWhenTappedAround()
-                    
-                    sceneDelegate.window?.rootViewController = navVC
-                    sceneDelegate.window?.makeKeyAndVisible()
+                    switchViewController(vc: ErrorHandlerViewController())
                 }
             })
             .disposed(by: disposeBag)

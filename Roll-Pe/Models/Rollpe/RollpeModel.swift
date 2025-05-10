@@ -66,6 +66,7 @@ struct RollpeV1DataModel: Decodable {
     let theme: String
     let size: String
     let ratio: String
+    let maxHeartLength: Int
     let hearts: HeartResponseModel
     let invitingUser: [RollpeUserModel]
     let createdAt: String
