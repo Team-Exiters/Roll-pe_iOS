@@ -40,7 +40,7 @@ class ErrorHandlerViewController: UIViewController {
         label.textColor = .rollpeSecondary
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 16)
         label.textAlignment = .center
-        label.text = "초대되지 않은 상태거나,\n로그인이 필요합니다."
+        label.text = "만료된 롤페이거나,\n불러올 수 없는 상태입니다."
         
         return label
     }()
@@ -53,6 +53,9 @@ class ErrorHandlerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        view.backgroundColor = .rollpePrimary
+        
         // UI 설정
         setupStackView()
         setupLogo()
@@ -60,15 +63,14 @@ class ErrorHandlerViewController: UIViewController {
         setupBackButton()
         
         // bind
-        
-        
+        bind()
     }
     
     // MARK: - UI 설정
     
     // 내부 뷰 설정
     private func setupStackView() {
-        self.view.addSubview(stackView)
+        view.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -109,16 +111,7 @@ class ErrorHandlerViewController: UIViewController {
         backButton.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-                    return
-                }
-                
-                let navVC = UINavigationController(rootViewController: MainAfterSignInViewController())
-                navVC.navigationBar.isHidden = true
-                navVC.hideKeyboardWhenTappedAround()
-                
-                sceneDelegate.window?.rootViewController = navVC
-                sceneDelegate.window?.makeKeyAndVisible()
+                switchViewController(vc: MainAfterSignInViewController())
             })
             .disposed(by: disposeBag)
     }

@@ -72,7 +72,7 @@ class NavigationBar: UIView {
         logo.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                self.goToHome()
+                switchViewController(vc: MainAfterSignInViewController())
             })
             .disposed(by: disposeBag)
         
@@ -106,19 +106,5 @@ class NavigationBar: UIView {
         if let navigationController = self.window?.rootViewController as? UINavigationController {
             navigationController.popViewController(animated: true)
         }
-    }
-    
-    // 홈으로 가기
-    private func goToHome() {
-        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-            return
-        }
-        
-        let navVC = UINavigationController(rootViewController: MainAfterSignInViewController())
-        navVC.navigationBar.isHidden = true
-        navVC.hideKeyboardWhenTappedAround()
-        
-        sceneDelegate.window?.rootViewController = navVC
-        sceneDelegate.window?.makeKeyAndVisible()
     }
 }

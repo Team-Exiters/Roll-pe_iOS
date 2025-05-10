@@ -97,6 +97,20 @@ func convertDateFormat(_ input: String) -> String? {
     return outputFormatter.string(from: date)
 }
 
+// 뷰 컨트롤러 전환
+func switchViewController(vc: UIViewController) {
+    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+        return
+    }
+    
+    let navVC = UINavigationController(rootViewController: vc)
+    navVC.navigationBar.isHidden = true
+    navVC.hideKeyboardWhenTappedAround()
+    
+    sceneDelegate.window?.rootViewController = navVC
+    sceneDelegate.window?.makeKeyAndVisible()
+}
+
 extension UIViewController {
     // 키보드 숨기기
     func hideKeyboardWhenTappedAround() {
@@ -145,24 +159,15 @@ extension UIViewController {
     }
 }
 
-// 미리보기
-#if DEBUG
-import SwiftUI
-
-struct UIViewControllerPreview: UIViewControllerRepresentable {
-    let viewController: () -> UIViewController
-    
-    init(_ viewController: @escaping () -> UIViewController) {
-        self.viewController = viewController
+extension UIStackView {
+    // 스택 하위 뷰 제거
+    func clear() {
+        arrangedSubviews.forEach {
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
     }
-    
-    func makeUIViewController(context: Context) -> UIViewController {
-        return viewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
-#endif
 
 // 버튼 여백 수정
 extension UIButton {
@@ -218,3 +223,22 @@ extension UILabel {
         }
     }
 }
+
+// 미리보기
+#if DEBUG
+import SwiftUI
+
+struct UIViewControllerPreview: UIViewControllerRepresentable {
+    let viewController: () -> UIViewController
+    
+    init(_ viewController: @escaping () -> UIViewController) {
+        self.viewController = viewController
+    }
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        return viewController()
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+#endif

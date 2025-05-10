@@ -164,7 +164,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if menuIndex != 0 {
                     self.closeMenu()
-                    self.switchViewController(vc: MainAfterSignInViewController())
+                    switchViewController(vc: MainAfterSignInViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -179,7 +179,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if menuIndex != 1 {
                     self.closeMenu()
-                    self.switchViewController(vc: SearchViewController())
+                    switchViewController(vc: SearchViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -214,7 +214,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if menuIndex != 4 {
                     self.closeMenu()
-                    self.switchViewController(vc: MyPageViewController())
+                    switchViewController(vc: MyPageViewController())
                 }
             })
             .disposed(by: disposeBag)
@@ -295,21 +295,6 @@ class SidemenuView: UIView {
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    // MARK: - 뷰 컨트롤러 전환
-    
-    private func switchViewController(vc: UIViewController) {
-        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-            return
-        }
-        
-        let navVC = UINavigationController(rootViewController: vc)
-        navVC.navigationBar.isHidden = true
-        navVC.hideKeyboardWhenTappedAround()
-        
-        sceneDelegate.window?.rootViewController = navVC
-        sceneDelegate.window?.makeKeyAndVisible()
     }
     
     // MARK: - 메뉴 닫기
