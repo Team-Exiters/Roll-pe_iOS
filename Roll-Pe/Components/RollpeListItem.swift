@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class RollpeListItem: UIStackView {
     override init(frame: CGRect) {
@@ -278,8 +279,9 @@ class RollpeListTableViewCell: UITableViewCell {
         
         if isLast {
             rollpeListItem.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(24)
                 make.horizontalEdges.equalToSuperview()
-                make.verticalEdges.equalToSuperview().offset(24)
+                make.bottom.equalToSuperview().inset(24)
             }
             
         } else {
