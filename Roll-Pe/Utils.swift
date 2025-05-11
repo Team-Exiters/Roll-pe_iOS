@@ -99,16 +99,18 @@ func convertDateFormat(_ input: String) -> String? {
 
 // 뷰 컨트롤러 전환
 func switchViewController(vc: UIViewController) {
-    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-        return
+    DispatchQueue.main.async {
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+            return
+        }
+        
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
+        
+        sceneDelegate.window?.rootViewController = navVC
+        sceneDelegate.window?.makeKeyAndVisible()
     }
-    
-    let navVC = UINavigationController(rootViewController: vc)
-    navVC.navigationBar.isHidden = true
-    navVC.hideKeyboardWhenTappedAround()
-    
-    sceneDelegate.window?.rootViewController = navVC
-    sceneDelegate.window?.makeKeyAndVisible()
 }
 
 extension UIViewController {
