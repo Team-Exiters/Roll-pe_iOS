@@ -294,7 +294,7 @@ class RollpeV1ViewController: UIViewController {
                         pCode: self.pCode,
                         model: model!))
                 } else { // 타인의 마음
-                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(model: model!))
+                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(pCode: self.pCode, model: model!))
                 }
             } else {
                 // 빈 마음
