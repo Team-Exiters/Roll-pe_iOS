@@ -183,7 +183,7 @@ class SearchViewController: UIViewController, UITableViewDelegate {
     
     // 사이드 메뉴
     private func addSideMenuButton() {
-        let sideMenuView = SidemenuView(menuIndex: 1)
+        let sideMenuView = SidemenuView(highlight: "검색")
         let buttonSideMenu: UIButton = ButtonSideMenu()
         
         view.addSubview(buttonSideMenu)

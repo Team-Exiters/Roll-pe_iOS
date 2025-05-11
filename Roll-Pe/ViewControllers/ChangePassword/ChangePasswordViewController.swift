@@ -19,7 +19,7 @@ class ChangePasswordViewController: UIViewController {
     // 네비게이션 바
     private let navigationBar: NavigationBar = {
         let navigationBar = NavigationBar()
-        navigationBar.menuIndex = 4
+        navigationBar.highlight = "마이페이지"
         navigationBar.showSideMenu = true
         
         return navigationBar

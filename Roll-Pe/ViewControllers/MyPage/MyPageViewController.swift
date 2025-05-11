@@ -31,7 +31,7 @@ class MyPageViewController: UIViewController {
     
     // 사이드 메뉴
     private let buttonSideMenu = ButtonSideMenu()
-    private let sideMenuView = SidemenuView(menuIndex: 4)
+    private let sideMenuView = SidemenuView(highlight: "마이페이지")
     
     // 제목
     private let titleLabel : UILabel = {

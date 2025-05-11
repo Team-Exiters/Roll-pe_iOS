@@ -120,7 +120,7 @@ class MainAfterSignInViewController: UIViewController {
     // 사이드 메뉴
     private func addSideMenuButton() {
         // 사이드 메뉴
-        let sideMenuView = SidemenuView(menuIndex: 0)
+        let sideMenuView = SidemenuView(highlight: "홈")
         let buttonSideMenu: UIButton = ButtonSideMenu()
         
         view.addSubview(buttonSideMenu)

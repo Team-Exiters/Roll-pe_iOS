@@ -15,7 +15,7 @@ class NavigationBar: UIView {
     private let disposeBag: DisposeBag = DisposeBag()
     weak var parentViewController: UIViewController?
     
-    var menuIndex: Int = 0
+    var highlight: String = ""
     
     // 사이드 메뉴 표시 기본값 false
     var showSideMenu = false {
@@ -83,7 +83,7 @@ class NavigationBar: UIView {
     
     // 사이드 메뉴
     private func updateSideMenu() {
-        let sideMenuView = SidemenuView(menuIndex: menuIndex)
+        let sideMenuView = SidemenuView(highlight: highlight)
         let buttonSideMenu = ButtonSideMenu()
         
         self.addSubview(buttonSideMenu)

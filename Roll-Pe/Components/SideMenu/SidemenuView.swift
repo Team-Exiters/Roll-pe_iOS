@@ -30,17 +30,17 @@ class SidemenuView: UIView {
     // 메뉴 배경
     private let menuView: UIView = UIView()
     
-    init(frame: CGRect = .zero, menuIndex: Int) {
+    init(frame: CGRect = .zero, highlight: String) {
         super.init(frame: frame)
-        setup(menuIndex: menuIndex)
+        setup(highlight: highlight)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setup(menuIndex: 0)
+        setup(highlight: "")
     }
     
-    private func setup(menuIndex: Int) {
+    private func setup(highlight: String) {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         // MARK: - 뒷배경
@@ -125,12 +125,12 @@ class SidemenuView: UIView {
         }
         
         // 메뉴 텍스트 컴포넌트
-        func menuText(menu: String, index: Int) -> UILabel {
+        func menuText(text: String) -> UILabel {
             let label: UILabel = UILabel()
-            label.textColor = menuIndex == index ? .rollpeMain : .rollpeSecondary
+            label.textColor = text == highlight ? .rollpeMain : .rollpeSecondary
             label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 40)
             label.numberOfLines = 1
-            label.text = menu
+            label.text = text
             
             return label
         }
@@ -155,14 +155,14 @@ class SidemenuView: UIView {
         contentView.addArrangedSubview(menusView)
         
         // 홈
-        let home = menuText(menu: "홈", index: 0)
+        let home = menuText(text: "홈")
         menusView.addArrangedSubview(home)
         
         home.rx
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                if menuIndex != 0 {
+                if highlight != "홈" {
                     self.closeMenu()
                     switchViewController(vc: MainAfterSignInViewController())
                 }
@@ -170,14 +170,14 @@ class SidemenuView: UIView {
             .disposed(by: disposeBag)
         
         // 검색
-        let search = menuText(menu: "검색", index: 1)
+        let search = menuText(text: "검색")
         menusView.addArrangedSubview(search)
         
         search.rx
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                if menuIndex != 1 {
+                if highlight != "검색" {
                     self.closeMenu()
                     switchViewController(vc: SearchViewController())
                 }
@@ -185,11 +185,13 @@ class SidemenuView: UIView {
             .disposed(by: disposeBag)
         
         // 공지사항
+        /*
         let notice = menuText(menu: "공지사항", index: 2)
         menusView.addArrangedSubview(notice)
+         */
         
         // 1:1 문의
-        let inquiry = menuText(menu: "1:1 문의", index: 3)
+        let inquiry = menuText(text: "1:1 문의")
         menusView.addArrangedSubview(inquiry)
         
         inquiry.rx
@@ -205,14 +207,14 @@ class SidemenuView: UIView {
             .disposed(by: disposeBag)
         
         // 마이페이지
-        let mypage = menuText(menu: "마이페이지", index: 4)
+        let mypage = menuText(text: "마이페이지")
         menusView.addArrangedSubview(mypage)
         
         mypage.rx
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                if menuIndex != 4 {
+                if highlight != "마이페이지" {
                     self.closeMenu()
                     switchViewController(vc: MyPageViewController())
                 }
