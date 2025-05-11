@@ -291,6 +291,7 @@ class RollpeV1ViewController: UIViewController {
                 } else if dataModel.host.id == Int(self.keychain.read(key: "USER_ID") ?? "-1") { // 방장
                     navVC = UINavigationController(rootViewController: HeartV1HostModalViewController(
                         paperId: dataModel.id,
+                        pCode: self.pCode,
                         model: model!))
                 } else { // 타인의 마음
                     navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(model: model!))

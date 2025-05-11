@@ -26,6 +26,7 @@ class RollpeV1DetailViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     private let viewModel = RollpeV1ViewModel()
+    private let keychain = Keychain.shared
     
     // MARK: - 요소
     
@@ -122,6 +123,9 @@ class RollpeV1DetailViewController: UIViewController {
         return sv
     }()
     
+    // 공유하기
+    private let shareButton = PrimaryButton(title: "공유하기")
+    
     // 방장
     private let participantListButton: UILabel = {
         let label = UILabel()
@@ -133,7 +137,6 @@ class RollpeV1DetailViewController: UIViewController {
         return label
     }()
     
-    private let shareButton = PrimaryButton(title: "공유하기")
     private let editSecondaryButton = SecondaryButton(title: "수정하기")
     
     // 방장 - 완료
@@ -142,7 +145,6 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 참석자
     private let quitButton = SecondaryButton(title: "롤페 나가기")
-    
     private let reportButton : SecondaryButton = {
         let button = SecondaryButton(title: "")
         button.setImage(.iconSiren.withRenderingMode(.alwaysOriginal), for: .normal)
@@ -318,6 +320,7 @@ class RollpeV1DetailViewController: UIViewController {
     
     private func setupHostButtonsView() {
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
+        buttonsHStackView.addArrangedSubview(shareButton)
         
         // 공유하기
         shareButton.rx.tap
@@ -325,8 +328,6 @@ class RollpeV1DetailViewController: UIViewController {
                 
             })
             .disposed(by: disposeBag)
-        
-        buttonsHStackView.addArrangedSubview(shareButton)
         
         // 수정하기
         editSecondaryButton.rx.tap
@@ -357,6 +358,31 @@ class RollpeV1DetailViewController: UIViewController {
         reportButton.snp.makeConstraints { make in
             make.width.equalTo(reportButton.snp.height)
         }
+        
+        // 공유하기
+        shareButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                
+            })
+            .disposed(by: disposeBag)
+        
+        // 롤페 나가기 버튼
+        quitButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                
+            })
+            .disposed(by: disposeBag)
+        
+        // 신고하기
+        reportButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self,
+                      let userCode = keychain.read(key: "IDENTIFY_CODE"),
+                      let url = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSfBv17bitAz4mSeiPg0hgXU9FktXujQCEIYe3_m1L-y8bIWyQ/viewform?usp=pp_url&entry.44205633=부적절한+롤페&entry.2107714088=\(userCode)&entry.1553361014=\(pCode)&entry.1614951501=해당+없음") else { return }
+                
+                UIApplication.shared.open(url)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Bind

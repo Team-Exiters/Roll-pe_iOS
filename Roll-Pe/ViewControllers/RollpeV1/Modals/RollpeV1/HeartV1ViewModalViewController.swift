@@ -12,9 +12,11 @@ import RxCocoa
 import RxGesture
 
 class HeartV1ViewModalViewController: UIViewController {
+    let pCode: String
     let model: HeartModel
     
-    init(model: HeartModel) {
+    init(pCode: String, model: HeartModel) {
+        self.pCode = pCode
         self.model = model
         super.init(nibName: nil, bundle: nil)
     }
@@ -24,6 +26,7 @@ class HeartV1ViewModalViewController: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
+    private let keychain = Keychain.shared
     
     // MARK: - 요소
     
@@ -180,7 +183,11 @@ class HeartV1ViewModalViewController: UIViewController {
         reportLabel.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self = self,
+                      let userCode = keychain.read(key: "IDENTIFY_CODE"),
+                      let url = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSfBv17bitAz4mSeiPg0hgXU9FktXujQCEIYe3_m1L-y8bIWyQ/viewform?usp=pp_url&entry.44205633=부적절한+마음&entry.2107714088=\(userCode)&entry.1553361014=\(pCode)&entry.1614951501=\(model.code)") else { return }
+                
+                UIApplication.shared.open(url)
             })
             .disposed(by: disposeBag)
     }
