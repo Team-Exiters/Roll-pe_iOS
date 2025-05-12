@@ -33,7 +33,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     // 제목
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "초대받은 롤페"
+        label.text = "내 롤페"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
