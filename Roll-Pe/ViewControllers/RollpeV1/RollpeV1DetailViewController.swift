@@ -163,6 +163,10 @@ class RollpeV1DetailViewController: UIViewController {
         
         // UI 설정
         setupNavigationBar()
+        setupButtonsVStackView()
+        setupScrollView()
+        setupContentView()
+        setupTitle()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -170,10 +174,6 @@ class RollpeV1DetailViewController: UIViewController {
         
         // UI 설정
         resetButtonsView()
-        setupButtonsVStackView()
-        setupScrollView()
-        setupContentView()
-        setupTitle()
         
         // Bind
         bind()
@@ -205,10 +205,10 @@ class RollpeV1DetailViewController: UIViewController {
     private func setupScrollView() {
         view.addSubview(scrollView)
         
-        scrollView.snp.makeConstraints { make in
+        scrollView.snp.remakeConstraints { make in
             make.top.equalTo(navigationBar.snp.bottom)
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalTo(buttonsVStackView.snp.top).inset(40)
+            make.bottom.equalTo(buttonsVStackView.snp.top).offset(-40)
         }
     }
     
@@ -293,7 +293,6 @@ class RollpeV1DetailViewController: UIViewController {
         quitButton.removeFromSuperview()
         reportButton.removeFromSuperview()
         buttonsHStackView.removeFromSuperview()
-        buttonsVStackView.removeFromSuperview()
     }
     
     // 방장
@@ -321,13 +320,6 @@ class RollpeV1DetailViewController: UIViewController {
     private func setupHostButtonsView() {
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
         buttonsHStackView.addArrangedSubview(shareButton)
-        
-        // 공유하기
-        shareButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                
-            })
-            .disposed(by: disposeBag)
         
         // 수정하기
         editSecondaryButton.rx.tap
@@ -359,13 +351,6 @@ class RollpeV1DetailViewController: UIViewController {
             make.width.equalTo(reportButton.snp.height)
         }
         
-        // 공유하기
-        shareButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                
-            })
-            .disposed(by: disposeBag)
-        
         // 롤페 나가기 버튼
         quitButton.rx.tap
             .subscribe(onNext: { [weak self] in
@@ -381,6 +366,25 @@ class RollpeV1DetailViewController: UIViewController {
                       let url = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSfBv17bitAz4mSeiPg0hgXU9FktXujQCEIYe3_m1L-y8bIWyQ/viewform?usp=pp_url&entry.44205633=부적절한+롤페&entry.2107714088=\(userCode)&entry.1553361014=\(pCode)&entry.1614951501=해당+없음") else { return }
                 
                 UIApplication.shared.open(url)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 공유하기 버튼 설정
+    private func setupShareButton(host: RollpeUserModel) {
+        shareButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                let message: String = "\(host.name)님의 롤페를 마음을 작성해 완성해 보아요!n\n\(WEBSITE_URL)/rollpe/\(self.pCode)"
+                
+                let activityItems: [String] = [message]
+                
+                let activityViewController = UIActivityViewController(
+                    activityItems: activityItems,
+                    applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+                
+                self.present(activityViewController, animated: true, completion: nil)
             })
             .disposed(by: disposeBag)
     }
@@ -468,6 +472,8 @@ class RollpeV1DetailViewController: UIViewController {
                         switchViewController(vc: ErrorHandlerViewController())
                     }
                 }
+                
+                self.setupShareButton(host: model.host)
             })
             .disposed(by: disposeBag)
         
