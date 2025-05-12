@@ -7,13 +7,13 @@
 
 import UIKit
 import SnapKit
-import SwiftUI
 import RxSwift
 import RxCocoa
 
 class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
     private let disposeBag = DisposeBag()
     private let viewModel = GetRollpeViewModel()
+    private let rollpeV1ViewModel = RollpeV1ViewModel()
     
     // MARK: - 요소
     
@@ -22,10 +22,9 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
     private let contentView = UIView()
     
     // 네비게이션 바
-    private lazy var navigationBar: NavigationBar = {
+    private let navigationBar: NavigationBar = {
         let navigationBar = NavigationBar()
-        navigationBar.parentViewController = self
-        navigationBar.menuIndex = 4
+        navigationBar.highlight = "마이페이지"
         navigationBar.showSideMenu = true
         
         return navigationBar
@@ -66,7 +65,7 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
         tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 118
+        tv.estimatedRowHeight = 128
         tv.isScrollEnabled = false
         
         // 내용 여백
@@ -93,14 +92,22 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
         setupAmountLabel()
         
         setupNavigationBar()
+        
+        // Bind
+        bindRollpeViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        rollpeTableView.dataSource = nil
-        
+        // Bind
         bind()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        rollpeV1ViewModel.isPushed = false
     }
     
     // MARK: - UI 설정
@@ -119,15 +126,15 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.verticalEdges.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview()
             make.width.equalToSuperview().offset(-40)
+            make.height.greaterThanOrEqualToSuperview()
         }
     }
     
     private func setupNavigationBar() {
-        self.view.addSubview(navigationBar)
+        view.addSubview(navigationBar)
         
         navigationBar.parentViewController = self
         
@@ -167,7 +174,7 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -192,7 +199,6 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
                 
                 self.amountLabel.text = "총 \(rollpeModels.count)개"
                 
-                self.setupAmountLabel()
                 self.contentView.addSubview(self.rollpeTableView)
                 
                 DispatchQueue.main.async {
@@ -208,16 +214,107 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
                 }
             })
             .disposed(by: disposeBag)
+        
+        rollpeTableView.rx.itemSelected
+            .withLatestFrom(output.rollpeModels) { indexPath, rollpeModels in
+                return (indexPath, rollpeModels)
+            }
+            .subscribe(onNext: { indexPath, rollpeModels in
+                guard let models = rollpeModels,
+                      indexPath.row < models.count else { return }
+                
+                let selectedModel = models[indexPath.row]
+                self.rollpeV1ViewModel.selectedRollpeDataModel = selectedModel
+                
+                self.rollpeV1ViewModel.getRollpeData(pCode: selectedModel.code)
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+extension InvitedRollpeViewController {
+    // bind
+    private func bindRollpeViewModel() {
+        let output = rollpeV1ViewModel.transform()
+        
+        output.needEnter
+            .emit(onNext: { needEnter in
+                if let needEnter = needEnter,
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
+                   !self.rollpeV1ViewModel.isPushed {
+                    if needEnter {
+                        if rollpeDataModel.viewStat { // 공개
+                            self.confirmEnterRollpe()
+                        } else { // 비공개
+                            self.showPasswordTextFieldAlert()
+                        }
+                    } else {
+                        self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
+                        self.rollpeV1ViewModel.isPushed = true
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.isEnterSuccess
+            .emit(onNext: { isEnterSuccess in
+                if let isEnterSuccess = isEnterSuccess,
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
+                   !self.rollpeV1ViewModel.isPushed {
+                    if isEnterSuccess {
+                        self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
+                        self.rollpeV1ViewModel.isPushed = true
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        output.errorAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showAlert(title: "오류", message: message)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+    // 롤페 입장 확인
+    private func confirmEnterRollpe() {
+        guard let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel else {
+            return
+        }
+        
+        self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
+            .subscribe(onNext: {
+                self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 비밀번호를 통한 입장
+    private func showPasswordTextFieldAlert() {
+        let alertController = UIAlertController(title: "롤페 입장하기", message: "비밀번호를 입력하세요", preferredStyle: .alert)
+        
+        alertController.addTextField { field in
+            
+        }
+        
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            if let textField = alertController.textFields?.first,
+               let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
+                self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code, password: textField.text)
+            }
+        }))
+        
+        alertController.addAction(UIAlertAction(title: "취소", style: .cancel))
+        
         self.present(alertController, animated: true, completion: nil)
     }
 }
 
 #if DEBUG
+import SwiftUI
+
 struct InvitedRollpeViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

@@ -15,7 +15,7 @@ class NavigationBar: UIView {
     private let disposeBag: DisposeBag = DisposeBag()
     weak var parentViewController: UIViewController?
     
-    var menuIndex: Int = 0
+    var highlight: String = ""
     
     // 사이드 메뉴 표시 기본값 false
     var showSideMenu = false {
@@ -72,7 +72,7 @@ class NavigationBar: UIView {
         logo.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                self.goToHome()
+                switchViewController(vc: MainAfterSignInViewController())
             })
             .disposed(by: disposeBag)
         
@@ -83,7 +83,7 @@ class NavigationBar: UIView {
     
     // 사이드 메뉴
     private func updateSideMenu() {
-        let sideMenuView = SidemenuView(menuIndex: menuIndex)
+        let sideMenuView = SidemenuView(highlight: highlight)
         let buttonSideMenu = ButtonSideMenu()
         
         self.addSubview(buttonSideMenu)
@@ -106,19 +106,5 @@ class NavigationBar: UIView {
         if let navigationController = self.window?.rootViewController as? UINavigationController {
             navigationController.popViewController(animated: true)
         }
-    }
-    
-    // 홈으로 가기
-    private func goToHome() {
-        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-            return
-        }
-        
-        let navVC = UINavigationController(rootViewController: MainAfterSignInViewController())
-        navVC.navigationBar.isHidden = true
-        navVC.hideKeyboardWhenTappedAround()
-        
-        sceneDelegate.window?.rootViewController = navVC
-        sceneDelegate.window?.makeKeyAndVisible()
     }
 }

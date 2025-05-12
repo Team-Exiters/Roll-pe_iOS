@@ -1,20 +1,16 @@
 //
-//  SearchUserModalViewController.swift
+//  ParticipantListModalViewController.swift
 //  Roll-Pe
 //
-//  Created by 김태은 on 2/25/25.
+//  Created by 김태은 on 14/4/25.
 //
 
 import UIKit
 import SnapKit
 import RxSwift
 
-class SearchUserModalViewController: UIViewController, UITableViewDelegate {
+class ParticipantListModalViewController: UIViewController, UITableViewDelegate {
     private let disposeBag = DisposeBag()
-    private let viewModel = SearchUserViewModel()
-    
-    // 선택한 유저 부모 뷰로 전달
-    var onUserSelected: ((SearchUserResultModel) -> Void)?
     
     // MARK: - 요소
     
@@ -41,7 +37,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
     
     private let titleLabel : UILabel = {
         let label = UILabel()
-        label.text = "전달하기"
+        label.text = "참여자 목록"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
@@ -55,41 +51,9 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         return label
     }()
     
-    private lazy var searchBar: RoundedBorderTextField = {
-        let textField = RoundedBorderTextField()
-        textField.placeholder = "검색어를 입력하세요."
-        textField.rightViewMode = .always
-        textField.rightView = searchButton
-        textField.returnKeyType = .search
-        
-        return textField
-    }()
-    
-    private let searchButton: UIButton = {
-        let button: UIButton = UIButton()
-        let iconView: UIImageView = UIImageView()
-        let iconImage: UIImage = UIImage.iconMagnifyingGlass
-        iconView.image = iconImage
-        iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = .rollpeSecondary
-        button.addSubview(iconView)
-        
-        iconView.snp.makeConstraints { make in
-            make.width.equalTo(22)
-            make.height.equalTo(iconView.snp.width).dividedBy(getImageRatio(image: iconImage))
-            make.trailing.equalToSuperview().inset(16)
-        }
-        
-        button.snp.makeConstraints { make in
-            make.size.equalTo(22)
-        }
-        
-        return button
-    }()
-    
     private let tableView: UITableView = {
         let tv = UITableView()
-        tv.register(SearchUserModalTableViewCell.self, forCellReuseIdentifier: "SearchUserCell")
+        tv.register(ParticipantListModalTableViewCell.self, forCellReuseIdentifier: "ParticipantCell")
         
         tv.rowHeight = UITableView.automaticDimension
         tv.estimatedRowHeight = 46
@@ -107,8 +71,6 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         return tv
     }()
     
-    private let sendButton = PrimaryButton(title: "선택하기")
-    
     // MARK: - 생명주기
     
     override func viewDidLoad() {
@@ -117,7 +79,6 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         self.hideKeyboardWhenTappedAround()
         
         setUI()
-        bind()
     }
     
     // MARK: - UI 구성
@@ -126,9 +87,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         setupContentView()
         setupCloseButton()
         setupTitle()
-        setupSearchBar()
         setupTableView()
-        setupSendButton()
     }
     
     // 내부 뷰
@@ -169,16 +128,6 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         }
     }
     
-    // 검색 바
-    private func setupSearchBar() {
-        contentView.addSubview(searchBar)
-        
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(28)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-    }
-    
     // 테이블 뷰
     private func setupTableView() {
         tableView.delegate = self
@@ -186,72 +135,15 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         contentView.addSubview(tableView)
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
+            make.top.equalTo(titleLabel.snp.bottom).offset(28)
             make.horizontalEdges.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview().offset(-24)
         }
-    }
-    
-    // 전송 버튼
-    private func setupSendButton() {
-        contentView.addSubview(sendButton)
-        
-        sendButton.snp.makeConstraints{ make in
-            make.top.equalTo(tableView.snp.bottom).offset(28)
-            make.bottom.equalToSuperview().inset(20)
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-    }
-    
-    // MARK: - Bind
-    
-    private func bind() {
-        let input = SearchUserViewModel.Input(
-            word: searchBar.rx.text,
-            keyboardTapEvent: searchBar.rx.controlEvent(.editingDidEndOnExit),
-            searchButtonTapEvent: searchButton.rx.tap,
-            selectUser: tableView.rx.itemSelected
-        )
-        
-        let output = viewModel.transform(input)
-        
-        output.showAlert
-            .drive(onNext: { [weak self] message in
-                guard let self = self else { return }
-                
-                if let message = message {
-                    self.showAlert(title: "오류", message: message)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        output.users
-            .map { users in users.enumerated().map { ($0.element, users.count) } }
-            .drive(tableView.rx.items(cellIdentifier: "SearchUserCell", cellType: SearchUserModalTableViewCell.self)) { index, data, cell in
-                let (model, length) = data
-                cell.configure(model: model, isLast: index == length - 1)
-            }
-            .disposed(by: disposeBag)
-        
-        sendButton.rx.tap
-            .withLatestFrom(output.users) { _, users in
-                users.first(where: { $0.isSelected! })
-            }
-            .subscribe(onNext: { [weak self] selectedUser in
-                guard let self = self else { return }
-                
-                if let user = selectedUser {
-                    self.onUserSelected?(user)
-                    self.dismiss(animated: true)
-                } else {
-                    self.showAlert(title: "오류", message: "유저를 선택해주세요.")
-                }
-            })
-            .disposed(by: disposeBag)
     }
 }
 
 // table view cell
-class SearchUserModalTableViewCell: UITableViewCell {
+class ParticipantListModalTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
@@ -261,16 +153,6 @@ class SearchUserModalTableViewCell: UITableViewCell {
         super.init(coder: coder)
         setup()
     }
-    
-    private let iconCheck: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = .iconCheck
-        imageView.contentMode = .scaleAspectFit
-        imageView.tintColor = .rollpeMain
-        imageView.isHidden = true
-        
-        return imageView
-    }()
     
     private let label: UILabel = {
         let label = UILabel()
@@ -288,36 +170,58 @@ class SearchUserModalTableViewCell: UITableViewCell {
         return view
     }()
     
+    private let kickImageView: UIImageView = {
+        let iv = UIImageView()
+        let image: UIImage = .iconDeny
+        iv.image = image
+        iv.tintColor = .rollpeStatusDanger
+        
+        return iv
+    }()
+    
+    private let reportImageView: UIImageView = {
+        let iv = UIImageView()
+        let image: UIImage = .iconSiren.withRenderingMode(.alwaysOriginal)
+        iv.image = image
+        
+        return iv
+    }()
+    
     private func setup() {
         self.selectionStyle = .none
         self.backgroundColor = .clear
         
-        contentView.addSubview(iconCheck)
-        
-        iconCheck.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(10)
-        }
-        
         contentView.addSubview(label)
+        contentView.addSubview(kickImageView)
+        contentView.addSubview(reportImageView)
     }
     
     func configure(model: SearchUserResultModel, isLast: Bool) {
         label.text = "\(model.name)(\(model.identifyCode))"
-        iconCheck.isHidden = !(model.isSelected ?? false)
-        
-        iconCheck.snp.updateConstraints { make in
-            make.size.equalTo((model.isSelected ?? false) ? 10 : 0)
-        }
         
         separatorView.removeFromSuperview()
         
         label.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(12)
-            make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
+            make.leading.equalToSuperview().offset(16)
+            if isLast {
+                make.bottom.equalToSuperview().inset(12)
+            }
+        }
+        
+        reportImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
             make.trailing.equalToSuperview().offset(-16)
-            
+            make.size.equalTo(20)
+            if isLast {
+                make.bottom.equalToSuperview().inset(12)
+            }
+        }
+        
+        kickImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(12)
+            make.trailing.equalTo(reportImageView.snp.leading).offset(-12)
+            make.size.equalTo(20)
             if isLast {
                 make.bottom.equalToSuperview().inset(12)
             }
@@ -333,16 +237,17 @@ class SearchUserModalTableViewCell: UITableViewCell {
                 make.height.equalTo(2)
             }
         }
+        
     }
 }
 
 #if DEBUG
 import SwiftUI
 
-struct PreviewSearchUserModalViewController: PreviewProvider {
+struct ParticipantListViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            SearchUserModalViewController()
+            ParticipantListModalViewController()
         }
     }
 }

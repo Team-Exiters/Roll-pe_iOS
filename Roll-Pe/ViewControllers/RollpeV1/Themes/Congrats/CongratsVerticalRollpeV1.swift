@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class CongratsVerticalRollpeV1: UIView {
+class CongratsVerticalRollpeV1: UIControl {
     private let disposeBag = DisposeBag()
     
     var onMemoSelected: ((Int, HeartModel?) -> Void)?
@@ -20,6 +20,12 @@ class CongratsVerticalRollpeV1: UIView {
             if let model = model {
                 setInfo(model: model)
             }
+        }
+    }
+    
+    var isMemoInteractionEnabled: Bool = true {
+        didSet {
+            setMemoInteractionEnabled(isMemoInteractionEnabled)
         }
     }
     
@@ -160,15 +166,19 @@ class CongratsVerticalRollpeV1: UIView {
                 .when(.recognized)
                 .subscribe(onNext: { _ in
                     self.onMemoSelected?(
-                        index, model.hearts.data.first { $0.index == index }
+                        index, model.hearts.data?.first { $0.index == index }
                     )
                 })
                 .disposed(by: disposeBag)
         }
         
         // response에 따라 메모에 데이터 입력
-        for heart in model.hearts.data {
+        for heart in model.hearts.data ?? [] {
             memoViews[heart.index].model = heart
         }
+    }
+    
+    private func setMemoInteractionEnabled(_ enabled: Bool) {
+        memoViews.forEach { $0.isUserInteractionEnabled = enabled }
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 struct HeartResponseModel: Decodable {
     let count: Int
-    let data: [HeartModel]
+    let data: [HeartModel]?
 }
 
 struct HeartModel: Decodable {

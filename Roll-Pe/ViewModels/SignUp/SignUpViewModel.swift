@@ -128,7 +128,7 @@ final class SignUpViewModel {
             "password": password
         ]
         
-        RxAlamofire.requestData(.post, "\(ip)/api/user/signup", parameters: body, encoding: JSONEncoding.default, headers: headers)
+        RxAlamofire.requestData(.post, "\(API_SERVER_URL)/api/user/signup", parameters: body, encoding: JSONEncoding.default, headers: headers)
             .observe(on: MainScheduler.instance)
             .do(onSubscribe: {
                 self.isLoading.onNext(true)

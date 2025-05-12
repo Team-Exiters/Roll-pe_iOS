@@ -7,25 +7,13 @@
 
 import Foundation
 
-struct RollpeModel {
-    // api값 저장만하고 화면에 뿌려주는 용도라 id추가 필요없음
-    // 변수들 작명,타입은 임의, 추후에 최종수정
-    let host : String //host는 임의로 넣어둠
-    let title : String
-    var writers : [UserDataModel]
-    var participants : [UserDataModel]
-    var isPublic : Bool
-    var date : Date
-    var password : String?
-}
-
 // 롤페 목록 모델
 struct RollpeResponseListModel: Decodable {
     let status_code: Int
     let message: String
     let code: String
     let link: String?
-    let data: [RollpeDataModel]
+    let data: [RollpeListDataModel]
 }
 
 // 롤페 페이지네이션 적용된 목록 모델
@@ -41,11 +29,11 @@ struct RollpeResponsePagenationListDataModel: Decodable {
     let count: Int
     let next: String?
     let previous: String?
-    let results: [RollpeDataModel]
+    let results: [RollpeListDataModel]
 }
 
-// 롤페 data 모델
-struct RollpeDataModel: Decodable {
+// 롤페 목록 data 모델
+struct RollpeListDataModel: Decodable {
     let id: Int
     let code: String
     let title: String
@@ -71,13 +59,14 @@ struct RollpeV1ResponseModel: Decodable {
 struct RollpeV1DataModel: Decodable {
     let id: Int
     let code: String
-    let title: String
+    var title: String
     let host: RollpeUserModel
     let receive: RollpeReceiveDataModel
     let viewStat: Bool
     let theme: String
     let size: String
     let ratio: String
+    let maxHeartLength: Int
     let hearts: HeartResponseModel
     let invitingUser: [RollpeUserModel]
     let createdAt: String

@@ -14,7 +14,7 @@ class SearchRollpeViewModel {
     private let apiService = APIService.shared
     
     let rollpeData = BehaviorRelay<RollpeResponsePagenationListModel?>(value: nil)
-    let rollpeModels = BehaviorRelay<[RollpeDataModel]?>(value: nil)
+    let rollpeModels = BehaviorRelay<[RollpeListDataModel]?>(value: nil)
     private let alertMessage = PublishSubject<String?>()
     
     struct Input {
@@ -26,7 +26,7 @@ class SearchRollpeViewModel {
     
     struct Output {
         let rollpeData: Driver<RollpeResponsePagenationListModel?>
-        let rollpeModels: Driver<[RollpeDataModel]?>
+        let rollpeModels: Driver<[RollpeListDataModel]?>
         let showAlert: Driver<String?>
     }
     

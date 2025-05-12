@@ -18,8 +18,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let keychain = Keychain.shared
         
-        print(keychain.read(key: "ACCESS_TOKEN"))
-        
         window = UIWindow(windowScene: windowScene)
         
         let navVC: UINavigationController

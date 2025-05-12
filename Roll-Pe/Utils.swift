@@ -7,9 +7,14 @@
 
 import Foundation
 import UIKit
-import SwiftUI
 import RxSwift
 import RxCocoa
+
+// API 서버 주소
+let API_SERVER_URL: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
+
+// 웹사이트 주소
+let WEBSITE_URL: String = "https://haren-dev2.defcon.or.kr"
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
@@ -18,9 +23,6 @@ let window = windowScene?.windows.first
 
 let safeareaTop = window?.safeAreaInsets.top ?? 0
 let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
-
-// 서버 IP 주소
-let ip: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
 
 // 이메일 정규식
 let emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$"
@@ -95,6 +97,22 @@ func convertDateFormat(_ input: String) -> String? {
     return outputFormatter.string(from: date)
 }
 
+// 뷰 컨트롤러 전환
+func switchViewController(vc: UIViewController) {
+    DispatchQueue.main.async {
+        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
+            return
+        }
+        
+        let navVC = UINavigationController(rootViewController: vc)
+        navVC.navigationBar.isHidden = true
+        navVC.hideKeyboardWhenTappedAround()
+        
+        sceneDelegate.window?.rootViewController = navVC
+        sceneDelegate.window?.makeKeyAndVisible()
+    }
+}
+
 extension UIViewController {
     // 키보드 숨기기
     func hideKeyboardWhenTappedAround() {
@@ -123,21 +141,34 @@ extension UIViewController {
         present(alert, animated: true)
         return result
     }
+    
+    // Alert 표시
+    func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // 뒤로 돌아가는 Alert 표시
+    func showAlertAndPop(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            self.navigationController?.popViewController(animated: true)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
-// 미리보기
-struct UIViewControllerPreview: UIViewControllerRepresentable {
-    let viewController: () -> UIViewController
-    
-    init(_ viewController: @escaping () -> UIViewController) {
-        self.viewController = viewController
+extension UIStackView {
+    // 스택 하위 뷰 제거
+    func clear() {
+        arrangedSubviews.forEach {
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
     }
-    
-    func makeUIViewController(context: Context) -> UIViewController {
-        return viewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
 // 버튼 여백 수정
@@ -194,3 +225,22 @@ extension UILabel {
         }
     }
 }
+
+// 미리보기
+#if DEBUG
+import SwiftUI
+
+struct UIViewControllerPreview: UIViewControllerRepresentable {
+    let viewController: () -> UIViewController
+    
+    init(_ viewController: @escaping () -> UIViewController) {
+        self.viewController = viewController
+    }
+    
+    func makeUIViewController(context: Context) -> UIViewController {
+        return viewController()
+    }
+    
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
+#endif

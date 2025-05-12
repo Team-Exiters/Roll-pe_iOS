@@ -10,7 +10,6 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
-import SwiftUI
 import SafariServices
 
 class SignUpViewController: UIViewController {
@@ -353,7 +352,7 @@ class SignUpViewController: UIViewController {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/terms-of-service")
+                let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
             })
@@ -384,7 +383,7 @@ class SignUpViewController: UIViewController {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "https://haren-dev2.defcon.or.kr/privacy-policy")
+                let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
                 self.present(safariVc, animated: true, completion: nil)
             })
@@ -434,7 +433,7 @@ class SignUpViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showSuccessAlert(message: message)
+                    self.showAlertAndPop(title: "알림", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -442,28 +441,16 @@ class SignUpViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: true)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 #if DEBUG
+import SwiftUI
+
 struct SignUpViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

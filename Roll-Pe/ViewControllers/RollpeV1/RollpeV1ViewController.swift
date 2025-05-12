@@ -10,7 +10,6 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
-import SwiftUI
 
 let monoThemes: [String] = ["추모"]
 
@@ -44,6 +43,7 @@ class RollpeV1ViewController: UIViewController {
         return button
     }()
     
+    // 롤페 뷰
     private var rollpeView: RollpeV1Types?
     
     // 변형 관련
@@ -102,7 +102,7 @@ class RollpeV1ViewController: UIViewController {
         view.addSubview(closeButton)
         
         closeButton.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
             make.leading.equalToSuperview().offset(20)
             make.size.equalTo(20)
         }
@@ -115,28 +115,34 @@ class RollpeV1ViewController: UIViewController {
     }
     
     // 롤페 뷰 설정
-    private func setupRollpeView(dataModel: RollpeV1DataModel) {
+    private func setupRollpeView(model: RollpeV1DataModel) {
         // 롤페 뷰 설정
-        switch dataModel.theme {
-        case "화이트":
-            self.rollpeView = dataModel.ratio == "가로" ? WhiteHorizontalRollpeV1() : WhiteVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        case "추모":
-            self.rollpeView = dataModel.ratio == "가로" ? MemorialHorizontalRollpeV1() : MemorialVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        case "축하":
-            self.rollpeView = dataModel.ratio == "가로" ? CongratsHorizontalRollpeV1() : CongratsVerticalRollpeV1()
-            self.rollpeView!.model = dataModel
-        default: break
+        switch (model.ratio, model.theme, model.size) {
+        case ("가로", "화이트", "A4"):
+            self.rollpeView = WhiteHorizontalRollpeV1()
+        case ("가로", "추모", "A4"):
+            self.rollpeView = MemorialHorizontalRollpeV1()
+        case ("가로", "축하", "A4"):
+            self.rollpeView = CongratsHorizontalRollpeV1()
+        case ("세로", "화이트", "A4"):
+            self.rollpeView = WhiteVerticalRollpeV1()
+        case ("세로", "추모", "A4"):
+            self.rollpeView = MemorialVerticalRollpeV1()
+        case ("세로", "축하", "A4"):
+            self.rollpeView = CongratsVerticalRollpeV1()
+        default:
+            break
         }
         
         guard let rollpeView = rollpeView else { return }
+        
+        rollpeView.model = model
         
         // 롤페 뷰 디바이스 너비와 높이에 따라 비율 조정
         let size = rollpeView.frame.size
         let ratio = UIScreen.main.bounds.height / size.height
         
-        self.view.addSubview(rollpeView)
+        view.addSubview(rollpeView)
         
         rollpeView.transform = CGAffineTransform(scaleX: ratio, y: ratio)
         
@@ -182,7 +188,7 @@ class RollpeV1ViewController: UIViewController {
                 guard let model = model else { return }
                 
                 self.resetRollpeView()
-                self.setupRollpeView(dataModel: model)
+                self.setupRollpeView(model: model)
                 self.bindMemoTap(dataModel: model)
                 self.bindGestures()
                 
@@ -193,7 +199,7 @@ class RollpeV1ViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showCriticalErrorAlert(message: message)
+                    self.showAlertAndPop(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -285,9 +291,10 @@ class RollpeV1ViewController: UIViewController {
                 } else if dataModel.host.id == Int(self.keychain.read(key: "USER_ID") ?? "-1") { // 방장
                     navVC = UINavigationController(rootViewController: HeartV1HostModalViewController(
                         paperId: dataModel.id,
+                        pCode: self.pCode,
                         model: model!))
                 } else { // 타인의 마음
-                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(model: model!))
+                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(pCode: self.pCode, model: model!))
                 }
             } else {
                 // 빈 마음
@@ -304,21 +311,13 @@ class RollpeV1ViewController: UIViewController {
             self.present(navVC, animated: false, completion: nil)
         }
     }
-    
-    // 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: false)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 // rollpeView 타입 관련
-protocol RollpeV1Types: UIView {
+protocol RollpeV1Types: UIControl {
     var onMemoSelected: ((Int, HeartModel?) -> Void)? { get set }
     var model: RollpeV1DataModel? { get set }
+    var isMemoInteractionEnabled: Bool { get set }
 }
 
 extension WhiteHorizontalRollpeV1: RollpeV1Types {}
@@ -329,6 +328,8 @@ extension CongratsHorizontalRollpeV1: RollpeV1Types {}
 extension CongratsVerticalRollpeV1: RollpeV1Types {}
 
 #if DEBUG
+import SwiftUI
+
 struct RollpeV1ViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

@@ -1,5 +1,5 @@
 //
-//  HeartV1HostModalViewController.swift
+//  HeartV1MineModalViewController.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 3/27/25.
@@ -11,13 +11,15 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HeartV1HostModalViewController: UIViewController {
+class HeartV1MineModalViewController: UIViewController {
     let paperId: Int
     let model: HeartModel
+    let isMono: Bool
     
-    init(paperId: Int, model: HeartModel) {
+    init(paperId: Int, model: HeartModel, isMono: Bool) {
         self.paperId = paperId
         self.model = model
+        self.isMono = isMono
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -71,10 +73,10 @@ class HeartV1HostModalViewController: UIViewController {
         return label
     }()
     
-    // 신고 버튼
-    private let reportLabel: UILabel = {
+    // 수정 버튼
+    private let editLabel: UILabel = {
         let label = UILabel()
-        label.text = "신고"
+        label.text = "수정"
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeBlack
         
@@ -86,7 +88,7 @@ class HeartV1HostModalViewController: UIViewController {
         let label = UILabel()
         label.text = "삭제"
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        label.textColor = .rollpeStatusDanger
+        label.textColor = .rollpeBlack
         
         return label
     }()
@@ -105,7 +107,7 @@ class HeartV1HostModalViewController: UIViewController {
         setupMemoView()
         setupScrollView()
         setupMemoLabel()
-        setupReportLabel()
+        setupEditLabel()
         setupDeleteLabel()
         addCloseButton()
         
@@ -144,8 +146,7 @@ class HeartV1HostModalViewController: UIViewController {
         memoView.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-48)
+            make.edges.equalToSuperview()
         }
     }
     
@@ -172,10 +173,10 @@ class HeartV1HostModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupReportLabel() {
-        memoView.addSubview(reportLabel)
+    private func setupEditLabel() {
+        memoView.addSubview(editLabel)
         
-        reportLabel.snp.makeConstraints { make in
+        editLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.bottom.equalToSuperview().offset(-20)
         }
@@ -202,15 +203,24 @@ class HeartV1HostModalViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        // 신고 버튼
-        reportLabel.rx.tapGesture()
+        // 수정 버튼
+        editLabel.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(
+                    HeartV1EditModalViewController(
+                        paperId: paperId,
+                        heartId: model.id,
+                        context: model.content,
+                        index: model.index,
+                        isMono: isMono
+                    ), animated: false)
             })
             .disposed(by: disposeBag)
         
-        // 삭제 버튼
+        // 완료 버튼
         deleteLabel.rx.tapGesture()
             .when(.recognized)
             .observe(on: MainScheduler.instance)
@@ -227,7 +237,8 @@ class HeartV1HostModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showSuccessAlert(message: message)
+                    self.showAlert(title: "알림", message: message)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
                 }
             })
             .disposed(by: disposeBag)
@@ -235,29 +246,10 @@ class HeartV1HostModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showCriticalErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    // 완료 알림창
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 심각한 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
     }
 }

@@ -18,7 +18,7 @@ class MainAfterSignInViewModel {
     }
     
     // 지금 뜨는 롤페들
-    let hotRollpeList = BehaviorRelay<[RollpeDataModel]>(value: [])
+    let hotRollpeList = BehaviorRelay<[RollpeListDataModel]>(value: [])
     
     // 지금 뜨는 롤페들 불러오기
     func getHotRollpes() {

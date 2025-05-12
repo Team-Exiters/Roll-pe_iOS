@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import SwiftUI
 
 class MainBeforeSignInViewController: UIViewController {
     let disposeBag = DisposeBag()
@@ -111,6 +110,8 @@ class MainBeforeSignInViewController: UIViewController {
 }
 
 #if DEBUG
+import SwiftUI
+
 struct MainBeforeSignInViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

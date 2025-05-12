@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class RollpeListItem: UIStackView {
     override init(frame: CGRect) {
@@ -99,7 +100,7 @@ class RollpeListItem: UIStackView {
         infoView.addArrangedSubview(desc)
     }
     
-    func configure(model: RollpeDataModel) {
+    func configure(model: RollpeListDataModel) {
         // 공개 여부
         self.removeArrangedSubview(viewStatView)
         viewStatView.removeFromSuperview()
@@ -213,7 +214,7 @@ class RollpeSearchListItem: UIStackView {
     }
     
     
-    func configure(model: RollpeDataModel) {
+    func configure(model: RollpeListDataModel) {
         // 테마
         self.removeArrangedSubview(themeView)
         themeView.removeFromSuperview()
@@ -272,14 +273,15 @@ class RollpeListTableViewCell: UITableViewCell {
         contentView.addSubview(rollpeListItem)
     }
     
-    func configure(model: RollpeDataModel, isLast: Bool) {
+    func configure(model: RollpeListDataModel, isLast: Bool) {
         rollpeListItem.configure(model: model)
         separatorView.removeFromSuperview()
         
         if isLast {
             rollpeListItem.snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(24)
                 make.horizontalEdges.equalToSuperview()
-                make.verticalEdges.equalToSuperview().offset(24)
+                make.bottom.equalToSuperview().inset(24)
             }
             
         } else {

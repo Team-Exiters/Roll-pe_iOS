@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxGesture
-import SwiftUI
 
 class MyPageViewController: UIViewController {
     private let disposeBag = DisposeBag()
@@ -32,7 +31,7 @@ class MyPageViewController: UIViewController {
     
     // 사이드 메뉴
     private let buttonSideMenu = ButtonSideMenu()
-    private let sideMenuView = SidemenuView(menuIndex: 4)
+    private let sideMenuView = SidemenuView(highlight: "마이페이지")
     
     // 제목
     private let titleLabel : UILabel = {
@@ -386,7 +385,8 @@ class MyPageViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showWithdrawSuccessAlert(message: message)
+                    self.showAlert(title: "알림", message: message)
+                    self.viewModel.logout()
                 }
             })
             .disposed(by: disposeBag)
@@ -394,30 +394,16 @@ class MyPageViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
-    // 회원탈퇴 완료 알림창
-    private func showWithdrawSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.viewModel.logout()
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 오류 알림창
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
 }
 
 #if DEBUG
+import SwiftUI
+
 struct MyPageViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {

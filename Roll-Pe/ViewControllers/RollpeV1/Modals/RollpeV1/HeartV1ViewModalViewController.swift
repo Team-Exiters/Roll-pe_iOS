@@ -1,5 +1,5 @@
 //
-//  HeartV1MineModalViewController.swift
+//  HeartV1ViewModalViewController.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 3/27/25.
@@ -11,15 +11,13 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HeartV1MineModalViewController: UIViewController {
-    let paperId: Int
+class HeartV1ViewModalViewController: UIViewController {
+    let pCode: String
     let model: HeartModel
-    let isMono: Bool
     
-    init(paperId: Int, model: HeartModel, isMono: Bool) {
-        self.paperId = paperId
+    init(pCode: String, model: HeartModel) {
+        self.pCode = pCode
         self.model = model
-        self.isMono = isMono
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -28,7 +26,7 @@ class HeartV1MineModalViewController: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
-    private let viewModel = DeleteHeartViewModel()
+    private let keychain = Keychain.shared
     
     // MARK: - 요소
     
@@ -73,20 +71,10 @@ class HeartV1MineModalViewController: UIViewController {
         return label
     }()
     
-    // 수정 버튼
-    private let editLabel: UILabel = {
+    // 신고 버튼
+    private let reportLabel: UILabel = {
         let label = UILabel()
-        label.text = "수정"
-        label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
-        label.textColor = .rollpeBlack
-        
-        return label
-    }()
-    
-    // 삭제 버튼
-    private let deleteLabel: UILabel = {
-        let label = UILabel()
-        label.text = "삭제"
+        label.text = "신고"
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
         label.textColor = .rollpeBlack
         
@@ -107,8 +95,7 @@ class HeartV1MineModalViewController: UIViewController {
         setupMemoView()
         setupScrollView()
         setupMemoLabel()
-        setupEditLabel()
-        setupDeleteLabel()
+        setupReportLabel()
         addCloseButton()
         
         // bind
@@ -173,29 +160,18 @@ class HeartV1MineModalViewController: UIViewController {
     }
     
     // 수정 버튼
-    private func setupEditLabel() {
-        memoView.addSubview(editLabel)
+    private func setupReportLabel() {
+        memoView.addSubview(reportLabel)
         
-        editLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
+        reportLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-20)
-        }
-    }
-    
-    // 삭제 버튼
-    private func setupDeleteLabel() {
-        memoView.addSubview(deleteLabel)
-        
-        deleteLabel.snp.makeConstraints { make in
-            make.trailing.bottom.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
         }
     }
     
     // MARK: - Bind
     
     private func bind() {
-        let output = viewModel.transform()
-        
         // 닫기 버튼
         closeButton.rx.tap
             .subscribe(onNext: {
@@ -203,71 +179,16 @@ class HeartV1MineModalViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        // 수정 버튼
-        editLabel.rx.tapGesture()
+        // 신고 버튼
+        reportLabel.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self = self,
+                      let userCode = keychain.read(key: "IDENTIFY_CODE"),
+                      let url = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSfBv17bitAz4mSeiPg0hgXU9FktXujQCEIYe3_m1L-y8bIWyQ/viewform?usp=pp_url&entry.44205633=부적절한+마음&entry.2107714088=\(userCode)&entry.1553361014=\(pCode)&entry.1614951501=\(model.code)") else { return }
                 
-                self.navigationController?.pushViewController(
-                    HeartV1EditModalViewController(
-                        paperId: paperId,
-                        heartId: model.id,
-                        context: model.content,
-                        index: model.index,
-                        isMono: isMono
-                    ), animated: false)
+                UIApplication.shared.open(url)
             })
             .disposed(by: disposeBag)
-        
-        // 완료 버튼
-        deleteLabel.rx.tapGesture()
-            .when(.recognized)
-            .observe(on: MainScheduler.instance)
-            .flatMap { _ in
-                self.showConfirmAlert(title: "알림", message: "마음을 삭제하시겠습니까?")
-            }
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
-                
-                viewModel.deleteHeart(hCode: model.code)
-            })
-            .disposed(by: disposeBag)
-        
-        output.successAlertMessage
-            .drive(onNext: { message in
-                if let message = message {
-                    self.showSuccessAlert(message: message)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        output.criticalAlertMessage
-            .drive(onNext: { message in
-                if let message = message {
-                    self.showCriticalErrorAlert(message: message)
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    // 완료 알림창
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 심각한 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.dismiss(animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
-        }))
-        self.present(alertController, animated: true, completion: nil)
     }
 }

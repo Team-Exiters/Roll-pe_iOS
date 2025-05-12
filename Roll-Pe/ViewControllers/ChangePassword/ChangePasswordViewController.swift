@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import SwiftUI
 import RxSwift
 
 class ChangePasswordViewController: UIViewController {
@@ -20,7 +19,7 @@ class ChangePasswordViewController: UIViewController {
     // 네비게이션 바
     private let navigationBar: NavigationBar = {
         let navigationBar = NavigationBar()
-        navigationBar.menuIndex = 4
+        navigationBar.highlight = "마이페이지"
         navigationBar.showSideMenu = true
         
         return navigationBar
@@ -178,7 +177,8 @@ class ChangePasswordViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showSuccessAlert(message: message)
+                    self.showAlert(title: "알림", message: message)
+                    self.userViewModel.logout()
                 }
             })
             .disposed(by: disposeBag)
@@ -186,7 +186,7 @@ class ChangePasswordViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showErrorAlert(message: message)
+                    self.showAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -194,40 +194,16 @@ class ChangePasswordViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showCriticalErrorAlert(message: message)
+                    self.showAlertAndPop(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
-    // 완료 알림창
-    private func showSuccessAlert(message: String) {
-        let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.userViewModel.logout()
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 오류 알림창
-    private func showErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 심각한 오류 알림창
-    private func showCriticalErrorAlert(message: String) {
-        let alertController = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: true)
-        }))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
 }
 
 #if DEBUG
+import SwiftUI
+
 struct ChangePasswordViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
