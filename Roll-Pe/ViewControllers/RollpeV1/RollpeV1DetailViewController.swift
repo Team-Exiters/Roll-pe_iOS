@@ -375,7 +375,7 @@ class RollpeV1DetailViewController: UIViewController {
         shareButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
-                let message: String = "\(host.name)님의 롤페를 마음을 작성해 완성해 보아요!n\n\(WEBSITE_URL)/rollpe/\(self.pCode)"
+                let message: String = "\(host.name)님의 롤페를 마음을 작성해 완성해 보아요!\n\n\(WEBSITE_URL)/rollpe/\(self.pCode)"
                 
                 let activityItems: [String] = [message]
                 
