@@ -1,5 +1,5 @@
 //
-//  ErrorHandlerViewController.swift
+//  RollpeErrorViewController.swift
 //  Roll-Pe
 //
 //  Created by 김태은 on 4/27/25.
