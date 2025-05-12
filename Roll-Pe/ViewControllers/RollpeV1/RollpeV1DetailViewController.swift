@@ -470,7 +470,7 @@ class RollpeV1DetailViewController: UIViewController {
                     if model.receive.receiver.id == myId {
                         self.setupDoneButtonsView()
                     } else {
-                        switchViewController(vc: ErrorHandlerViewController())
+                        switchViewController(vc: RollpeErrorViewController())
                     }
                 }
                 
@@ -481,7 +481,7 @@ class RollpeV1DetailViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if message != nil {
-                    switchViewController(vc: ErrorHandlerViewController())
+                    switchViewController(vc: RollpeErrorViewController())
                 }
             })
             .disposed(by: disposeBag)

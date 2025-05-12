@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ErrorHandlerViewController: UIViewController {
+class RollpeErrorViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     // MARK: - 요소
@@ -123,7 +123,7 @@ import SwiftUI
 struct ErrorHandlerViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            ErrorHandlerViewController()
+            RollpeErrorViewController()
         }
     }
 }
