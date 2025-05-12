@@ -452,6 +452,7 @@ class RollpeV1DetailViewController: UIViewController {
                 guard self.rollpeView != nil else { return }
                 
                 self.rollpeView!.model = model
+                self.rollpeView!.isMemoInteractionEnabled = false
                 
                 self.setupRollpeViewAndExplainationLabel()
                 self.setupWriterLabel()

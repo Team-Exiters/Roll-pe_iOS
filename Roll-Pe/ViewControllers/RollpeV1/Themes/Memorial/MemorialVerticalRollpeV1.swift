@@ -23,6 +23,12 @@ class MemorialVerticalRollpeV1: UIControl {
         }
     }
     
+    var isMemoInteractionEnabled: Bool = true {
+        didSet {
+            setMemoInteractionEnabled(isMemoInteractionEnabled)
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -169,5 +175,9 @@ class MemorialVerticalRollpeV1: UIControl {
         for heart in model.hearts.data ?? [] {
             memoViews[heart.index].model = heart
         }
+    }
+    
+    private func setMemoInteractionEnabled(_ enabled: Bool) {
+        memoViews.forEach { $0.isUserInteractionEnabled = enabled }
     }
 }

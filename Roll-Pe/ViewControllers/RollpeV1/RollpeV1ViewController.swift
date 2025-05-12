@@ -317,6 +317,7 @@ class RollpeV1ViewController: UIViewController {
 protocol RollpeV1Types: UIControl {
     var onMemoSelected: ((Int, HeartModel?) -> Void)? { get set }
     var model: RollpeV1DataModel? { get set }
+    var isMemoInteractionEnabled: Bool { get set }
 }
 
 extension WhiteHorizontalRollpeV1: RollpeV1Types {}
