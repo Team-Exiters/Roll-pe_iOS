@@ -23,6 +23,7 @@ class MainAfterSignInViewModel {
     // 지금 뜨는 롤페들 불러오기
     func getHotRollpes() {
         apiService.requestDecodable("/api/paper/user?type=hot", method: .get, decodeType: RollpeResponseListModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.hotRollpeList.accept(model.data)
             }, onError: { error in

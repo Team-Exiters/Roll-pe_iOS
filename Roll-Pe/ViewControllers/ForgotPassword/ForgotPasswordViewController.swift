@@ -94,6 +94,7 @@ class ForgotPasswordViewController: UIViewController {
         let back = BackButton()
         
         back.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             })

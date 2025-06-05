@@ -790,6 +790,7 @@ class CreateRollpeViewController: UIViewController {
         }
         
         datePicker.rx.date
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
                 self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
             })
@@ -818,6 +819,7 @@ class CreateRollpeViewController: UIViewController {
         pickerUser.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 let modalVC = SearchUserModalViewController()
                 modalVC.onUserSelected = { user in
@@ -916,6 +918,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     ratioBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             
@@ -951,6 +954,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     themeBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             
@@ -986,6 +990,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     sizeBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             

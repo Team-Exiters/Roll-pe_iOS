@@ -39,6 +39,7 @@ class EditHeartViewModel {
     // 색상
     func getColors(isMono: Bool) {
         apiService.requestDecodable("/api/index?type=\(isMono ? "monocolor" : "color")", method: .get, decodeType: QueryIndexResponseModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.colors.accept(model.data)
             }, onError: { error in
@@ -61,6 +62,7 @@ class EditHeartViewModel {
         ]
         
         apiService.request("/api/heart", method: .patch, parameters: body)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
                 let decoder = JSONDecoder()
                 

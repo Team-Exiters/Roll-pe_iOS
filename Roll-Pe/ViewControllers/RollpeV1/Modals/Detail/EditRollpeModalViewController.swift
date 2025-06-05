@@ -205,6 +205,7 @@ class EditRollpeModalViewController: UIViewController {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })
@@ -256,6 +257,7 @@ class EditRollpeModalViewController: UIViewController {
         }
         
         datePicker.rx.date
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
                 self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
             })

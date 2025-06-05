@@ -104,6 +104,7 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    // 네비게이션 바
     private func setupNavigationBar() {
         view.addSubview(navigationBar)
         
@@ -115,6 +116,7 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    // 뷰 제목
     private func setupTitleLabel() {
         view.addSubview(titleLabel)
         
@@ -124,6 +126,7 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    // 비밀번호 변경란
     private func setupChangePasswordTextField() {
         view.addSubview(changePasswordTextField)
         
@@ -133,6 +136,7 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    // 비밀번호 확인란
     private func setupConfirmPasswordTextField() {
         view.addSubview(confirmPasswordTextField)
         
@@ -142,6 +146,7 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    // 버튼
     private func setupChangeConfirmButton(){
         view.addSubview(changeConfirmButton)
         

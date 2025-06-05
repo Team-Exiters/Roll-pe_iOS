@@ -165,7 +165,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     // MARK: - Bind
     
     private func bind() {
-        viewModel.getRollpes(type: "my")
+        viewModel.getRollpes(type: "host")
         
         let output = viewModel.transform()
         
@@ -216,6 +216,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         rollpeTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(output.rollpeModels) { indexPath, rollpeModels in
                 return (indexPath, rollpeModels)
             }
@@ -285,6 +286,7 @@ extension MyRollpeViewController {
         }
         
         self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
             })

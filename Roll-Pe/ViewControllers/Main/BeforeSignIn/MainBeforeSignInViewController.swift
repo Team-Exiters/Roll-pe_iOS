@@ -54,6 +54,7 @@ class MainBeforeSignInViewController: UIViewController {
         let mainTopSection = MainBeforeSignInTopSecionView()
         
         mainTopSection.button.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 let vc = SignInViewController()
                 self.navigationController?.pushViewController(vc, animated: true)

@@ -168,6 +168,7 @@ class CreateRollpeViewModel {
     // 서버로부터 비율, 테마, 크기 정보 가져오기
     func getIndexes() {
         apiService.requestDecodable("/api/index?type=all", method: .get, decodeType: QueryIndexResponseModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 var themes: [QueryIndexDataModel] = []
                 var sizes: [QueryIndexDataModel] = []
@@ -234,6 +235,7 @@ class CreateRollpeViewModel {
             }
             
             apiService.request("/api/paper", method: .post, parameters: body)
+                .observe(on: MainScheduler.instance)
                 .do(onSubscribe: {
                     self.isLoading.onNext(true)
                 })

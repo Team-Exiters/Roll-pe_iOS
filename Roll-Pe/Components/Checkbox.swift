@@ -11,7 +11,9 @@ import RxSwift
 import RxCocoa
 
 class Checkbox: UIButton {
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
+    
+    let isCheckedSubject = BehaviorRelay<Bool>(value: false)
     
     var isChecked: Bool = false {
         didSet {
@@ -19,6 +21,16 @@ class Checkbox: UIButton {
             isCheckedSubject.accept(isChecked)
         }
     }
+    
+    private let checkmarkView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .rollpeMain
+        view.layer.cornerRadius = 1
+        view.tag = 2
+        view.isUserInteractionEnabled = false
+        
+        return view
+    }()
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -41,6 +53,7 @@ class Checkbox: UIButton {
         }
         
         self.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.isChecked.toggle()
             })
@@ -51,12 +64,6 @@ class Checkbox: UIButton {
     
     private func updateCheckbox() {
         if isChecked {
-            let checkmarkView = UIView()
-            checkmarkView.backgroundColor = .rollpeMain
-            checkmarkView.layer.cornerRadius = 1
-            checkmarkView.tag = 2
-            checkmarkView.isUserInteractionEnabled = false
-            
             self.addSubview(checkmarkView)
             
             checkmarkView.snp.makeConstraints { make in
@@ -67,8 +74,6 @@ class Checkbox: UIButton {
             self.subviews.filter { $0.tag == 2 }.forEach { $0.removeFromSuperview() }
         }
     }
-    
-    let isCheckedSubject = BehaviorRelay<Bool>(value: false)
 }
 
 extension Reactive where Base: Checkbox {

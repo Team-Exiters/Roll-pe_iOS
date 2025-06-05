@@ -198,6 +198,7 @@ class HeartV1MineModalViewController: UIViewController {
         
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })
@@ -206,6 +207,7 @@ class HeartV1MineModalViewController: UIViewController {
         // 수정 버튼
         editLabel.rx.tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 

@@ -73,6 +73,7 @@ class SegmentControl: UIView {
         
         // 세그먼트 index 변화에 따른 동작
         control.rx.selectedSegmentIndex
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { index in
                 self.changeSegmentedControlLinePosition(index: index)
             })

@@ -257,6 +257,7 @@ class SignInViewController: UIViewController {
         let back = BackButton()
         
         back.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             })
@@ -419,6 +420,7 @@ class SignInViewController: UIViewController {
         findPasswordButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let vc = ForgotPasswordViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -428,6 +430,7 @@ class SignInViewController: UIViewController {
         signUpButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let vc = SignUpViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -479,6 +482,7 @@ class SignInViewController: UIViewController {
         termsOfServiceButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
@@ -491,6 +495,7 @@ class SignInViewController: UIViewController {
         privacyPolicy.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
@@ -551,6 +556,7 @@ class SignInViewController: UIViewController {
         
         // 구글 로그인
         google.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 

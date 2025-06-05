@@ -189,6 +189,7 @@ class SignUpViewController: UIViewController {
         let back = BackButton()
         
         back.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             })
@@ -351,6 +352,7 @@ class SignUpViewController: UIViewController {
         linkToTerms.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
@@ -382,6 +384,7 @@ class SignUpViewController: UIViewController {
         linkToPrivacy.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)

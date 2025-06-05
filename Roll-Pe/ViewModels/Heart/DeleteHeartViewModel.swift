@@ -31,6 +31,7 @@ class DeleteHeartViewModel {
     // 마음 삭제
     func deleteHeart(hCode: String) {
         apiService.request("/api/heart?hcode=\(hCode)", method: .delete)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
                 if (200..<300).contains(response.statusCode) {
                     self.successAlertMessage.onNext("마음이 삭제되었습니다.")

@@ -115,6 +115,7 @@ class HeartV1EditModalViewController: UIViewController {
         view.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.memoView.backgroundColor = UIColor(hex: model.name)
                 self.viewModel.selectedColor.accept(model)
@@ -235,6 +236,7 @@ class HeartV1EditModalViewController: UIViewController {
         
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })

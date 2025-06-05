@@ -109,6 +109,7 @@ class HeartV1WriteModalViewController: UIViewController {
         view.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.memoView.backgroundColor = UIColor(hex: model.name)
                 self.viewModel.selectedColor.accept(model)
@@ -214,6 +215,7 @@ class HeartV1WriteModalViewController: UIViewController {
         viewModel.getColors(isMono: isMono)
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })

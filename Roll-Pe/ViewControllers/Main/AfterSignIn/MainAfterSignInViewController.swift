@@ -131,6 +131,7 @@ class MainAfterSignInViewController: UIViewController {
         }
         
         buttonSideMenu.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.view.addSubview(sideMenuView)
                 sideMenuView.showMenu()
@@ -205,6 +206,7 @@ class MainAfterSignInViewController: UIViewController {
         }
         
         primaryButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(InvitedRollpeViewController(), animated: true)
             })
@@ -222,6 +224,7 @@ class MainAfterSignInViewController: UIViewController {
         }
         
         secondaryButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.pushViewController(CreateRollpeViewController(), animated: true)
             })
@@ -305,6 +308,7 @@ class MainAfterSignInViewController: UIViewController {
             .disposed(by: disposeBag)
         
         rollpeCollectionView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(mainViewModel.hotRollpeList) { indexPath, rollpeModels in
                 return (indexPath, rollpeModels)
             }
@@ -388,6 +392,7 @@ extension MainAfterSignInViewController {
         }
         
         self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
             })

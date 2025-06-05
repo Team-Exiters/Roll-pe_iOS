@@ -77,6 +77,7 @@ final class SignUpViewModel {
         
         // 버튼 tap event
         input.signUpButtonTapEvent
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(Observable.combineLatest(
                 input.email.orEmpty,
                 input.name.orEmpty,

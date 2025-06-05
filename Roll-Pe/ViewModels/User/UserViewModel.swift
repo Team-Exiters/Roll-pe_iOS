@@ -36,6 +36,7 @@ class UserViewModel {
     // 내가 작성한 마음 불러오기
     func getMyStatus() {
         apiService.requestDecodable("/api/paper/mypage?type=main", method: .get, decodeType: MyStatusModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.myStatus.accept(model)
             }, onError: { error in
@@ -75,28 +76,29 @@ class UserViewModel {
     // 계정 삭제
     func deleteAccount() {
         apiService.request("/api/user/drop-user", method: .delete)
-        .subscribe(onNext: { response, data in
-            let decoder = JSONDecoder()
-            
-            do {
-                let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { response, data in
+                let decoder = JSONDecoder()
                 
-                if (200..<300).contains(response.statusCode) {
-                    self.successAlertMessage.onNext(model.message)
-                } else {
-                    self.errorAlertMessage.onNext(model.message)
+                do {
+                    let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+                    
+                    if (200..<300).contains(response.statusCode) {
+                        self.successAlertMessage.onNext(model.message)
+                    } else {
+                        self.errorAlertMessage.onNext(model.message)
+                    }
+                } catch {
+                    print("ResponseNoDataModel 변환 실패")
+                    print(String(data: data, encoding: .utf8) ?? "")
+                    
+                    self.onError()
                 }
-            } catch {
-                print("ResponseNoDataModel 변환 실패")
-                print(String(data: data, encoding: .utf8) ?? "")
-                
+            }, onError: { error in
+                print("회원탈퇴 실패: \(error)")
                 self.onError()
-            }
-        }, onError: { error in
-            print("회원탈퇴 실패: \(error)")
-            self.onError()
-        })
-        .disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func onError() {

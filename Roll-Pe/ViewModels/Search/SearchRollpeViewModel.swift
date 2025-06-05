@@ -68,6 +68,7 @@ class SearchRollpeViewModel {
     // 롤페 불러오기
     func getRollpes(name: String) {
         apiService.requestDecodable("/api/engine/serach?k=\(name)", method: .get, decodeType: RollpeResponsePagenationListModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.rollpeData.accept(model)
                 self.rollpeModels.accept(model.data.results)
@@ -80,6 +81,7 @@ class SearchRollpeViewModel {
     // 롤페 더 불러오기
     func getMoreRollpes(next: String) {
         apiService.requestDecodable(next, method: .get, decodeType: RollpeResponsePagenationListModel.self, isDomainInclude: true)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.rollpeData.accept(model)
                 

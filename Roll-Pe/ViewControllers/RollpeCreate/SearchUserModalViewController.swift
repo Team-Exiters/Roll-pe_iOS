@@ -153,6 +153,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })
@@ -233,6 +234,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         sendButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(output.users) { _, users in
                 users.first(where: { $0.isSelected! })
             }

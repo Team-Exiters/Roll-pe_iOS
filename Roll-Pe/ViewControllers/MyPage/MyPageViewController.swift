@@ -144,6 +144,7 @@ class MyPageViewController: UIViewController {
         }
         
         buttonSideMenu.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.view.addSubview(self.sideMenuView)
                 self.sideMenuView.showMenu()
@@ -266,6 +267,7 @@ class MyPageViewController: UIViewController {
             
             label.rx.tapGesture()
                 .when(.recognized)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onNext: { _ in
                     button.tap()
                 })

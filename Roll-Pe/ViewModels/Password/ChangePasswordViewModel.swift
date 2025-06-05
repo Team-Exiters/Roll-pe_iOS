@@ -49,6 +49,7 @@ class ChangePasswordViewModel {
             .asDriver(onErrorJustReturn: false)
         
         input.buttonTapEvent
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(
                 Observable.combineLatest(
                     input.password.orEmpty,
@@ -91,6 +92,7 @@ class ChangePasswordViewModel {
         ]
         
         apiService.request("/api/user/change-password", method: .patch, parameters: body)
+            .observe(on: MainScheduler.instance)
             .do(onSubscribe: {
                 self.isLoading.onNext(true)
             })

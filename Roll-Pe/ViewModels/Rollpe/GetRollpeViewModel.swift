@@ -31,6 +31,7 @@ class GetRollpeViewModel {
     // 롤페 불러오기
     func getRollpes(type: String) {
         apiService.requestDecodable("/api/paper/mypage?type=\(type)", method: .get, decodeType: RollpeResponseListModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.rollpeModels.accept(model.data)
             }, onError: { error in

@@ -41,6 +41,7 @@ class ForgotPasswordViewModel {
             .asDriver(onErrorJustReturn: false)
         
         input.verifyButtonTapEvent
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(
                 Observable.combineLatest(
                     input.email.orEmpty,

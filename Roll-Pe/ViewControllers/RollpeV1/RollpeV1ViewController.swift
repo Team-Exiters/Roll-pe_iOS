@@ -108,6 +108,7 @@ class RollpeV1ViewController: UIViewController {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: false)
             })
@@ -175,6 +176,7 @@ class RollpeV1ViewController: UIViewController {
     
     private func bindData() {
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: false)
             })
@@ -211,6 +213,7 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.pinchGesture()
             .when(.changed)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 guard let view = gesture.view else { return }
                 
@@ -223,6 +226,7 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.panGesture()
             .when(.began)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 guard let view = gesture.view else { return }
                 
@@ -232,6 +236,7 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.panGesture()
             .when(.changed)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 guard let view = gesture.view else { return }
                 
@@ -243,6 +248,7 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.panGesture()
             .when(.ended)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 guard let view = gesture.view else { return }
                 
@@ -252,6 +258,7 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.rotationGesture()
             .when(.changed)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 guard let view = gesture.view else { return }
                 
