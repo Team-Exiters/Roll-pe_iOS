@@ -50,8 +50,6 @@ class PolicyViewModel {
                     </html>
                     """
                 )
-                
-                print("\(String(describing: UIColor.rollpeSecondary.toHex))")
             }, onError: { error in
                 print("index 가져오는 중 오류 발생: \(error)")
                 self.onError()
