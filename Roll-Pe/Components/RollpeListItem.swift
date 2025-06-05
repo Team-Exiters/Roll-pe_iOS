@@ -109,7 +109,7 @@ class RollpeListItem: UIStackView {
         statusesView.insertArrangedSubview(viewStatView, at: 0)
         
         // D-day
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receive.receivingDate))
+        dday.text = dateToDDay(stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd")) 
         
         // 테마
         contentView.removeArrangedSubview(themeView)
@@ -134,7 +134,7 @@ class RollpeListItem: UIStackView {
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
          
-        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
+        desc.text = "\(model.host.name) 주최 | \(dateToString(date: dateFormatter.date(from: model.createdAt)!, format: "yyyy.M.d")) 생성"
     }
 }
 
@@ -231,7 +231,7 @@ class RollpeSearchListItem: UIStackView {
         self.insertArrangedSubview(themeView, at: 0)
         
         // D-day
-        dday.text = dateToDDay(convertYYYYMMddToDate(model.receive.receivingDate))
+        dday.text = dateToDDay(stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd"))
         
         // 제목
         title.text = model.title
@@ -240,7 +240,7 @@ class RollpeSearchListItem: UIStackView {
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         
-        desc.text = "\(model.host.name) 주최 | \(dateToYYYYMD(dateFormatter.date(from: model.createdAt)!)) 생성"
+        desc.text = "\(model.host.name) 주최 | \(dateToString(date: dateFormatter.date(from: model.createdAt)!, format: "yyyy.M.d")) 생성"
     }
 }
 

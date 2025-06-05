@@ -492,7 +492,7 @@ class RollpeV1DetailViewController: UIViewController {
                 self.setupWriterList()
                 
                 // 버튼 설정
-                if convertYYYYMMddToDate(model.receive.receivingDate) > date {
+                if stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd") > date {
                     if model.host.id == myId { // 방장
                         // self.setupParticipantsButton()
                         self.setupHostButtonsView()

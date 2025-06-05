@@ -209,7 +209,6 @@ class CreateRollpeViewModel {
             guard let receiver = receiver,
                   let myId = keychain.read(key: "USER_ID"),
                   let myIdToInt = Int(myId),
-                  let receivingDate = convertDateFormat(receivingDate),
                   !title.isEmpty,
                   let theme = theme,
                   let size = size,
@@ -217,6 +216,8 @@ class CreateRollpeViewModel {
                 onError()
                 return
             }
+            
+            let receivingDate = dateToString(date: stringToDate(string: receivingDate, format: "yyyy년 M월 d일 a h시"), format: "yyyy-MM-dd")
             
             // 바디
             var body: [String: Any] = [

@@ -779,7 +779,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(titleSendDate)
         
         // 전달일 선택
-        textFieldSendDate.text = "\(dateToYYYYMd(datePicker.minimumDate!)) 오전 10시"
+        textFieldSendDate.text = "\(dateToString(date: datePicker.minimumDate!, format: "yyyy년 M월 d일")) 오전 10시"
         textFieldSendDate.inputView = datePicker
         
         contentView.addSubview(textFieldSendDate)
@@ -792,7 +792,7 @@ class CreateRollpeViewController: UIViewController {
         datePicker.rx.date
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
-                self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
+                self.textFieldSendDate.text = "\(dateToString(date: date, format: "yyyy년 M월 d일")) 오전 10시"
             })
             .disposed(by: disposeBag)
     }

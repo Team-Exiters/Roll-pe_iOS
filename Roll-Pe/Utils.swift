@@ -54,48 +54,26 @@ func dateToDDay(_ endDate: Date) -> String {
     }
 }
 
-// YYYY.M.D 계산
-func dateToYYYYMD(_ date: Date) -> String {
+// 문자열에서 날짜 계산
+func stringToDate(string: String, format: String) -> Date {
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy.M.d"
-    return dateFormatter.string(from: date)
-}
-
-// YYYY년 MM월 DD일 계산
-func dateToYYYYMd(_ date: Date) -> String {
-    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
     dateFormatter.locale = Locale(identifier: "ko_KR")
-    dateFormatter.dateFormat = "yyyy년 M월 d일"
-    return dateFormatter.string(from: date)
-}
-
-// YYYY-MM-dd date로 변환
-func convertYYYYMMddToDate(_ string: String) -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd"
-    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.amSymbol = "오전"
+    dateFormatter.pmSymbol = "오후"
     
     return dateFormatter.date(from: string)!
 }
 
-// 한글 날짜에서 yyyy-MM-dd 형식으로 변환
-func convertDateFormat(_ input: String) -> String? {
-    // 입력 형식 정의
-    let inputFormatter = DateFormatter()
-    inputFormatter.locale = Locale(identifier: "ko_KR")
-    inputFormatter.dateFormat = "yyyy년 M월 d일 a h시"
-    inputFormatter.amSymbol = "오전"
-    inputFormatter.pmSymbol = "오후"
+// 날짜에서 문자열 계산
+func dateToString(date: Date, format: String) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.amSymbol = "오전"
+    dateFormatter.pmSymbol = "오후"
     
-    let outputFormatter = DateFormatter()
-    outputFormatter.dateFormat = "yyyy-MM-dd"
-    
-    guard let date = inputFormatter.date(from: input) else {
-        print("날짜 변환 실패: \(input)")
-        return nil
-    }
-    
-    return outputFormatter.string(from: date)
+    return dateFormatter.string(from: date)
 }
 
 // 뷰 컨트롤러 전환

@@ -137,7 +137,7 @@ class RollpeItemView: UIView {
     
     func configure(model: RollpeListDataModel) {
         configureTopSection(model.theme)
-        badgeDDay.text = dateToDDay(convertYYYYMMddToDate(model.receive.receivingDate))
+        badgeDDay.text = dateToDDay(stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd"))
         titleLabel.text = model.title
         nameLabel.text = model.host.name
     }
