@@ -42,8 +42,14 @@ class PolicyViewModel {
                     <html>
                       <head>
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
                         <style>
-                          body { color: \(UIColor.rollpeSecondary.toHex ?? "black"); background: \(UIColor.rollpePrimary.toHex ?? "black"); font-size: 14px; }
+                          body {
+                            font-family: "Pretendard Variable", "Pretendard", -apple-system, sans-serif;
+                            color: \(UIColor.rollpeSecondary.toHex ?? "black"); 
+                            background: \(UIColor.rollpePrimary.toHex ?? "black"); 
+                            font-size: 20px;
+                            }
                         </style>
                       </head>
                       \(model.data)
