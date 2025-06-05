@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import Photos
 
 // API 서버 주소
 let API_SERVER_URL: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
@@ -111,6 +112,14 @@ func switchViewController(vc: UIViewController) {
         sceneDelegate.window?.rootViewController = navVC
         sceneDelegate.window?.makeKeyAndVisible()
     }
+}
+
+// 사진 권한 확인
+func checkNotHavaPhotoPermission() -> Bool {
+    var status: PHAuthorizationStatus = .notDetermined
+    status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+    
+    return status == .denied
 }
 
 extension UIViewController {
