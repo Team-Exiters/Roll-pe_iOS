@@ -256,40 +256,6 @@ class SidemenuView: UIView {
         
         contentView.addArrangedSubview(policiesView)
         
-        // 서비스 이용약관
-        let termsOfService = policyText(text: "서비스 이용약관")
-        policiesView.addArrangedSubview(termsOfService)
-        
-        termsOfService.rx
-            .tapGesture()
-            .when(.recognized)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                guard let url = URL(string: "\(WEBSITE_URL)/terms-of-service") else {
-                    return
-                }
-                
-                UIApplication.shared.open(url)
-            })
-            .disposed(by: disposeBag)
-        
-        // 개인정보처리방침
-        let privacyPolicy = policyText(text: "개인정보처리방침")
-        policiesView.addArrangedSubview(privacyPolicy)
-        
-        privacyPolicy.rx
-            .tapGesture()
-            .when(.recognized)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                guard let url = URL(string: "\(WEBSITE_URL)/privacy-policy") else {
-                    return
-                }
-                
-                UIApplication.shared.open(url)
-            })
-            .disposed(by: disposeBag)
-        
         // MARK: - 제스쳐
         
         let panGesture = UIPanGestureRecognizer()

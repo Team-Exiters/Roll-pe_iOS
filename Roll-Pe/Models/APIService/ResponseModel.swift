@@ -13,3 +13,11 @@ struct ResponseNoDataModel: Decodable {
     let code: String
     let link: String?
 }
+
+struct ResponseStringModel: Decodable {
+    let status_code: Int
+    let message: String
+    let code: String
+    let link: String?
+    let data: String
+}

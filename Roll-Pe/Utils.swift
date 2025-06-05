@@ -213,6 +213,16 @@ extension UIColor {
 
         self.init(red: r, green: g, blue: b, alpha: 1.0)
     }
+    
+    var toHex: String? {
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
+            var a: CGFloat = 0
+            guard self.getRed(&r, green: &g, blue: &b, alpha: &a) else { return nil }
+            let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+            return String(format: "#%06x", rgb)
+        }
 }
 
 // UILabel에 line-height 설정

@@ -440,9 +440,9 @@ class SignInViewController: UIViewController {
         /*
         menus.addArrangedSubview(findAccountButton)
         menus.addArrangedSubview(menuText("|"))
-        */
         menus.addArrangedSubview(findPasswordButton)
         menus.addArrangedSubview(menuText("|"))
+        */
         menus.addArrangedSubview(signUpButton)
         
         contentView.addSubview(menus)
@@ -484,9 +484,8 @@ class SignInViewController: UIViewController {
             .when(.recognized)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                let vc = PolicyViewController("terms")
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -497,9 +496,8 @@ class SignInViewController: UIViewController {
             .when(.recognized)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                let vc = PolicyViewController("privacy")
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
