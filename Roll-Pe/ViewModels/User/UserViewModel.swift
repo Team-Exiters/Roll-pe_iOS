@@ -51,7 +51,7 @@ class UserViewModel {
         keychain.delete(key: "REFRESH_TOKEN")
         keychain.delete(key: "NAME")
         keychain.delete(key: "EMAIL")
-        keychain.delete(key: "IDENTITY_CODE")
+        keychain.delete(key: "IDENTIFY_CODE")
         keychain.delete(key: "USER_ID")
         keychain.delete(key: "PROVIDER")
         
@@ -75,7 +75,21 @@ class UserViewModel {
     
     // 계정 삭제
     func deleteAccount() {
-        apiService.request("/api/user/drop-user", method: .delete)
+        guard let identifyCode = keychain.read(key: "IDENTIFY_CODE"),
+              let refresh = keychain.read(key: "REFRESH_TOKEN") else {
+            onError()
+            return
+        }
+        
+        // 바디
+        let body: [String: Any] = [
+            "identifyCode": identifyCode,
+            "refresh": refresh
+        ]
+        
+        print(body)
+        
+        apiService.request("/api/user/drop-user", method: .delete, parameters: body)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
                 let decoder = JSONDecoder()
