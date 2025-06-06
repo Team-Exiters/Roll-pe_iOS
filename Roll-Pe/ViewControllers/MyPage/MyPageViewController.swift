@@ -387,8 +387,9 @@ class MyPageViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "알림", message: message)
-                    self.viewModel.logout()
+                    self.showOKAlert(title: "알림", message: message) {
+                        self.viewModel.logout()
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -396,7 +397,7 @@ class MyPageViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

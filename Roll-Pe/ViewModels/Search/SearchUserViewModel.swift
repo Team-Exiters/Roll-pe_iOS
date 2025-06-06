@@ -25,7 +25,7 @@ class SearchUserViewModel {
     
     struct Output {
         let users: Driver<[SearchUserResultModel]>
-        let showAlert: Driver<String?>
+        let showOKAlert: Driver<String?>
     }
     
     func transform(_ input: Input) -> Output {
@@ -61,7 +61,7 @@ class SearchUserViewModel {
         
         return Output(
             users: users.asDriver(),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil)
+            showOKAlert: alertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     

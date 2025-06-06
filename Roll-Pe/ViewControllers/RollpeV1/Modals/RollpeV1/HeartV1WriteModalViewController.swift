@@ -258,8 +258,9 @@ class HeartV1WriteModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "알림", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "알림", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -267,7 +268,7 @@ class HeartV1WriteModalViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -275,8 +276,9 @@ class HeartV1WriteModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "오류", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)

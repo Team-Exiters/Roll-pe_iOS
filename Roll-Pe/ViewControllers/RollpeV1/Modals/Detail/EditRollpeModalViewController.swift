@@ -326,7 +326,9 @@ class EditRollpeModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "알림", message: message)
+                    self.showOKAlert(title: "알림", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -334,7 +336,7 @@ class EditRollpeModalViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

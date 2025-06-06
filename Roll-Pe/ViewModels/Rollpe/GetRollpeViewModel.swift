@@ -18,13 +18,13 @@ class GetRollpeViewModel {
     
     struct Output {
         let rollpeModels: Driver<[RollpeListDataModel]?>
-        let showAlert: Driver<String?>
+        let showOKAlert: Driver<String?>
     }
     
     func transform() -> Output {
         return Output(
             rollpeModels: rollpeModels.asDriver(),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil)
+            showOKAlert: alertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     

@@ -27,7 +27,7 @@ class SearchRollpeViewModel {
     struct Output {
         let rollpeData: Driver<RollpeResponsePagenationListModel?>
         let rollpeModels: Driver<[RollpeListDataModel]?>
-        let showAlert: Driver<String?>
+        let showOKAlert: Driver<String?>
     }
     
     func transform(_ input: Input) -> Output {
@@ -61,7 +61,7 @@ class SearchRollpeViewModel {
         return Output(
             rollpeData: rollpeData.asDriver(),
             rollpeModels: rollpeModels.asDriver(),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil)
+            showOKAlert: alertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     

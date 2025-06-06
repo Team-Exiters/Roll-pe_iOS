@@ -129,19 +129,11 @@ extension UIViewController {
         return result
     }
     
-    // Alert 표시
-    func showAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 뒤로 돌아가는 Alert 표시
-    func showAlertAndPop(title: String, message: String) {
+    // OK Alert 표시
+    func showOKAlert(title: String, message: String, handler: @escaping () -> Void = {}) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: true)
+            handler()
         }))
         
         self.present(alertController, animated: true, completion: nil)

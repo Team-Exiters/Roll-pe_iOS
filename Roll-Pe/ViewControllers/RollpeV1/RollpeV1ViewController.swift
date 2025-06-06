@@ -201,7 +201,9 @@ class RollpeV1ViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)

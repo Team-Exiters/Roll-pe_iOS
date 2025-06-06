@@ -298,12 +298,12 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         
         let output = viewModel.transform(input)
         
-        output.showAlert
+        output.showOKAlert
             .drive(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -413,7 +413,7 @@ extension SearchViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

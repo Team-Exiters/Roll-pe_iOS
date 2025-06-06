@@ -532,7 +532,7 @@ class SignInViewController: UIViewController {
                     let vc = MainAfterSignInViewController()
                     self.navigationController?.pushViewController(vc, animated: false)
                 } else {
-                    self.showAlert(title: "오류", message: "로그인에 실패하였습니다.")
+                    self.showOKAlert(title: "오류", message: "로그인에 실패하였습니다.")
                 }
             })
             .disposed(by: disposeBag)
@@ -546,7 +546,7 @@ class SignInViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

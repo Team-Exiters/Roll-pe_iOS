@@ -514,7 +514,7 @@ class RollpeV1DetailViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -566,12 +566,12 @@ class RollpeV1DetailViewController: UIViewController {
         if let error = error {
             print("이미지 저장 실패: \(error.localizedDescription)")
             if checkNotHavaPhotoPermission() {
-                showAlert(title: "오류", message: "사진 접근 권한이 없어 저장할 수 없습니다.")
+                showOKAlert(title: "오류", message: "사진 접근 권한이 없어 저장할 수 없습니다.")
             } else {
-                showAlert(title: "오류", message: "롤페 이미지 저장 중 오류가 발생하였습니다.")
+                showOKAlert(title: "오류", message: "롤페 이미지 저장 중 오류가 발생하였습니다.")
             }
         } else {
-            showAlert(title: "알림", message: "롤페 이미지를 저장하였습니다.")
+            showOKAlert(title: "알림", message: "롤페 이미지를 저장하였습니다.")
         }
     }
 }
