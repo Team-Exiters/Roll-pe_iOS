@@ -534,6 +534,8 @@ class RollpeV1DetailViewController: UIViewController {
     private func saveImage() {
         guard let rollpeView = rollpeView else { return }
         
+        loadingView.isHidden = false
+        
         let tempRollpeView: RollpeV1Types = rollpeView
         
         // 그림자 제거
@@ -543,7 +545,7 @@ class RollpeV1DetailViewController: UIViewController {
         tempRollpeView.layer.shadowOffset = .zero
         
         // 크기 조정
-        let scaleFactor: CGFloat = 2.0
+        let scaleFactor: CGFloat = 1.0
         let scaledSize = CGSize(width: tempRollpeView.bounds.size.width * scaleFactor, height: tempRollpeView.bounds.size.height * scaleFactor)
         
         // 크기 반영
@@ -553,8 +555,6 @@ class RollpeV1DetailViewController: UIViewController {
             context.cgContext.scaleBy(x: scaleFactor, y: scaleFactor)
             tempRollpeView.layer.render(in: context.cgContext)
         }
-        
-        loadingView.isHidden = false
         
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(imageSaved(image:didFinishSavingWithError:contextInfo:)), nil)
     }
