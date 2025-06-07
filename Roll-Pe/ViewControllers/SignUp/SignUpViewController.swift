@@ -189,6 +189,7 @@ class SignUpViewController: UIViewController {
         let back = BackButton()
         
         back.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             })
@@ -351,6 +352,7 @@ class SignUpViewController: UIViewController {
         linkToTerms.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
@@ -382,6 +384,7 @@ class SignUpViewController: UIViewController {
         linkToPrivacy.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
                 let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
@@ -433,7 +436,9 @@ class SignUpViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "알림", message: message)
+                    self.showOKAlert(title: "알림", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -441,7 +446,7 @@ class SignUpViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

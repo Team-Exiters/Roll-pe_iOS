@@ -257,6 +257,7 @@ class SignInViewController: UIViewController {
         let back = BackButton()
         
         back.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.navigationController?.popViewController(animated: true)
             })
@@ -419,6 +420,7 @@ class SignInViewController: UIViewController {
         findPasswordButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let vc = ForgotPasswordViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -428,6 +430,7 @@ class SignInViewController: UIViewController {
         signUpButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 let vc = SignUpViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -437,9 +440,9 @@ class SignInViewController: UIViewController {
         /*
         menus.addArrangedSubview(findAccountButton)
         menus.addArrangedSubview(menuText("|"))
-        */
         menus.addArrangedSubview(findPasswordButton)
         menus.addArrangedSubview(menuText("|"))
+        */
         menus.addArrangedSubview(signUpButton)
         
         contentView.addSubview(menus)
@@ -479,10 +482,10 @@ class SignInViewController: UIViewController {
         termsOfServiceButton.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                let vc = PolicyViewController("terms")
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -491,10 +494,10 @@ class SignInViewController: UIViewController {
         privacyPolicy.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                let vc = PolicyViewController("privacy")
+                self.navigationController?.pushViewController(vc, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -529,7 +532,7 @@ class SignInViewController: UIViewController {
                     let vc = MainAfterSignInViewController()
                     self.navigationController?.pushViewController(vc, animated: false)
                 } else {
-                    self.showAlert(title: "오류", message: "로그인에 실패하였습니다.")
+                    self.showOKAlert(title: "오류", message: "로그인에 실패하였습니다.")
                 }
             })
             .disposed(by: disposeBag)
@@ -543,7 +546,7 @@ class SignInViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -551,6 +554,7 @@ class SignInViewController: UIViewController {
         
         // 구글 로그인
         google.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 

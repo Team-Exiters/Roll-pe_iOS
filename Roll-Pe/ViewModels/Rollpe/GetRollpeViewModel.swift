@@ -18,19 +18,20 @@ class GetRollpeViewModel {
     
     struct Output {
         let rollpeModels: Driver<[RollpeListDataModel]?>
-        let showAlert: Driver<String?>
+        let showOKAlert: Driver<String?>
     }
     
     func transform() -> Output {
         return Output(
             rollpeModels: rollpeModels.asDriver(),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil)
+            showOKAlert: alertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     
     // 롤페 불러오기
     func getRollpes(type: String) {
         apiService.requestDecodable("/api/paper/mypage?type=\(type)", method: .get, decodeType: RollpeResponseListModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.rollpeModels.accept(model.data)
             }, onError: { error in

@@ -205,6 +205,7 @@ class EditRollpeModalViewController: UIViewController {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })
@@ -245,7 +246,7 @@ class EditRollpeModalViewController: UIViewController {
         contentView.addSubview(sendDateLabel)
         
         // 전달일 선택
-        textFieldSendDate.text = "\(dateToYYYYMd(datePicker.minimumDate!)) 오전 10시"
+        textFieldSendDate.text = "\(dateToString(date: datePicker.minimumDate!, format: "yyyy년 M월 d일")) 오전 10시"
         textFieldSendDate.inputView = datePicker
         
         contentView.addSubview(textFieldSendDate)
@@ -256,8 +257,9 @@ class EditRollpeModalViewController: UIViewController {
         }
         
         datePicker.rx.date
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
-                self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
+                self.textFieldSendDate.text = "\(dateToString(date: date, format: "yyyy년 M월 d일")) 오전 10시"
             })
             .disposed(by: disposeBag)
     }
@@ -324,7 +326,9 @@ class EditRollpeModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "알림", message: message)
+                    self.showOKAlert(title: "알림", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -332,7 +336,7 @@ class EditRollpeModalViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)

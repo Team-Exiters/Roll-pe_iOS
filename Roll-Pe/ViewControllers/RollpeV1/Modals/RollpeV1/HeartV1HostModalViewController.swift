@@ -200,6 +200,7 @@ class HeartV1HostModalViewController: UIViewController {
         
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })
@@ -208,6 +209,7 @@ class HeartV1HostModalViewController: UIViewController {
         // 신고 버튼
         reportLabel.rx.tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self,
                       let userCode = keychain.read(key: "IDENTIFY_CODE"),
@@ -234,8 +236,9 @@ class HeartV1HostModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "알림", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "알림", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -243,8 +246,9 @@ class HeartV1HostModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "오류", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)

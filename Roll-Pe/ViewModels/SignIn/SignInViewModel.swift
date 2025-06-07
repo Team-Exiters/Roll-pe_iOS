@@ -248,7 +248,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                     }
                 } else {
                     do {
-                        let model = try JSONDecoder().decode(ErrorModel.self, from: data)
+                        let model = try JSONDecoder().decode(ResponseNoDataModel.self, from: data)
                         self.errorAlertMessage.onNext(model.message)
                     } catch {
                         self.response.onNext(false)
@@ -269,6 +269,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
     private func signInWithKakao() {
         if (UserApi.isKakaoTalkLoginAvailable()) {
             UserApi.shared.rx.loginWithKakaoTalk()
+                .observe(on: MainScheduler.instance)
                 .subscribe(onNext:{ (oauthToken) in
                     print("loginWithKakaoTalk() success.")
                     
@@ -280,6 +281,7 @@ class SignInViewModel: NSObject, ObservableObject, ASAuthorizationControllerDele
                 .disposed(by: disposeBag)
         } else {
             UserApi.shared.rx.loginWithKakaoAccount()
+                .observe(on: MainScheduler.instance)
                 .subscribe(onNext:{ (oauthToken) in
                     print("loginWithKakaoAccount() success.")
                     

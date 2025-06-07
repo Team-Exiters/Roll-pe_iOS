@@ -168,6 +168,7 @@ class CreateRollpeViewModel {
     // 서버로부터 비율, 테마, 크기 정보 가져오기
     func getIndexes() {
         apiService.requestDecodable("/api/index?type=all", method: .get, decodeType: QueryIndexResponseModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 var themes: [QueryIndexDataModel] = []
                 var sizes: [QueryIndexDataModel] = []
@@ -208,7 +209,6 @@ class CreateRollpeViewModel {
             guard let receiver = receiver,
                   let myId = keychain.read(key: "USER_ID"),
                   let myIdToInt = Int(myId),
-                  let receivingDate = convertDateFormat(receivingDate),
                   !title.isEmpty,
                   let theme = theme,
                   let size = size,
@@ -216,6 +216,8 @@ class CreateRollpeViewModel {
                 onError()
                 return
             }
+            
+            let receivingDate = dateToString(date: stringToDate(string: receivingDate, format: "yyyy년 M월 d일 a h시"), format: "yyyy-MM-dd")
             
             // 바디
             var body: [String: Any] = [
@@ -234,6 +236,7 @@ class CreateRollpeViewModel {
             }
             
             apiService.request("/api/paper", method: .post, parameters: body)
+                .observe(on: MainScheduler.instance)
                 .do(onSubscribe: {
                     self.isLoading.onNext(true)
                 })

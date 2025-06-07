@@ -25,7 +25,7 @@ class SearchUserViewModel {
     
     struct Output {
         let users: Driver<[SearchUserResultModel]>
-        let showAlert: Driver<String?>
+        let showOKAlert: Driver<String?>
     }
     
     func transform(_ input: Input) -> Output {
@@ -47,6 +47,7 @@ class SearchUserViewModel {
             .disposed(by: disposeBag)
         
         input.selectUser
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { indexPath in
                 var currentUsers = self.users.value
                 
@@ -60,18 +61,19 @@ class SearchUserViewModel {
         
         return Output(
             users: users.asDriver(),
-            showAlert: alertMessage.asDriver(onErrorJustReturn: nil)
+            showOKAlert: alertMessage.asDriver(onErrorJustReturn: nil)
         )
     }
     
     // 유저 불러오기
     func getUsers(name: String) {
         apiService.requestDecodable("/api/user/search-user/?nameCode=\(name)", method: .get, decodeType: SearchUserModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.users.accept(model.data.results)
             }, onError: { error in
                 print("검색한 유저 불러오는 중 오류 발생: \(error)")
-                self.alertMessage.onNext("오류가 발생하였습니다.")
+                self.alertMessage.onNext("검색 결과가 없습니다.")
             })
             .disposed(by: disposeBag)
     }

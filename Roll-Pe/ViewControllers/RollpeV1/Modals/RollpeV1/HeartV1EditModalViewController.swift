@@ -115,6 +115,7 @@ class HeartV1EditModalViewController: UIViewController {
         view.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.memoView.backgroundColor = UIColor(hex: model.name)
                 self.viewModel.selectedColor.accept(model)
@@ -235,6 +236,7 @@ class HeartV1EditModalViewController: UIViewController {
         
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })
@@ -264,8 +266,9 @@ class HeartV1EditModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "알림", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "알림", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -273,7 +276,7 @@ class HeartV1EditModalViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -281,8 +284,9 @@ class HeartV1EditModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "오류", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)

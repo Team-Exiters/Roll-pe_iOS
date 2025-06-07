@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 import MarqueeLabel
+import Photos
 
 class RollpeV1DetailViewController: UIViewController {
     let pCode: String
@@ -36,6 +37,14 @@ class RollpeV1DetailViewController: UIViewController {
         navigationBar.showSideMenu = false
         
         return navigationBar
+    }()
+    
+    // 로딩 뷰
+    private let loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
     }()
     
     // 내부 스크롤 뷰
@@ -104,7 +113,6 @@ class RollpeV1DetailViewController: UIViewController {
         return stackView
     }()
     
-    
     // 하단 버튼 stack view
     private let buttonsVStackView: UIStackView = {
         let sv = UIStackView()
@@ -167,6 +175,8 @@ class RollpeV1DetailViewController: UIViewController {
         setupScrollView()
         setupContentView()
         setupTitle()
+        
+        addLoadingView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -188,6 +198,15 @@ class RollpeV1DetailViewController: UIViewController {
         navigationBar.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.equalToSuperview().inset(20)
+        }
+    }
+    
+    // 로딩 뷰
+    private func addLoadingView() {
+        view.addSubview(loadingView)
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
     
@@ -297,6 +316,8 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 방장
     private func setupParticipantsButton() {
+        contentView.addSubview(participantListButton)
+        
         participantListButton.rx
             .tapGesture()
             .when(.recognized)
@@ -308,7 +329,6 @@ class RollpeV1DetailViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        contentView.addSubview(participantListButton)
         
         participantListButton.snp.makeConstraints { make in
             make.top.equalTo(writerListStack.snp.bottom).offset(40)
@@ -321,7 +341,10 @@ class RollpeV1DetailViewController: UIViewController {
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
         buttonsHStackView.addArrangedSubview(shareButton)
         
+        /*
         // 수정하기
+        buttonsHStackView.addArrangedSubview(editSecondaryButton)
+        
         editSecondaryButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 let modalVC = EditRollpeModalViewController()
@@ -330,13 +353,20 @@ class RollpeV1DetailViewController: UIViewController {
                 self?.present(modalVC, animated: true)
             })
             .disposed(by: disposeBag)
-        
-        buttonsHStackView.addArrangedSubview(editSecondaryButton)
+        */
     }
     
     // 방장 - 완료
     private func setupDoneButtonsView() {
         buttonsVStackView.addArrangedSubview(imageSaveButton)
+        
+        // 이미지 저장 버튼
+        imageSaveButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.saveImage()
+            })
+            .disposed(by: disposeBag)
     }
     
     // 참석자
@@ -344,21 +374,13 @@ class RollpeV1DetailViewController: UIViewController {
         buttonsVStackView.addArrangedSubview(shareButton)
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
         
-        buttonsHStackView.addArrangedSubview(quitButton)
+        // 신고하기
         buttonsHStackView.addArrangedSubview(reportButton)
         
         reportButton.snp.makeConstraints { make in
             make.width.equalTo(reportButton.snp.height)
         }
         
-        // 롤페 나가기 버튼
-        quitButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                
-            })
-            .disposed(by: disposeBag)
-        
-        // 신고하기
         reportButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self,
@@ -368,6 +390,17 @@ class RollpeV1DetailViewController: UIViewController {
                 UIApplication.shared.open(url)
             })
             .disposed(by: disposeBag)
+        
+        /*
+        // 롤페 나가기 버튼
+        buttonsHStackView.addArrangedSubview(quitButton)
+        
+        quitButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                
+            })
+            .disposed(by: disposeBag)
+        */
     }
     
     // 공유하기 버튼 설정
@@ -459,9 +492,9 @@ class RollpeV1DetailViewController: UIViewController {
                 self.setupWriterList()
                 
                 // 버튼 설정
-                if convertYYYYMMddToDate(model.receive.receivingDate) > date {
+                if stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd") > date {
                     if model.host.id == myId { // 방장
-                        self.setupParticipantsButton()
+                        // self.setupParticipantsButton()
                         self.setupHostButtonsView()
                     } else { // 참석자
                         self.setupParticipantButtonsView()
@@ -478,6 +511,14 @@ class RollpeV1DetailViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
+        output.errorAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showOKAlert(title: "오류", message: message)
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if message != nil {
@@ -485,6 +526,53 @@ class RollpeV1DetailViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    // MARK: - 기능
+    
+    // 롤페 이미지 저장
+    private func saveImage() {
+        guard let rollpeView = rollpeView else { return }
+        
+        loadingView.isHidden = false
+        
+        let tempRollpeView: RollpeV1Types = rollpeView
+        
+        // 그림자 제거
+        tempRollpeView.layer.shadowColor = nil
+        tempRollpeView.layer.shadowOpacity = 0
+        tempRollpeView.layer.shadowRadius = 0
+        tempRollpeView.layer.shadowOffset = .zero
+        
+        // 크기 조정
+        let scaleFactor: CGFloat = 1.0
+        let scaledSize = CGSize(width: tempRollpeView.bounds.size.width * scaleFactor, height: tempRollpeView.bounds.size.height * scaleFactor)
+        
+        // 크기 반영
+        let renderer = UIGraphicsImageRenderer(size: scaledSize, format: .init(for: tempRollpeView.traitCollection))
+        
+        let image = renderer.image { context in
+            context.cgContext.scaleBy(x: scaleFactor, y: scaleFactor)
+            tempRollpeView.layer.render(in: context.cgContext)
+        }
+        
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(imageSaved(image:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    // 롤페 이미지 저장 handler
+    @objc func imageSaved(image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        loadingView.isHidden = true
+        
+        if let error = error {
+            print("이미지 저장 실패: \(error.localizedDescription)")
+            if checkNotHavaPhotoPermission() {
+                showOKAlert(title: "오류", message: "사진 접근 권한이 없어 저장할 수 없습니다.")
+            } else {
+                showOKAlert(title: "오류", message: "롤페 이미지 저장 중 오류가 발생하였습니다.")
+            }
+        } else {
+            showOKAlert(title: "알림", message: "롤페 이미지를 저장하였습니다.")
+        }
     }
 }
 

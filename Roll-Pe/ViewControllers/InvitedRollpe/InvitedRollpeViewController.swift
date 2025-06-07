@@ -100,6 +100,8 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        rollpeTableView.dataSource = nil
+        
         // Bind
         bind()
     }
@@ -169,12 +171,12 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
         
         let output = viewModel.transform()
         
-        output.showAlert
+        output.showOKAlert
             .drive(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -216,6 +218,7 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         rollpeTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(output.rollpeModels) { indexPath, rollpeModels in
                 return (indexPath, rollpeModels)
             }
@@ -272,7 +275,7 @@ extension InvitedRollpeViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -285,6 +288,7 @@ extension InvitedRollpeViewController {
         }
         
         self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
             })

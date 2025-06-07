@@ -198,6 +198,7 @@ class HeartV1MineModalViewController: UIViewController {
         
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })
@@ -206,6 +207,7 @@ class HeartV1MineModalViewController: UIViewController {
         // 수정 버튼
         editLabel.rx.tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -237,8 +239,9 @@ class HeartV1MineModalViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "알림", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "알림", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -246,8 +249,9 @@ class HeartV1MineModalViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    self.showOKAlert(title: "오류", message: message) {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                    }
                 }
             })
             .disposed(by: disposeBag)

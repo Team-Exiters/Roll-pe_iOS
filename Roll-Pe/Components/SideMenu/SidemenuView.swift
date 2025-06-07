@@ -13,7 +13,7 @@ import RxGesture
 import SafariServices
 
 class SidemenuView: UIView {
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     // 투명도
     private let ALPHA: CGFloat = 0.5
@@ -25,18 +25,79 @@ class SidemenuView: UIView {
     private let MENU_VIEW_WIDTH = UIScreen.main.bounds.width * 0.8
     
     // 뒷배경
-    private let background: UIButton = UIButton()
+    private lazy var background: UIButton = {
+        let button = UIButton()
+        button.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: ALPHA).cgColor
+        button.isUserInteractionEnabled = true
+        
+        return button
+    }()
     
     // 메뉴 배경
-    private let menuView: UIView = UIView()
+    private let menuView: UIView = {
+        let view = UIView()
+        view.layer.backgroundColor = UIColor.rollpePrimary.cgColor
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+        view.layer.cornerRadius = 16
+        view.layer.masksToBounds = true
+        
+        return view
+    }()
+    
+    // 닫기
+    private let closeButton: UIButton = UIButton()
+    
+    private let closeImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.image = .iconX
+        iv.contentMode = .scaleAspectFit
+        iv.clipsToBounds = true
+        iv.tintColor = .rollpeSecondary
+        iv.isUserInteractionEnabled = false
+        
+        return iv
+    }()
+    
+    // 내부 뷰
+    private let contentView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 0
+        sv.distribution = .equalSpacing
+        
+        return sv
+    }()
+    
+    // 메뉴
+    private let menusView: UIStackView = {
+        let sv = UIStackView()
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        sv.axis = .vertical
+        sv.spacing = 40
+        
+        return sv
+    }()
+    
+    // 약관 텍스트 컴포넌트
+    func policyText(text: String) -> UILabel {
+        let label: UILabel = UILabel()
+        label.textColor = .rollpeGray
+        label.font = UIFont(name: "Pretendard-Regular", size: 12)
+        label.numberOfLines = 1
+        label.text = text
+        
+        return label
+    }
     
     init(frame: CGRect = .zero, highlight: String) {
         super.init(frame: frame)
+        
         setup(highlight: highlight)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setup(highlight: "")
     }
     
@@ -44,9 +105,6 @@ class SidemenuView: UIView {
         self.translatesAutoresizingMaskIntoConstraints = false
         
         // MARK: - 뒷배경
-        
-        background.layer.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: ALPHA).cgColor
-        background.isUserInteractionEnabled = true
         
         self.addSubview(background)
         
@@ -57,19 +115,13 @@ class SidemenuView: UIView {
         }
         
         background.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.closeMenu()
             })
             .disposed(by: disposeBag)
         
-        // MARK: - 메뉴 배경
-        
-        menuView.layer.backgroundColor = UIColor.rollpePrimary.cgColor
-        
-        menuView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
-        menuView.layer.cornerRadius = 16
-        menuView.layer.masksToBounds = true
-        
+        // 메뉴 배경
         self.addSubview(menuView)
         
         menuView.snp.makeConstraints { make in
@@ -80,16 +132,7 @@ class SidemenuView: UIView {
             make.bottom.equalToSuperview()
         }
         
-        // MARK: - 닫기
-        let closeButton: UIButton = UIButton()
-        
-        let closeImageView: UIImageView = UIImageView()
-        closeImageView.image = .iconX
-        closeImageView.contentMode = .scaleAspectFit
-        closeImageView.clipsToBounds = true
-        closeImageView.tintColor = .rollpeSecondary
-        closeImageView.isUserInteractionEnabled = false
-        
+        // 닫기
         closeButton.addSubview(closeImageView)
         menuView.addSubview(closeButton)
         
@@ -103,18 +146,13 @@ class SidemenuView: UIView {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.closeMenu()
             })
             .disposed(by: disposeBag)
         
-        // MARK: - 메뉴 뷰
-        
-        let contentView: UIStackView = UIStackView()
-        
-        contentView.axis = .vertical
-        contentView.spacing = 0
-        contentView.distribution = .equalSpacing
+        // 메뉴 뷰
         
         menuView.addSubview(contentView)
         
@@ -135,23 +173,7 @@ class SidemenuView: UIView {
             return label
         }
         
-        // 약관 텍스트 컴포넌트
-        func policyText(text: String) -> UILabel {
-            let label: UILabel = UILabel()
-            label.textColor = .rollpeGray
-            label.font = UIFont(name: "Pretendard-Regular", size: 12)
-            label.numberOfLines = 1
-            label.text = text
-            
-            return label
-        }
-        
-        // 메뉴
-        let menusView: UIStackView = UIStackView()
-        menusView.translatesAutoresizingMaskIntoConstraints = false
-        menusView.axis = .vertical
-        menusView.spacing = 40
-        
+        // 메뉴 뷰
         contentView.addArrangedSubview(menusView)
         
         // 홈
@@ -161,6 +183,7 @@ class SidemenuView: UIView {
         home.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 if highlight != "홈" {
                     self.closeMenu()
@@ -176,6 +199,7 @@ class SidemenuView: UIView {
         search.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 if highlight != "검색" {
                     self.closeMenu()
@@ -197,6 +221,7 @@ class SidemenuView: UIView {
         inquiry.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 guard let url = URL(string: "https://forms.gle/WGC7ibNBgTnomRgZ7") else {
                     return
@@ -213,6 +238,7 @@ class SidemenuView: UIView {
         mypage.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 if highlight != "마이페이지" {
                     self.closeMenu()
@@ -230,44 +256,13 @@ class SidemenuView: UIView {
         
         contentView.addArrangedSubview(policiesView)
         
-        // 서비스 이용약관
-        let termsOfService = policyText(text: "서비스 이용약관")
-        policiesView.addArrangedSubview(termsOfService)
-        
-        termsOfService.rx
-            .tapGesture()
-            .when(.recognized)
-            .subscribe(onNext: { _ in
-                guard let url = URL(string: "\(WEBSITE_URL)/terms-of-service") else {
-                    return
-                }
-                
-                UIApplication.shared.open(url)
-            })
-            .disposed(by: disposeBag)
-        
-        // 개인정보처리방침
-        let privacyPolicy = policyText(text: "개인정보처리방침")
-        policiesView.addArrangedSubview(privacyPolicy)
-        
-        privacyPolicy.rx
-            .tapGesture()
-            .when(.recognized)
-            .subscribe(onNext: { _ in
-                guard let url = URL(string: "\(WEBSITE_URL)/privacy-policy") else {
-                    return
-                }
-                
-                UIApplication.shared.open(url)
-            })
-            .disposed(by: disposeBag)
-        
         // MARK: - 제스쳐
         
         let panGesture = UIPanGestureRecognizer()
         menuView.addGestureRecognizer(panGesture)
         
         panGesture.rx.event
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { gesture in
                 // 제스처의 이동 거리
                 let translation = gesture.translation(in: self)
@@ -301,7 +296,7 @@ class SidemenuView: UIView {
     
     // MARK: - 메뉴 닫기
     
-    func closeMenu() {
+    private func closeMenu() {
         UIView.animate(withDuration: ANIMATION_DURATION, animations: {
             self.background.alpha = 0
             

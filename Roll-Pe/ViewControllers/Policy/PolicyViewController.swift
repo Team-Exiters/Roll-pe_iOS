@@ -1,18 +1,32 @@
 //
-//  ForgotPasswordViewController.swift
+//  PolicyViewController.swift
 //  Roll-Pe
 //
-//  Created by 김태은 on 3/9/25.
+//  Created by 김태은 on 6/4/25.
 //
 
 import UIKit
 import SnapKit
+import WebKit
 import RxSwift
-import RxCocoa
 
-class ForgotPasswordViewController: UIViewController {
+class PolicyViewController: UIViewController, WKNavigationDelegate {
+    let policy: String
+    let isModal: Bool
+    
+    init(_ policy: String, isModal: Bool = false) {
+        self.policy = policy
+        self.isModal = isModal
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let disposeBag = DisposeBag()
-    private let viewModel = ForgotPasswordViewModel()
+    private let viewModel = PolicyViewModel()
+    var webViewHeightConstraint: Constraint?
     
     // MARK: - 요소
     
@@ -37,57 +51,44 @@ class ForgotPasswordViewController: UIViewController {
         let label = UILabel()
         label.textColor = .rollpeSecondary
         label.font = UIFont(name: "Pretendard-Regular", size: 20)
-        label.text = "비밀번호 찾기"
         
         return label
     }()
     
-    // 이메일
-    private let email: RoundedBorderTextField = {
-        let textField = RoundedBorderTextField()
-        textField.placeholder = "이메일"
-        textField.textContentType = .emailAddress
-        textField.keyboardType = .emailAddress
+    // 웹뷰
+    private let webView: WKWebView = {
+        let wb = WKWebView()
+        wb.scrollView.isScrollEnabled = false
         
-        return textField
+        return wb
     }()
-    
-    // 인증
-    private let verifyButton = PrimaryButton(title: "이메일 인증")
-    
-    // 로딩 뷰
-    private let loadingView: LoadingView = {
-        let view = LoadingView()
-        view.isHidden = true
-        
-        return view
-    }()
-    
+
     // MARK: - 생명주기
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        view.backgroundColor = .rollpePrimary
+
+        // UI 설정
+        setupContentView()
+        setupLogo()
+        setupTitle()
+        setupWebView()
         
-        setUI()
+        if !isModal {
+            addBack()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Bind
         bind()
     }
     
     // MARK: - UI 구성
-    
-    // 전체 UI
-    private func setUI() {
-        view.backgroundColor = .rollpePrimary
-        
-        setupContentView()
-        setupLogo()
-        setupTitle()
-        setupEmail()
-        setupVerifyButton()
-        
-        addBack()
-        addLoadingView()
-    }
     
     // 뒤로가기
     private func addBack() {
@@ -108,20 +109,10 @@ class ForgotPasswordViewController: UIViewController {
         }
     }
     
-    // 로딩 뷰
-    private func addLoadingView() {
-        view.addSubview(loadingView)
-        
-        loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-    
     // 내부 뷰
     private func setupContentView() {
         let scrollView: UIScrollView = UIScrollView()
-        scrollView.showsVerticalScrollIndicator = false
-        
+        scrollView.bounces = false
         view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
@@ -145,7 +136,7 @@ class ForgotPasswordViewController: UIViewController {
         
         logo.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(80)
-            make.width.equalToSuperview().multipliedBy(0.377884615)
+            make.width.equalTo(104)
             make.height.equalTo(logo.snp.width).dividedBy(getImageRatio(image: logoImage))
             make.centerX.equalToSuperview()
         }
@@ -153,6 +144,12 @@ class ForgotPasswordViewController: UIViewController {
     
     // 제목
     private func setupTitle() {
+        switch policy {
+        case "terms": titleLabel.text = "서비스 이용약관"
+        case "privacy": titleLabel.text = "개인정보처리방침"
+        default: titleLabel.text = ""
+        }
+        
         contentView.addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
@@ -161,76 +158,61 @@ class ForgotPasswordViewController: UIViewController {
         }
     }
     
-    // 이메일
-    private func setupEmail() {
-        contentView.addSubview(email)
+    // 웹뷰
+    private func setupWebView() {
+        webView.navigationDelegate = self
+        contentView.addSubview(webView)
         
-        email.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(60)
+        webView.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview()
+            self.webViewHeightConstraint = make.height.equalTo(0).constraint
         }
     }
-    
-    // 인증
-    private func setupVerifyButton() {
-        contentView.addSubview(verifyButton)
-        
-        verifyButton.snp.makeConstraints { make in
-            make.top.equalTo(email.snp.bottom).offset(24)
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(40)
-        }
-    }
-    
+
     // MARK: - Bind
     
     private func bind() {
-        let input = ForgotPasswordViewModel.Input(
-            email: email.rx.text,
-            verifyButtonTapEvent: verifyButton.rx.tap
-        )
+        viewModel.getHtml(policy)
         
-        let output = viewModel.transform(input)
+        let output = viewModel.transform()
         
-        output.isVerifyEnabled
-            .drive(onNext: { isEnabled in
-                self.verifyButton.disabled = !isEnabled
+        output.htmlCode
+            .drive(onNext: { html in
+                self.webView.loadHTMLString(html, baseURL: nil)
             })
             .disposed(by: disposeBag)
         
-        output.isLoading
-            .drive(onNext: { isLoading in
-                self.loadingView.isHidden = !isLoading
-            })
-            .disposed(by: disposeBag)
-        
-        output.successAlertMessage
+        output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showOKAlert(title: "알림", message: message) {
+                    self.showOKAlert(title: "오류", message: message) {
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
             })
             .disposed(by: disposeBag)
-        
-        output.errorAlertMessage
-            .drive(onNext: { message in
-                if let message = message {
-                    self.showOKAlert(title: "오류", message: message)
-                }
-            })
-            .disposed(by: disposeBag)
+    }
+    
+    // MARK: - Delegate
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        // JavaScript로 webview 높이 측정
+        webView.evaluateJavaScript("document.body.scrollHeight") { [weak self] (height, error) in
+            guard let height = height as? CGFloat else { return }
+            self?.webViewHeightConstraint?.update(offset: height)
+        }
     }
 }
 
 #if DEBUG
 import SwiftUI
 
-struct ForgotPasswordViewControllerPreview: PreviewProvider {
+struct PolicyViewControllerPreview: PreviewProvider {
     static var previews: some View {
         UIViewControllerPreview {
-            ForgotPasswordViewController()
+            PolicyViewController("")
         }
     }
 }

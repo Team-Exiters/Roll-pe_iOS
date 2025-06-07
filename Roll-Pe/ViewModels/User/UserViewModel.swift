@@ -36,6 +36,7 @@ class UserViewModel {
     // 내가 작성한 마음 불러오기
     func getMyStatus() {
         apiService.requestDecodable("/api/paper/mypage?type=main", method: .get, decodeType: MyStatusModel.self)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { model in
                 self.myStatus.accept(model)
             }, onError: { error in
@@ -50,7 +51,7 @@ class UserViewModel {
         keychain.delete(key: "REFRESH_TOKEN")
         keychain.delete(key: "NAME")
         keychain.delete(key: "EMAIL")
-        keychain.delete(key: "IDENTITY_CODE")
+        keychain.delete(key: "IDENTIFY_CODE")
         keychain.delete(key: "USER_ID")
         keychain.delete(key: "PROVIDER")
         
@@ -74,29 +75,42 @@ class UserViewModel {
     
     // 계정 삭제
     func deleteAccount() {
-        apiService.request("/api/user/drop-user", method: .delete)
-        .subscribe(onNext: { response, data in
-            let decoder = JSONDecoder()
-            
-            do {
-                let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+        guard let identifyCode = keychain.read(key: "IDENTIFY_CODE"),
+              let refresh = keychain.read(key: "REFRESH_TOKEN") else {
+            onError()
+            return
+        }
+        
+        // 바디
+        let body: [String: Any] = [
+            "identifyCode": identifyCode,
+            "refresh": refresh
+        ]
+        
+        apiService.request("/api/user/drop-user", method: .delete, parameters: body)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { response, data in
+                let decoder = JSONDecoder()
                 
-                if (200..<300).contains(response.statusCode) {
-                    self.successAlertMessage.onNext(model.message)
-                } else {
-                    self.errorAlertMessage.onNext(model.message)
+                do {
+                    let model = try decoder.decode(ResponseNoDataModel.self, from: data)
+                    
+                    if (200..<300).contains(response.statusCode) {
+                        self.successAlertMessage.onNext(model.message)
+                    } else {
+                        self.errorAlertMessage.onNext(model.message)
+                    }
+                } catch {
+                    print("ResponseNoDataModel 변환 실패")
+                    print(String(data: data, encoding: .utf8) ?? "")
+                    
+                    self.onError()
                 }
-            } catch {
-                print("ResponseNoDataModel 변환 실패")
-                print(String(data: data, encoding: .utf8) ?? "")
-                
+            }, onError: { error in
+                print("회원탈퇴 실패: \(error)")
                 self.onError()
-            }
-        }, onError: { error in
-            print("회원탈퇴 실패: \(error)")
-            self.onError()
-        })
-        .disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func onError() {

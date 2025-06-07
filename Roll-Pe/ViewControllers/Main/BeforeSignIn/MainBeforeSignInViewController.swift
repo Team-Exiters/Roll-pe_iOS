@@ -54,6 +54,7 @@ class MainBeforeSignInViewController: UIViewController {
         let mainTopSection = MainBeforeSignInTopSecionView()
         
         mainTopSection.button.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 let vc = SignInViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -89,6 +90,7 @@ class MainBeforeSignInViewController: UIViewController {
         
         // MARK: - 메인 네번째 섹션
         
+        /*
         let main4thSection = MainBeforeSignIn4thSection
         
         contentView.addArrangedSubview(main4thSection)
@@ -96,6 +98,7 @@ class MainBeforeSignInViewController: UIViewController {
         main4thSection.snp.makeConstraints { make in
             make.width.equalToSuperview()
         }
+        */
         
         // MARK: - Footer
         

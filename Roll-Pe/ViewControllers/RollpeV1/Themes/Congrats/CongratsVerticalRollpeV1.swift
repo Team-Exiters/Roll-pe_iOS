@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import RxGesture
 
 class CongratsVerticalRollpeV1: UIControl {
     private let disposeBag = DisposeBag()
@@ -164,6 +165,7 @@ class CongratsVerticalRollpeV1: UIControl {
             memoView.rx
                 .tapGesture()
                 .when(.recognized)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onNext: { _ in
                     self.onMemoSelected?(
                         index, model.hearts.data?.first { $0.index == index }

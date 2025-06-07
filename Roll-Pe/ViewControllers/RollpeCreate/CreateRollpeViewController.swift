@@ -779,7 +779,7 @@ class CreateRollpeViewController: UIViewController {
         contentView.addSubview(titleSendDate)
         
         // 전달일 선택
-        textFieldSendDate.text = "\(dateToYYYYMd(datePicker.minimumDate!)) 오전 10시"
+        textFieldSendDate.text = "\(dateToString(date: datePicker.minimumDate!, format: "yyyy년 M월 d일")) 오전 10시"
         textFieldSendDate.inputView = datePicker
         
         contentView.addSubview(textFieldSendDate)
@@ -790,8 +790,9 @@ class CreateRollpeViewController: UIViewController {
         }
         
         datePicker.rx.date
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
-                self.textFieldSendDate.text = "\(dateToYYYYMd(date)) 오전 10시"
+                self.textFieldSendDate.text = "\(dateToString(date: date, format: "yyyy년 M월 d일")) 오전 10시"
             })
             .disposed(by: disposeBag)
     }
@@ -818,6 +819,7 @@ class CreateRollpeViewController: UIViewController {
         pickerUser.rx
             .tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 let modalVC = SearchUserModalViewController()
                 modalVC.onUserSelected = { user in
@@ -916,6 +918,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     ratioBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             
@@ -951,6 +954,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     themeBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             
@@ -986,6 +990,7 @@ class CreateRollpeViewController: UIViewController {
                     
                     // select tap event
                     sizeBlock.rx.tap
+                        .observe(on: MainScheduler.instance)
                         .subscribe(onNext: { [weak self] in
                             guard let self = self else { return }
                             
@@ -1066,7 +1071,9 @@ class CreateRollpeViewController: UIViewController {
         output.successAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "알림", message: message)
+                    self.showOKAlert(title: "알림", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -1075,7 +1082,7 @@ class CreateRollpeViewController: UIViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -1084,14 +1091,23 @@ class CreateRollpeViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlertAndPop(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message) {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
         
         // 롤페 미리보기
-        Driver.combineLatest(output.selectedRatio, output.selectedTheme, output.selectedSize)
-            .drive(onNext: { ratio, theme, size in
+        Driver.combineLatest(
+            output.selectedRatio,
+            output.selectedTheme,
+            output.selectedSize,
+            textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
+            .drive(onNext: { ratio, theme, size, text in
+                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
+                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
+                
                 guard let ratio = ratio,
                       let theme = theme,
                       let size = size else { return }
@@ -1119,24 +1135,6 @@ class CreateRollpeViewController: UIViewController {
                 self.setupPreviewAndCreateButton()
                 
                 guard let rollpeView = self.rollpeView else { return }
-                
-                if ["추모"].contains(theme.name) {
-                    rollpeView.model = self.sampleRollpeV1MonoModel
-                } else {
-                    rollpeView.model = self.sampleRollpeV1Model
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        // 롤페 미리보기 제목 처리
-        Driver.combineLatest(
-            output.selectedTheme, textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
-            .drive(onNext: { theme, text in
-                guard let theme = theme,
-                      let rollpeView = self.rollpeView else { return }
-                
-                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
-                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
                 
                 if ["추모"].contains(theme.name) {
                     rollpeView.model = self.sampleRollpeV1MonoModel

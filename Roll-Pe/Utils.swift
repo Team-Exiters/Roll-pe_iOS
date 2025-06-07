@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import Photos
 
 // API 서버 주소
 let API_SERVER_URL: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
@@ -53,48 +54,26 @@ func dateToDDay(_ endDate: Date) -> String {
     }
 }
 
-// YYYY.M.D 계산
-func dateToYYYYMD(_ date: Date) -> String {
+// 문자열에서 날짜 계산
+func stringToDate(string: String, format: String) -> Date {
     let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy.M.d"
-    return dateFormatter.string(from: date)
-}
-
-// YYYY년 MM월 DD일 계산
-func dateToYYYYMd(_ date: Date) -> String {
-    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
     dateFormatter.locale = Locale(identifier: "ko_KR")
-    dateFormatter.dateFormat = "yyyy년 M월 d일"
-    return dateFormatter.string(from: date)
-}
-
-// YYYY-MM-dd date로 변환
-func convertYYYYMMddToDate(_ string: String) -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd"
-    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.amSymbol = "오전"
+    dateFormatter.pmSymbol = "오후"
     
     return dateFormatter.date(from: string)!
 }
 
-// 한글 날짜에서 yyyy-MM-dd 형식으로 변환
-func convertDateFormat(_ input: String) -> String? {
-    // 입력 형식 정의
-    let inputFormatter = DateFormatter()
-    inputFormatter.locale = Locale(identifier: "ko_KR")
-    inputFormatter.dateFormat = "yyyy년 M월 d일 a h시"
-    inputFormatter.amSymbol = "오전"
-    inputFormatter.pmSymbol = "오후"
+// 날짜에서 문자열 계산
+func dateToString(date: Date, format: String) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    dateFormatter.locale = Locale(identifier: "ko_KR")
+    dateFormatter.amSymbol = "오전"
+    dateFormatter.pmSymbol = "오후"
     
-    let outputFormatter = DateFormatter()
-    outputFormatter.dateFormat = "yyyy-MM-dd"
-    
-    guard let date = inputFormatter.date(from: input) else {
-        print("날짜 변환 실패: \(input)")
-        return nil
-    }
-    
-    return outputFormatter.string(from: date)
+    return dateFormatter.string(from: date)
 }
 
 // 뷰 컨트롤러 전환
@@ -111,6 +90,14 @@ func switchViewController(vc: UIViewController) {
         sceneDelegate.window?.rootViewController = navVC
         sceneDelegate.window?.makeKeyAndVisible()
     }
+}
+
+// 사진 권한 확인
+func checkNotHavaPhotoPermission() -> Bool {
+    var status: PHAuthorizationStatus = .notDetermined
+    status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+    
+    return status == .denied
 }
 
 extension UIViewController {
@@ -142,19 +129,11 @@ extension UIViewController {
         return result
     }
     
-    // Alert 표시
-    func showAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: nil))
-        
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    // 뒤로 돌아가는 Alert 표시
-    func showAlertAndPop(title: String, message: String) {
+    // OK Alert 표시
+    func showOKAlert(title: String, message: String, handler: @escaping () -> Void = {}) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            self.navigationController?.popViewController(animated: true)
+            handler()
         }))
         
         self.present(alertController, animated: true, completion: nil)
@@ -204,6 +183,16 @@ extension UIColor {
 
         self.init(red: r, green: g, blue: b, alpha: 1.0)
     }
+    
+    var toHex: String? {
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
+            var a: CGFloat = 0
+            guard self.getRed(&r, green: &g, blue: &b, alpha: &a) else { return nil }
+            let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+            return String(format: "#%06x", rgb)
+        }
 }
 
 // UILabel에 line-height 설정

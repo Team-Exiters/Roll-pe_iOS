@@ -112,6 +112,7 @@ class ParticipantListModalViewController: UIViewController, UITableViewDelegate 
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })

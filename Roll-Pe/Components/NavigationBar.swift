@@ -50,6 +50,7 @@ class NavigationBar: UIView {
         }
         
         backButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.goToBack()
             })
@@ -71,6 +72,7 @@ class NavigationBar: UIView {
         
         logo.rx.tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
                 switchViewController(vc: MainAfterSignInViewController())
             })
@@ -94,6 +96,7 @@ class NavigationBar: UIView {
         }
         
         buttonSideMenu.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.parentViewController?.view.addSubview(sideMenuView)
                 sideMenuView.showMenu()

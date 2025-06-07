@@ -33,7 +33,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     // 제목
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "초대받은 롤페"
+        label.text = "내 롤페"
         label.textAlignment = .center
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
@@ -100,6 +100,8 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        rollpeTableView.dataSource = nil
+        
         // Bind
         bind()
     }
@@ -165,16 +167,16 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     // MARK: - Bind
     
     private func bind() {
-        viewModel.getRollpes(type: "my")
+        viewModel.getRollpes(type: "host")
         
         let output = viewModel.transform()
         
-        output.showAlert
+        output.showOKAlert
             .drive(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -216,6 +218,7 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         rollpeTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(output.rollpeModels) { indexPath, rollpeModels in
                 return (indexPath, rollpeModels)
             }
@@ -272,7 +275,7 @@ extension MyRollpeViewController {
         output.errorAlertMessage
             .drive(onNext: { message in
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -285,6 +288,7 @@ extension MyRollpeViewController {
         }
         
         self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
             })

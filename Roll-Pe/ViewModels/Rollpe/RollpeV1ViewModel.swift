@@ -21,6 +21,7 @@ class RollpeV1ViewModel {
     
     private let errorAlertMessage = PublishSubject<String?>()
     private let criticalAlertMessage = PublishSubject<String?>()
+    
     private let needEnter = BehaviorRelay<Bool?>(value: nil)
     private let isEnterSuccess = BehaviorRelay<Bool?>(value: nil)
     

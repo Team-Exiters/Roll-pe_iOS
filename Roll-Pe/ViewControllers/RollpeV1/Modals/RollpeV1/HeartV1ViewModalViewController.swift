@@ -174,6 +174,7 @@ class HeartV1ViewModalViewController: UIViewController {
     private func bind() {
         // 닫기 버튼
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
                 self.dismiss(animated: true)
             })
@@ -182,6 +183,7 @@ class HeartV1ViewModalViewController: UIViewController {
         // 신고 버튼
         reportLabel.rx.tapGesture()
             .when(.recognized)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self,
                       let userCode = keychain.read(key: "IDENTIFY_CODE"),

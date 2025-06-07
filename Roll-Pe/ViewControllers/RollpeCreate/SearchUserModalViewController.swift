@@ -153,6 +153,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         }
         
         closeButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })
@@ -214,12 +215,12 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
         
         let output = viewModel.transform(input)
         
-        output.showAlert
+        output.showOKAlert
             .drive(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
                 if let message = message {
-                    self.showAlert(title: "오류", message: message)
+                    self.showOKAlert(title: "오류", message: message)
                 }
             })
             .disposed(by: disposeBag)
@@ -233,6 +234,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         sendButton.rx.tap
+            .observe(on: MainScheduler.instance)
             .withLatestFrom(output.users) { _, users in
                 users.first(where: { $0.isSelected! })
             }
@@ -243,7 +245,7 @@ class SearchUserModalViewController: UIViewController, UITableViewDelegate {
                     self.onUserSelected?(user)
                     self.dismiss(animated: true)
                 } else {
-                    self.showAlert(title: "오류", message: "유저를 선택해주세요.")
+                    self.showOKAlert(title: "오류", message: "유저를 선택해주세요.")
                 }
             })
             .disposed(by: disposeBag)
