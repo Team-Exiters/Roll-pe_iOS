@@ -100,6 +100,8 @@ class InvitedRollpeViewController: UIViewController, UITableViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        rollpeTableView.dataSource = nil
+        
         // Bind
         bind()
     }
