@@ -87,8 +87,6 @@ class UserViewModel {
             "refresh": refresh
         ]
         
-        print(body)
-        
         apiService.request("/api/user/drop-user", method: .delete, parameters: body)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
