@@ -1099,8 +1099,15 @@ class CreateRollpeViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 롤페 미리보기
-        Driver.combineLatest(output.selectedRatio, output.selectedTheme, output.selectedSize)
-            .drive(onNext: { ratio, theme, size in
+        Driver.combineLatest(
+            output.selectedRatio,
+            output.selectedTheme,
+            output.selectedSize,
+            textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
+            .drive(onNext: { ratio, theme, size, text in
+                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
+                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
+                
                 guard let ratio = ratio,
                       let theme = theme,
                       let size = size else { return }
@@ -1128,24 +1135,6 @@ class CreateRollpeViewController: UIViewController {
                 self.setupPreviewAndCreateButton()
                 
                 guard let rollpeView = self.rollpeView else { return }
-                
-                if ["추모"].contains(theme.name) {
-                    rollpeView.model = self.sampleRollpeV1MonoModel
-                } else {
-                    rollpeView.model = self.sampleRollpeV1Model
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        // 롤페 미리보기 제목 처리
-        Driver.combineLatest(
-            output.selectedTheme, textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
-            .drive(onNext: { theme, text in
-                guard let theme = theme,
-                      let rollpeView = self.rollpeView else { return }
-                
-                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
-                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
                 
                 if ["추모"].contains(theme.name) {
                     rollpeView.model = self.sampleRollpeV1MonoModel
