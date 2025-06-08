@@ -26,6 +26,7 @@ class RollpeV1DetailViewController: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
+    private var timerDisposeBag = DisposeBag()
     private let viewModel = RollpeV1ViewModel()
     private let keychain = Keychain.shared
     
@@ -62,6 +63,22 @@ class RollpeV1DetailViewController: UIViewController {
         label.type = .continuous
         
         if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 32) {
+            label.font = customFont
+        } else {
+            label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        }
+        
+        return label
+    }()
+    
+    // 종료까지
+    private let timeLimitLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.numberOfLines = 1
+        label.textColor = .rollpeSecondary
+        
+        if let customFont = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 14) {
             label.font = customFont
         } else {
             label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
@@ -172,6 +189,7 @@ class RollpeV1DetailViewController: UIViewController {
         setupNavigationBar()
         setupContentsView()
         setupTitle()
+        setupTimeLimitLabel()
         
         addLoadingView()
     }
@@ -249,6 +267,17 @@ class RollpeV1DetailViewController: UIViewController {
         }
     }
     
+    // 종료까지
+    private func setupTimeLimitLabel() {
+        contentView.addSubview(timeLimitLabel)
+        
+        timeLimitLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(4)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.centerX.equalToSuperview()
+        }
+    }
+    
     // 미리보기와 설명
     private func setupRollpeViewAndExplainationLabel() {
         // 롤페 미리보기 뷰
@@ -261,7 +290,7 @@ class RollpeV1DetailViewController: UIViewController {
         rollpeView.transform = CGAffineTransform(scaleX: ratio, y: ratio)
         
         rollpeView.snp.remakeConstraints { make in
-            make.top.equalTo(self.titleLabel.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 52)
+            make.top.equalTo(self.timeLimitLabel.snp.bottom).offset(((size.height * ratio - size.height) / 2) + 52)
             make.centerX.equalToSuperview()
             make.width.equalTo(size.width)
             make.height.equalTo(size.height)
@@ -433,18 +462,13 @@ class RollpeV1DetailViewController: UIViewController {
                 guard let rawMyId = keychain.read(key: "USER_ID"),
                       let myId = Int(rawMyId) else { return }
                 
+                // 제목 설정
                 titleLabel.text = model.title
                 
+                // 작성자 설정
                 writerLabel.text = "작성자(\(model.hearts.count)/\(model.maxHeartLength))"
                 
-                writerLabel.rx
-                    .tapGesture()
-                    .when(.recognized)
-                    .subscribe(onNext: { _ in
-                        print("dd")
-                    })
-                    .disposed(by: disposeBag)
-                
+                // 작성자 목록 설정
                 writerListStack.clear()
                 
                 model.hearts.data?.forEach { heart in
@@ -484,49 +508,76 @@ class RollpeV1DetailViewController: UIViewController {
                 }
                 
                 guard rollpeView != nil else { return }
-                
                 rollpeView!.model = model
                 
+                // 롤페 미리보기 설정
                 setupRollpeViewAndExplainationLabel()
+                
+                // 작성자 수 라벨 설정
                 setupWriterLabel()
+                
+                // 작성자 목록 설정
                 setupWriterList()
                 
                 // rollpeView interaction 추가
                 rollpeView!.isMemoInteractionEnabled = false
                 
-                // 버튼 설정
-                if stringToDate(
-                    string: "\(model.receive.receivingDate) \(ROLLPE_END_TIME)",
-                    format: "yyyy-MM-dd a h시") > Date() {
-                    (rollpeView! as UIView).rx
-                        .tapGesture()
-                        .when(.recognized)
-                        .subscribe(onNext: { _ in
-                            self.navigationController?.pushViewController(RollpeV1ViewController(pCode: self.pCode), animated: false)
-                        })
-                        .disposed(by: disposeBag)
-                    
-                    if model.host.id == myId { // 방장
-                        // self.setupParticipantsButton()
-                        setupHostButtonsView()
-                    } else { // 참석자
-                        setupParticipantButtonsView()
-                    }
-                } else { // 완료
-                    (rollpeView! as UIView).rx
-                        .tapGesture()
-                        .when(.recognized)
-                        .subscribe(onNext: { _ in
-                            self.showOKAlert(title: "알림", message: "더 이상 마음을 작성할 수 없습니다.")
-                        })
-                        .disposed(by: disposeBag)
-                    
-                    if model.receive.receiver.id == myId {
-                        setupDoneButtonsView()
-                    } else {
-                        switchViewController(vc: RollpeErrorViewController())
-                    }
-                }
+                // 타이머
+                self.timerDisposeBag = DisposeBag()
+                
+                let endDateString = "\(model.receive.receivingDate) \(ROLLPE_END_TIME)"
+                let endDate = stringToDate(string: endDateString, format: "yyyy-MM-dd a h시")
+                
+                // 10초마다 종료 시간 확인
+                Observable<Int>.interval(.milliseconds(10000), scheduler: MainScheduler.instance)
+                    .startWith(0)
+                    .subscribe(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        
+                        // 종료까지 남은 시간 계산
+                        let now = Date()
+                        let remainingTime = formatTimeUntil(endDate: endDate, now: now)
+                        timeLimitLabel.text = "종료까지: \(remainingTime) 남음"
+                        
+                        // 롤페 종료
+                        if remainingTime == "종료됨" {
+                            timeLimitLabel.text = "이미 종료된 롤페입니다."
+                            self.timerDisposeBag = DisposeBag()
+                        }
+                        
+                        // 버튼 설정
+                        if endDate > now {
+                            (rollpeView! as UIView).rx
+                                .tapGesture()
+                                .when(.recognized)
+                                .subscribe(onNext: { _ in
+                                    self.navigationController?.pushViewController(RollpeV1ViewController(pCode: self.pCode), animated: false)
+                                })
+                                .disposed(by: disposeBag)
+                            
+                            if model.host.id == myId { // 방장
+                                // self.setupParticipantsButton()
+                                setupHostButtonsView()
+                            } else { // 참석자
+                                setupParticipantButtonsView()
+                            }
+                        } else { // 완료
+                            (rollpeView! as UIView).rx
+                                .tapGesture()
+                                .when(.recognized)
+                                .subscribe(onNext: { _ in
+                                    self.showOKAlert(title: "알림", message: "더 이상 마음을 작성할 수 없습니다.")
+                                })
+                                .disposed(by: disposeBag)
+                            
+                            if model.receive.receiver.id == myId {
+                                setupDoneButtonsView()
+                            } else {
+                                switchViewController(vc: RollpeErrorViewController())
+                            }
+                        }
+                    })
+                    .disposed(by: self.timerDisposeBag)
                 
                 setupShareButton(host: model.host)
             })
@@ -594,6 +645,20 @@ class RollpeV1DetailViewController: UIViewController {
         } else {
             showOKAlert(title: "알림", message: "롤페 이미지를 저장하였습니다.")
         }
+    }
+    
+    // 종료까지 시간 계산
+    private func formatTimeUntil(endDate: Date, now: Date) -> String {
+        if now >= endDate {
+            return "종료됨"
+        }
+        
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.day, .hour, .minute]
+        formatter.unitsStyle = .full
+        formatter.zeroFormattingBehavior = .dropLeading
+        
+        return formatter.string(from: now, to: endDate) ?? "계산 중..."
     }
 }
 
