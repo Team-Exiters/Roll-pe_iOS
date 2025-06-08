@@ -179,6 +179,9 @@ class RollpeV1DetailViewController: UIViewController, UIGestureRecognizerDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // 롤페 데이터 불러오기
+        viewModel.getRollpeData(pCode: pCode)
+        
         // UI 설정
         resetButtonsView()
         
@@ -418,8 +421,6 @@ class RollpeV1DetailViewController: UIViewController, UIGestureRecognizerDelegat
     // MARK: - Bind
     
     private func bind() {
-        viewModel.getRollpeData(pCode: pCode)
-        
         let output = viewModel.transform()
         
         // 롤페 데이터 상호작용
