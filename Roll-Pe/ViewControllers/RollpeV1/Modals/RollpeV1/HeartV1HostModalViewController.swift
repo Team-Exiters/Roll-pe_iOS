@@ -237,7 +237,9 @@ class HeartV1HostModalViewController: UIViewController {
             .drive(onNext: { message in
                 if let message = message {
                     self.showOKAlert(title: "알림", message: message) {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                        self.dismiss(animated: true) {
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                        }
                     }
                 }
             })
@@ -247,7 +249,9 @@ class HeartV1HostModalViewController: UIViewController {
             .drive(onNext: { message in
                 if let message = message {
                     self.showOKAlert(title: "오류", message: message) {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                        self.dismiss(animated: true) {
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "HEART_EDITED"), object: nil)
+                        }
                     }
                 }
             })

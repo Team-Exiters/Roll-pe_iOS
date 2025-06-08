@@ -259,7 +259,7 @@ class EditRollpeModalViewController: UIViewController {
         datePicker.rx.date
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { date in
-                self.textFieldSendDate.text = "\(dateToString(date: date, format: "yyyy년 M월 d일")) 오전 10시"
+                self.textFieldSendDate.text = "\(dateToString(date: date, format: "yyyy년 M월 d일")) \(ROLLPE_END_TIME)"
             })
             .disposed(by: disposeBag)
     }

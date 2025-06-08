@@ -15,8 +15,6 @@ class RollpeV1ViewModel {
     
     var selectedRollpeDataModel: RollpeListDataModel?
     
-    var isPushed: Bool = false
-    
     private let rollpe = BehaviorRelay<RollpeV1DataModel?>(value: nil)
     
     private let errorAlertMessage = PublishSubject<String?>()

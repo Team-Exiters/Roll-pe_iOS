@@ -145,29 +145,14 @@ class SearchViewController: UIViewController, UITableViewDelegate {
         super.viewDidLoad()
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
-        rollpeTableView.delegate = self
         rollpeTableView.register(SearchRollpeTableViewCell.self, forCellReuseIdentifier: "SearchRollpeCell")
         
         // UI 설정
         setUI()
         
         // Bind
-        bindRollpeViewModel()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        rollpeTableView.dataSource = nil
-        
-        // Bind
         bind()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        rollpeV1ViewModel.isPushed = false
+        bindRollpeViewModel()
     }
     
     // MARK: - UI 구성
@@ -381,8 +366,7 @@ extension SearchViewController {
         output.needEnter
             .emit(onNext: { needEnter in
                 if let needEnter = needEnter,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if needEnter {
                         if rollpeDataModel.viewStat { // 공개
                             self.confirmEnterRollpe()
@@ -391,7 +375,6 @@ extension SearchViewController {
                         }
                     } else {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })
@@ -400,11 +383,9 @@ extension SearchViewController {
         output.isEnterSuccess
             .emit(onNext: { isEnterSuccess in
                 if let isEnterSuccess = isEnterSuccess,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if isEnterSuccess {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })

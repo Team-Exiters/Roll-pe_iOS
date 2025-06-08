@@ -18,11 +18,30 @@ class MainAfterSignInViewController: UIViewController {
     private let userViewModel = UserViewModel()
     private let rollpeV1ViewModel = RollpeV1ViewModel()
     
+    private var collectionViewHeightConstraint: Constraint?
+    
     // MARK: - 요소
     
-    private let contentView = UIView()
+    private let contentsView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .rollpeSectionBackground
+        
+        return view
+    }()
     
-    private let hotContentView = UIView()
+    private let topContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .rollpePrimary
+        
+        return view
+    }()
+    
+    private let hotContentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .rollpeSectionBackground
+        
+        return view
+    }()
     
     private let nickNameLabel: UILabel = {
         let label = UILabel()
@@ -69,6 +88,8 @@ class MainAfterSignInViewController: UIViewController {
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
     
+    private let footer = Footer()
+    
     // MARK: - 생명주기
     
     override func viewDidLoad() {
@@ -78,25 +99,17 @@ class MainAfterSignInViewController: UIViewController {
         // UI 설정
         setUI()
         
+        rollpeCollectionView.delegate = self
+        
         // Bind
+        bind()
         bindRollpeViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        rollpeCollectionView.dataSource = nil
-        
         userViewModel.getMyStatus()
-        
-        // bind
-        bind()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        rollpeV1ViewModel.isPushed = false
     }
     
     // MARK: - UI 구성
@@ -104,16 +117,17 @@ class MainAfterSignInViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = .rollpePrimary
         
-        setupContentView()
+        setupContentsView()
+        setupTopContentView()
         setupNickNameLabel()
         setupRollpesLabel()
         setupHeartsLabel()
         setupPrimaryButton()
         setupSecondaryButton()
+        setupFooter()
         setupHotContentView()
         setupHotLabel()
         setupRollpeItems()
-        setupFooter()
         addSideMenuButton()
     }
     
@@ -140,7 +154,7 @@ class MainAfterSignInViewController: UIViewController {
     }
     
     // 내부 뷰
-    private func setupContentView() {
+    private func setupContentsView() {
         let scrollView = UIScrollView()
         scrollView.bounces = false
         scrollView.showsVerticalScrollIndicator = false
@@ -153,12 +167,23 @@ class MainAfterSignInViewController: UIViewController {
             make.width.equalToSuperview()
         }
         
-        scrollView.addSubview(contentView)
+        scrollView.addSubview(contentsView)
         
-        contentView.snp.makeConstraints { make in
+        contentsView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().inset(-safeareaBottom)
             make.width.equalToSuperview()
+            make.height.greaterThanOrEqualToSuperview()
+        }
+    }
+    
+    // topContentView
+    private func setupTopContentView() {
+        contentsView.addSubview(topContentView)
+        
+        topContentView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
         }
     }
     
@@ -167,37 +192,37 @@ class MainAfterSignInViewController: UIViewController {
         let nickname = self.keychain.read(key: "NAME")
         nickNameLabel.text = "\(nickname ?? "")님은"
         
-        contentView.addSubview(nickNameLabel)
+        topContentView.addSubview(nickNameLabel)
         
         nickNameLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(40)
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().inset(20)
         }
     }
     
     // 내가 만든 롤페 횟수
     private func setupRollpesLabel(){
-        contentView.addSubview(rollpeCountLabel)
+        topContentView.addSubview(rollpeCountLabel)
         
         rollpeCountLabel.snp.makeConstraints { make in
             make.top.equalTo(nickNameLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().inset(20)
         }
     }
     
     // 내가 작성한 롤페 횟수
     private func setupHeartsLabel(){
-        contentView.addSubview(heartCountLabel)
+        topContentView.addSubview(heartCountLabel)
         
         heartCountLabel.snp.makeConstraints { make in
             make.top.equalTo(rollpeCountLabel.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().inset(20)
         }
     }
     
     // 초대받는 롤페 버튼
     private func setupPrimaryButton(){
-        contentView.addSubview(primaryButton)
+        topContentView.addSubview(primaryButton)
         
         primaryButton.snp.makeConstraints { make in
             make.top.equalTo(heartCountLabel.snp.bottom).offset(40)
@@ -215,12 +240,13 @@ class MainAfterSignInViewController: UIViewController {
     
     // 롤페 만들기 버튼
     private func setupSecondaryButton(){
-        contentView.addSubview(secondaryButton)
+        topContentView.addSubview(secondaryButton)
         
         secondaryButton.snp.makeConstraints { make in
             make.top.equalTo(primaryButton.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(36)
         }
         
         secondaryButton.rx.tap
@@ -233,13 +259,12 @@ class MainAfterSignInViewController: UIViewController {
     
     // 지금 뜨고있는 롤페 구역
     private func setupHotContentView(){
-        contentView.addSubview(hotContentView)
-        hotContentView.backgroundColor = .rollpeSectionBackground
+        contentsView.addSubview(hotContentView)
         
         hotContentView.snp.makeConstraints { make in
-            make.top.equalTo(secondaryButton.snp.bottom).offset(36)
+            make.top.equalTo(topContentView.snp.bottom)
             make.horizontalEdges.equalToSuperview()
-            make.height.greaterThanOrEqualTo(UIScreen.main.bounds.height - (safeareaTop + 292))
+            make.bottom.equalTo(footer.snp.top).priority(.low)
         }
     }
     
@@ -255,8 +280,8 @@ class MainAfterSignInViewController: UIViewController {
     
     // 지금 뜨고있는 롤페
     private func setupRollpeItems() {
+        rollpeCollectionView.isScrollEnabled = false
         rollpeCollectionView.backgroundColor = .clear
-        rollpeCollectionView.delegate = self
         
         rollpeCollectionView.register(MainAfterSignInGridCell.self, forCellWithReuseIdentifier: "GridCell")
         
@@ -265,18 +290,16 @@ class MainAfterSignInViewController: UIViewController {
         rollpeCollectionView.snp.makeConstraints { make in
             make.top.equalTo(hotLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(20)
-            make.bottom.equalToSuperview().inset(44).priority(.low)
-            make.height.equalTo(0)
+            make.bottom.equalToSuperview().inset(44)
+            self.collectionViewHeightConstraint = make.height.equalTo(0).constraint
         }
     }
     
     // 푸터
     private func setupFooter(){
-        let footer = Footer()
-        contentView.addSubview(footer)
+        contentsView.addSubview(footer)
         
-        footer.snp.makeConstraints{make in
-            make.top.equalTo(hotContentView.snp.bottom)
+        footer.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -301,8 +324,8 @@ class MainAfterSignInViewController: UIViewController {
             .disposed(by: disposeBag)
         
         // 지금 뜨는 롤페
-        mainViewModel.hotRollpeList
-            .bind(to: rollpeCollectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
+        mainViewModel.hotRollpeList.asDriver()
+            .drive(rollpeCollectionView.rx.items(cellIdentifier: "GridCell", cellType: MainAfterSignInGridCell.self)) { index, model, cell in
                 cell.configure(model: model)
             }
             .disposed(by: disposeBag)
@@ -321,19 +344,22 @@ class MainAfterSignInViewController: UIViewController {
                 self.rollpeV1ViewModel.getRollpeData(pCode: selectedModel.code)
             })
             .disposed(by: disposeBag)
+        
+        rollpeCollectionView.rx.observe(CGSize.self, "contentSize")
+            .compactMap { $0?.height }
+            .filter { $0 > 0 }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] height in
+                self?.collectionViewHeightConstraint?.update(offset: height)
+            })
+            .disposed(by: disposeBag)
     }
 }
 
 extension MainAfterSignInViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (collectionView.frame.width - 12) / 2
-        
-        // collectionView의 높이 설정
-        DispatchQueue.main.async {
-            self.rollpeCollectionView.snp.updateConstraints { make in
-                make.height.equalTo(self.rollpeCollectionView.contentSize.height)
-            }
-        }
         
         return CGSize(width: width, height: 148)
     }
@@ -347,8 +373,7 @@ extension MainAfterSignInViewController {
         output.needEnter
             .emit(onNext: { needEnter in
                 if let needEnter = needEnter,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if needEnter {
                         if rollpeDataModel.viewStat { // 공개
                             self.confirmEnterRollpe()
@@ -357,7 +382,6 @@ extension MainAfterSignInViewController {
                         }
                     } else {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })
@@ -366,11 +390,9 @@ extension MainAfterSignInViewController {
         output.isEnterSuccess
             .emit(onNext: { isEnterSuccess in
                 if let isEnterSuccess = isEnterSuccess,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if isEnterSuccess {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })
@@ -428,7 +450,7 @@ class MainAfterSignInGridCell: UICollectionViewCell {
         super.init(frame: frame)
         setup()
     }
-
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
@@ -441,7 +463,7 @@ class MainAfterSignInGridCell: UICollectionViewCell {
             make.edges.equalToSuperview()
         }
     }
-
+    
     func configure(model: RollpeListDataModel) {
         rollpeItemView.configure(model: model)
     }

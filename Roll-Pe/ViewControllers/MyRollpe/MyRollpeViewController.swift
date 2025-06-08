@@ -82,7 +82,6 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
         view.backgroundColor = .rollpePrimary
         
-        rollpeTableView.delegate = self
         rollpeTableView.register(RollpeListTableViewCell.self, forCellReuseIdentifier: "RollpeListCell")
         
         // UI 설정
@@ -94,22 +93,14 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
         setupNavigationBar()
         
         // Bind
+        bind()
         bindRollpeViewModel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        rollpeTableView.dataSource = nil
-        
-        // Bind
-        bind()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        rollpeV1ViewModel.isPushed = false
+        viewModel.getRollpes(type: "host")
     }
     
     // MARK: - UI 설정
@@ -167,8 +158,6 @@ class MyRollpeViewController: UIViewController, UITableViewDelegate {
     // MARK: - Bind
     
     private func bind() {
-        viewModel.getRollpes(type: "host")
-        
         let output = viewModel.transform()
         
         output.showOKAlert
@@ -243,8 +232,7 @@ extension MyRollpeViewController {
         output.needEnter
             .emit(onNext: { needEnter in
                 if let needEnter = needEnter,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if needEnter {
                         if rollpeDataModel.viewStat { // 공개
                             self.confirmEnterRollpe()
@@ -253,7 +241,6 @@ extension MyRollpeViewController {
                         }
                     } else {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })
@@ -262,11 +249,9 @@ extension MyRollpeViewController {
         output.isEnterSuccess
             .emit(onNext: { isEnterSuccess in
                 if let isEnterSuccess = isEnterSuccess,
-                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel,
-                   !self.rollpeV1ViewModel.isPushed {
+                   let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
                     if isEnterSuccess {
                         self.navigationController?.pushViewController(RollpeV1DetailViewController(pCode: rollpeDataModel.code), animated: true)
-                        self.rollpeV1ViewModel.isPushed = true
                     }
                 }
             })
