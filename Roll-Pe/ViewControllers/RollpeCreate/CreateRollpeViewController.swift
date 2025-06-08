@@ -937,7 +937,7 @@ class CreateRollpeViewController: UIViewController {
             .drive(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                self.ratioBlocks.forEach { block in
+                ratioBlocks.forEach { block in
                     block.isSelected = (model == block.model)
                 }
             })
@@ -991,9 +991,7 @@ class CreateRollpeViewController: UIViewController {
                     // select tap event
                     sizeBlock.rx.tap
                         .observe(on: MainScheduler.instance)
-                        .subscribe(onNext: { [weak self] in
-                            guard let self = self else { return }
-                            
+                        .subscribe(onNext: { _ in
                             self.viewModel.selectedSize.accept(model)
                         })
                         .disposed(by: self.disposeBag)
@@ -1010,7 +1008,7 @@ class CreateRollpeViewController: UIViewController {
                 guard let self = self,
                 let model = model else { return }
                 
-                self.sizeBlocks.forEach { block in
+                sizeBlocks.forEach { block in
                     block.isSelected = (model == block.model)
                 }
                 
@@ -1023,20 +1021,20 @@ class CreateRollpeViewController: UIViewController {
             .drive(onNext: { [weak self] visible in
                 guard let self = self else { return }
                 
-                self.password.isHidden = !visible
+                password.isHidden = !visible
                 
                 if visible {
-                    self.password.snp.remakeConstraints { make in
+                    password.snp.remakeConstraints { make in
                         make.top.equalTo(self.controlPrivate.snp.bottom).offset(12)
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
                     
-                    self.titleSendDate.snp.remakeConstraints { make in
+                    titleSendDate.snp.remakeConstraints { make in
                         make.top.equalTo(self.password.snp.bottom).offset(40)
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
                 } else {
-                    self.titleSendDate.snp.remakeConstraints { make in
+                    titleSendDate.snp.remakeConstraints { make in
                         make.top.equalTo(self.controlPrivate.snp.bottom).offset(40)
                         make.horizontalEdges.equalToSuperview().inset(20)
                     }
@@ -1104,42 +1102,45 @@ class CreateRollpeViewController: UIViewController {
             output.selectedTheme,
             output.selectedSize,
             textFieldTitle.rx.text.orEmpty.asDriver().distinctUntilChanged())
-            .drive(onNext: { ratio, theme, size, text in
-                self.sampleRollpeV1Model.title = text.isEmpty ? "제목을 입력하세요." : text
-                self.sampleRollpeV1MonoModel.title = text.isEmpty ? "제목을 입력하세요." : text
-                
-                guard let ratio = ratio,
+            .drive(onNext: { [weak self] ratio, theme, size, text in
+                guard let self = self,
+                      let ratio = ratio,
                       let theme = theme,
                       let size = size else { return }
                 
-                if self.rollpeView?.superview != nil {
-                    self.rollpeView?.removeFromSuperview()
+                let emptyText: String = "제목을 입력하세요."
+                
+                self.sampleRollpeV1Model.title = text.isEmpty ? emptyText : text
+                self.sampleRollpeV1MonoModel.title = text.isEmpty ? emptyText : text
+                
+                if rollpeView?.superview != nil {
+                    rollpeView?.removeFromSuperview()
                 }
                 
                 switch (ratio.name, theme.name, size.name) {
                 case ("가로", "화이트", "A4"):
-                    self.rollpeView = WhiteHorizontalRollpeV1()
+                    rollpeView = WhiteHorizontalRollpeV1()
                 case ("가로", "추모", "A4"):
-                    self.rollpeView = MemorialHorizontalRollpeV1()
+                    rollpeView = MemorialHorizontalRollpeV1()
                 case ("가로", "축하", "A4"):
-                    self.rollpeView = CongratsHorizontalRollpeV1()
+                    rollpeView = CongratsHorizontalRollpeV1()
                 case ("세로", "화이트", "A4"):
-                    self.rollpeView = WhiteVerticalRollpeV1()
+                    rollpeView = WhiteVerticalRollpeV1()
                 case ("세로", "추모", "A4"):
-                    self.rollpeView = MemorialVerticalRollpeV1()
+                    rollpeView = MemorialVerticalRollpeV1()
                 case ("세로", "축하", "A4"):
-                    self.rollpeView = CongratsVerticalRollpeV1()
+                    rollpeView = CongratsVerticalRollpeV1()
                 default: break
                 }
                 
-                self.setupPreviewAndCreateButton()
+                setupPreviewAndCreateButton()
                 
-                guard let rollpeView = self.rollpeView else { return }
+                guard let rollpeView = rollpeView else { return }
                 
                 if ["추모"].contains(theme.name) {
-                    rollpeView.model = self.sampleRollpeV1MonoModel
+                    rollpeView.model = sampleRollpeV1MonoModel
                 } else {
-                    rollpeView.model = self.sampleRollpeV1Model
+                    rollpeView.model = sampleRollpeV1Model
                 }
             })
             .disposed(by: disposeBag)
