@@ -13,7 +13,7 @@ import RxGesture
 import MarqueeLabel
 import Photos
 
-class RollpeV1DetailViewController: UIViewController, UIGestureRecognizerDelegate {
+class RollpeV1DetailViewController: UIViewController {
     let pCode: String
     
     init(pCode: String) {
