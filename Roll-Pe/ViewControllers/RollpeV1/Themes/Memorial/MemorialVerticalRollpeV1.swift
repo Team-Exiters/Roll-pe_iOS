@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class MemorialVerticalRollpeV1: UIControl {
+class MemorialVerticalRollpeV1: UIView {
     private let disposeBag = DisposeBag()
     
     var onMemoSelected: ((Int, HeartModel?) -> Void)?

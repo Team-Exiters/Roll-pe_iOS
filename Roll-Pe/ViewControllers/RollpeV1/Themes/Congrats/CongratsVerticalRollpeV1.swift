@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class CongratsVerticalRollpeV1: UIControl {
+class CongratsVerticalRollpeV1: UIView {
     private let disposeBag = DisposeBag()
     
     var onMemoSelected: ((Int, HeartModel?) -> Void)?

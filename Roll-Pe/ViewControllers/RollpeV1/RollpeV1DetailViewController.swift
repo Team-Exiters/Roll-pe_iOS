@@ -13,7 +13,7 @@ import RxGesture
 import MarqueeLabel
 import Photos
 
-class RollpeV1DetailViewController: UIViewController {
+class RollpeV1DetailViewController: UIViewController, UIGestureRecognizerDelegate {
     let pCode: String
     
     init(pCode: String) {
@@ -144,7 +144,6 @@ class RollpeV1DetailViewController: UIViewController {
         
         return label
     }()
-    
     private let editSecondaryButton = SecondaryButton(title: "수정하기")
     
     // 방장 - 완료
@@ -171,9 +170,7 @@ class RollpeV1DetailViewController: UIViewController {
         
         // UI 설정
         setupNavigationBar()
-        setupButtonsVStackView()
-        setupScrollView()
-        setupContentView()
+        setupContentsView()
         setupTitle()
         
         addLoadingView()
@@ -210,18 +207,17 @@ class RollpeV1DetailViewController: UIViewController {
         }
     }
     
-    // 하단 버튼 뷰
-    private func setupButtonsVStackView() {
+    // 컨텐츠 뷰
+    private func setupContentsView() {
+        // 하단 버튼 뷰
         view.addSubview(buttonsVStackView)
         
         buttonsVStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-    }
-    
-    // 스크롤 뷰
-    private func setupScrollView() {
+        
+        // 스크롤 뷰
         view.addSubview(scrollView)
         
         scrollView.snp.remakeConstraints { make in
@@ -229,10 +225,8 @@ class RollpeV1DetailViewController: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalTo(buttonsVStackView.snp.top).offset(-40)
         }
-    }
-    
-    // 스크롤 내부 뷰
-    private func setupContentView() {
+        
+        // 내부 뷰
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
@@ -247,18 +241,15 @@ class RollpeV1DetailViewController: UIViewController {
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(20)
-            make.centerX.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
+            make.centerX.equalToSuperview()
         }
     }
     
-    // 미리보기
+    // 미리보기와 설명
     private func setupRollpeViewAndExplainationLabel() {
+        // 롤페 미리보기 뷰
         guard let rollpeView = rollpeView else { return }
-        
-        rollpeView.addAction(UIAction { _ in
-            self.navigationController?.pushViewController(RollpeV1ViewController(pCode: self.pCode), animated: false)
-        }, for: .touchUpInside)
         
         contentView.addSubview(rollpeView)
         
@@ -275,6 +266,7 @@ class RollpeV1DetailViewController: UIViewController {
         
         addShadow(to: rollpeView)
         
+        // 설명 라벨
         contentView.addSubview(explainationLabel)
         
         explainationLabel.snp.makeConstraints { make in
@@ -300,6 +292,7 @@ class RollpeV1DetailViewController: UIViewController {
         writerListStack.snp.makeConstraints { make in
             make.top.equalTo(writerLabel.snp.bottom).offset(20)
             make.leading.equalToSuperview()
+            make.bottom.equalToSuperview() // 참여자 목록 기능 추가하면 바꿔야함
         }
     }
     
@@ -431,20 +424,27 @@ class RollpeV1DetailViewController: UIViewController {
         
         // 롤페 데이터 상호작용
         output.rollpe
-            .drive(onNext: { model in
-                guard let model = model else { return }
+            .drive(onNext: { [weak self] model in
+                guard let self = self,
+                      let model = model else { return }
                 
                 let keychain = Keychain.shared
                 guard let rawMyId = keychain.read(key: "USER_ID"),
                       let myId = Int(rawMyId) else { return }
                 
-                let date = Date()
+                titleLabel.text = model.title
                 
-                self.titleLabel.text = model.title
+                writerLabel.text = "작성자(\(model.hearts.count)/\(model.maxHeartLength))"
                 
-                self.writerLabel.text = "작성자(\(model.hearts.count)/\(model.maxHeartLength))"
+                writerLabel.rx
+                    .tapGesture()
+                    .when(.recognized)
+                    .subscribe(onNext: { _ in
+                        print("dd")
+                    })
+                    .disposed(by: disposeBag)
                 
-                self.writerListStack.clear()
+                writerListStack.clear()
                 
                 model.hearts.data?.forEach { heart in
                     let label = UILabel()
@@ -460,54 +460,74 @@ class RollpeV1DetailViewController: UIViewController {
                     self.writerListStack.addArrangedSubview(label)
                 }
                 
-                if self.rollpeView?.superview != nil {
-                    self.rollpeView?.removeFromSuperview()
+                if rollpeView?.superview != nil {
+                    rollpeView?.removeFromSuperview()
                 }
                 
                 // 롤페 뷰 설정
                 switch (model.ratio, model.theme, model.size) {
                 case ("가로", "화이트", "A4"):
-                    self.rollpeView = WhiteHorizontalRollpeV1()
+                    rollpeView = WhiteHorizontalRollpeV1()
                 case ("가로", "추모", "A4"):
-                    self.rollpeView = MemorialHorizontalRollpeV1()
+                    rollpeView = MemorialHorizontalRollpeV1()
                 case ("가로", "축하", "A4"):
-                    self.rollpeView = CongratsHorizontalRollpeV1()
+                    rollpeView = CongratsHorizontalRollpeV1()
                 case ("세로", "화이트", "A4"):
-                    self.rollpeView = WhiteVerticalRollpeV1()
+                    rollpeView = WhiteVerticalRollpeV1()
                 case ("세로", "추모", "A4"):
-                    self.rollpeView = MemorialVerticalRollpeV1()
+                    rollpeView = MemorialVerticalRollpeV1()
                 case ("세로", "축하", "A4"):
-                    self.rollpeView = CongratsVerticalRollpeV1()
+                    rollpeView = CongratsVerticalRollpeV1()
                 default:
                     break
                 }
                 
-                guard self.rollpeView != nil else { return }
+                guard rollpeView != nil else { return }
                 
-                self.rollpeView!.model = model
-                self.rollpeView!.isMemoInteractionEnabled = false
+                rollpeView!.model = model
                 
-                self.setupRollpeViewAndExplainationLabel()
-                self.setupWriterLabel()
-                self.setupWriterList()
+                setupRollpeViewAndExplainationLabel()
+                setupWriterLabel()
+                setupWriterList()
+                
+                // rollpeView interaction 추가
+                rollpeView!.isMemoInteractionEnabled = false
                 
                 // 버튼 설정
-                if stringToDate(string: model.receive.receivingDate, format: "yyyy-MM-dd") > date {
+                if stringToDate(
+                    string: "\(model.receive.receivingDate) \(ROLLPE_END_TIME)",
+                    format: "yyyy-MM-dd a h시") > Date() {
+                    (rollpeView! as UIView).rx
+                        .tapGesture()
+                        .when(.recognized)
+                        .subscribe(onNext: { _ in
+                            self.navigationController?.pushViewController(RollpeV1ViewController(pCode: self.pCode), animated: false)
+                        })
+                        .disposed(by: disposeBag)
+                    
                     if model.host.id == myId { // 방장
                         // self.setupParticipantsButton()
-                        self.setupHostButtonsView()
+                        setupHostButtonsView()
                     } else { // 참석자
-                        self.setupParticipantButtonsView()
+                        setupParticipantButtonsView()
                     }
                 } else { // 완료
+                    (rollpeView! as UIView).rx
+                        .tapGesture()
+                        .when(.recognized)
+                        .subscribe(onNext: { _ in
+                            self.showOKAlert(title: "알림", message: "더 이상 마음을 작성할 수 없습니다.")
+                        })
+                        .disposed(by: disposeBag)
+                    
                     if model.receive.receiver.id == myId {
-                        self.setupDoneButtonsView()
+                        setupDoneButtonsView()
                     } else {
                         switchViewController(vc: RollpeErrorViewController())
                     }
                 }
                 
-                self.setupShareButton(host: model.host)
+                setupShareButton(host: model.host)
             })
             .disposed(by: disposeBag)
         
