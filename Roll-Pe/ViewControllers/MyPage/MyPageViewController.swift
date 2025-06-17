@@ -10,8 +10,7 @@ import SnapKit
 import RxSwift
 import RxGesture
 
-class MyPageViewController: UIViewController {
-    private let disposeBag = DisposeBag()
+class MyPageViewController: BaseRollpeV1ViewController {
     private let viewModel = UserViewModel()
     private let keychain = Keychain.shared
     
@@ -107,7 +106,6 @@ class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // 배경 및 네비게이션 설정
-        view.backgroundColor = .rollpePrimary
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         // UI 설정

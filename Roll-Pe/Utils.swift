@@ -15,7 +15,7 @@ import Photos
 let API_SERVER_URL: String = Bundle.main.object(forInfoDictionaryKey: "SERVER_IP") as! String
 
 // 웹사이트 주소
-let WEBSITE_URL: String = "https://haren-dev2.defcon.or.kr"
+let WEBSITE_URL: String = "https://rollpe.me"
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
