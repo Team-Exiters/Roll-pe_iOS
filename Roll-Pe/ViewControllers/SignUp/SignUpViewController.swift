@@ -354,9 +354,7 @@ class SignUpViewController: UIViewController {
             .when(.recognized)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/terms-of-service")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                self.navigationController?.pushViewController(PolicyViewController("terms"), animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -386,9 +384,7 @@ class SignUpViewController: UIViewController {
             .when(.recognized)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                let url = NSURL(string: "\(WEBSITE_URL)/privacy-policy")
-                let safariVc: SFSafariViewController = SFSafariViewController(url: url! as URL)
-                self.present(safariVc, animated: true, completion: nil)
+                self.navigationController?.pushViewController(PolicyViewController("privacy"), animated: true)
             })
             .disposed(by: disposeBag)
         
