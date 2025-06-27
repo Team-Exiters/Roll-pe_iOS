@@ -215,95 +215,87 @@ class RollpeV1ViewController: UIViewController {
         
         (rollpeView as UIView).rx.pinchGesture()
             .when(.changed)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { gesture in
-                guard let view = gesture.view else { return }
-                
+            .subscribe(onNext: { [weak self] gesture in
+                guard let self = self else { return }
                 self.scale *= gesture.scale
-                view.transform = CGAffineTransform(scaleX: self.scale, y: self.scale)
-                
+                self.applyTransform()
                 gesture.scale = 1.0
             })
             .disposed(by: disposeBag)
-        
-        (rollpeView as UIView).rx.panGesture()
-            .when(.began)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { gesture in
-                guard let view = gesture.view else { return }
-                
-                self.lastTranslation = view.center
-            })
-            .disposed(by: disposeBag)
-        
-        (rollpeView as UIView).rx.panGesture()
-            .when(.changed)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { gesture in
-                guard let view = gesture.view else { return }
-                
-                let translation = gesture.translation(in: self.view)
-                let center = CGPoint(x: self.lastTranslation.x + translation.x, y: self.lastTranslation.y + translation.y)
-                view.center = center
-            })
-            .disposed(by: disposeBag)
-        
-        (rollpeView as UIView).rx.panGesture()
-            .when(.ended)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { gesture in
-                guard let view = gesture.view else { return }
-                
-                self.lastTranslation = view.center
-            })
-            .disposed(by: disposeBag)
-        
+
         (rollpeView as UIView).rx.rotationGesture()
             .when(.changed)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { gesture in
-                guard let view = gesture.view else { return }
-                
+            .subscribe(onNext: { [weak self] gesture in
+                guard let self = self else { return }
                 self.rotation += gesture.rotation
-                
                 self.rotation = min(max(self.rotation, self.minRotation), self.maxRotation)
-                
-                let transform = CGAffineTransform.identity
-                    .scaledBy(x: self.scale, y: self.scale)
-                    .rotated(by: self.rotation)
-                
-                view.transform = transform
-                
+                self.applyTransform()
                 gesture.rotation = 0
             })
             .disposed(by: disposeBag)
+        
+        (rollpeView as UIView).rx.panGesture()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] gesture in
+                guard let self = self, let view = gesture.view else { return }
+                
+                switch gesture.state {
+                case .began:
+                    self.lastTranslation = view.center
+                case .changed:
+                    let translation = gesture.translation(in: self.view)
+                    let center = CGPoint(x: self.lastTranslation.x + translation.x, y: self.lastTranslation.y + translation.y)
+                    view.center = center
+                case .ended, .cancelled:
+                    self.lastTranslation = view.center
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func applyTransform() {
+        guard let rollpeView = self.rollpeView else { return }
+        
+        let newTransform = CGAffineTransform.identity
+            .scaledBy(x: self.scale, y: self.scale)
+            .rotated(by: self.rotation)
+        
+        rollpeView.transform = newTransform
     }
     
     // 롤페 메모 상호작용 설정
     private func bindMemoTap(dataModel: RollpeV1DataModel) {
         guard let rollpeView = rollpeView else { return }
         
-        let isMono: Bool = monoThemes.contains(dataModel.theme)
-        
         rollpeView.onMemoSelected = { (index, model) in
-            guard self.presentedViewController == nil else { return }
+            guard self.presentedViewController == nil,
+            let keychainMyId = self.keychain.read(key: "USER_ID"),
+            let myId = Int(keychainMyId) else {
+                self.showOKAlert(title: "오류", message: "치명적인 오류가 발생하였습니다.\n앱을 다시 시작해주세요.") {
+                    UIApplication.shared.perform(#selector(NSXPCConnection.suspend))}
+                
+                return
+            }
             
+            let isMono: Bool = monoThemes.contains(dataModel.theme)
             var navVC: UINavigationController
             
-            if model != nil {
+            if let model = model {
                 // 내 마음
-                if model!.author.id == Int(self.keychain.read(key: "USER_ID") ?? "-1") {
+                if model.author.id == myId {
                     navVC = UINavigationController(rootViewController: HeartV1MineModalViewController(
                         paperId: dataModel.id,
-                        model: model!,
+                        model: model,
                         isMono: isMono))
-                } else if dataModel.host.id == Int(self.keychain.read(key: "USER_ID") ?? "-1") { // 방장
+                } else if dataModel.host.id == myId { // 방장
                     navVC = UINavigationController(rootViewController: HeartV1HostModalViewController(
                         paperId: dataModel.id,
                         pCode: self.pCode,
-                        model: model!))
+                        model: model))
                 } else { // 타인의 마음
-                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(pCode: self.pCode, model: model!))
+                    navVC = UINavigationController(rootViewController: HeartV1ViewModalViewController(pCode: self.pCode, model: model))
                 }
             } else {
                 // 빈 마음
