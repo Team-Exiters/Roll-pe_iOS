@@ -499,7 +499,7 @@ class CreateRollpeViewController: UIViewController {
     
     private let textFieldSendDate = RoundedBorderTextFieldPicker()
     
-    private let pickerUser = RoundedBorderTextField()
+    private let pickerUser = RoundedBorderTextFieldPicker()
     
     private lazy var descPreview = descLabel()
     
