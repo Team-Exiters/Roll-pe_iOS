@@ -315,7 +315,7 @@ class SearchUserModalTableViewCell: UITableViewCell {
         
         separatorView.removeFromSuperview()
         
-        label.snp.makeConstraints { make in
+        label.snp.remakeConstraints { make in
             make.top.equalToSuperview().offset(12)
             make.leading.equalTo(iconCheck.snp.trailing).offset((model.isSelected ?? false) ? 8 : 0)
             make.trailing.equalToSuperview().offset(-16)
