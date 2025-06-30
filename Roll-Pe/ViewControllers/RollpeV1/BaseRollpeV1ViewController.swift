@@ -57,6 +57,14 @@ class BaseRollpeV1ViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        output.criticalAlertMessage
+            .drive(onNext: { message in
+                if let message = message {
+                    self.showOKAlert(title: "오류", message: message)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // 롤페 입장 확인
@@ -68,7 +76,9 @@ class BaseRollpeV1ViewController: UIViewController {
         self.showConfirmAlert(title: "알림", message: "\(rollpeDataModel.title) 롤페에 입장하시겠습니까?")
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code)
+                let pCode = rollpeDataModel.code.replacingOccurrences(of: "-", with: "")
+                print(pCode)
+                self.rollpeV1ViewModel.enterRollpe(pCode: pCode)
             })
             .disposed(by: disposeBag)
     }
@@ -84,7 +94,7 @@ class BaseRollpeV1ViewController: UIViewController {
         alertController.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             if let textField = alertController.textFields?.first,
                let rollpeDataModel = self.rollpeV1ViewModel.selectedRollpeDataModel {
-                self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code, password: textField.text)
+                self.rollpeV1ViewModel.enterRollpe(pCode: rollpeDataModel.code.replacingOccurrences(of: "-", with: ""), password: textField.text)
             }
         }))
         

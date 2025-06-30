@@ -26,7 +26,11 @@ class RollpeV1DetailViewController: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
-    private var timerDisposeBag = DisposeBag()
+    
+    // 10초 간격
+    private let interval = Observable<Int>.interval(.milliseconds(10000), scheduler: MainScheduler.instance)
+    private var intervalSubscription: Disposable?
+    
     private let viewModel = RollpeV1ViewModel()
     private let keychain = Keychain.shared
     
@@ -205,6 +209,12 @@ class RollpeV1DetailViewController: UIViewController {
         
         // Bind
         bind()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        self.disposeInterval()
     }
     
     // MARK: - UI 설정
@@ -396,8 +406,8 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 참석자
     private func setupParticipantButtonsView() {
-        buttonsVStackView.addArrangedSubview(shareButton)
         buttonsVStackView.addArrangedSubview(buttonsHStackView)
+        buttonsHStackView.addArrangedSubview(shareButton)
         
         // 신고하기
         buttonsHStackView.addArrangedSubview(reportButton)
@@ -521,15 +531,13 @@ class RollpeV1DetailViewController: UIViewController {
                 
                 // rollpeView interaction 추가
                 rollpeView!.isMemoInteractionEnabled = false
-                
-                // 타이머
-                self.timerDisposeBag = DisposeBag()
-                
+                                
                 let endDateString = "\(model.receive.receivingDate) \(ROLLPE_END_TIME)"
                 let endDate = stringToDate(string: endDateString, format: "yyyy-MM-dd a h시")
                 
                 // 10초마다 종료 시간 확인
-                Observable<Int>.interval(.milliseconds(10000), scheduler: MainScheduler.instance)
+                
+                intervalSubscription = interval
                     .startWith(0)
                     .subscribe(onNext: { [weak self] _ in
                         guard let self = self else { return }
@@ -542,10 +550,8 @@ class RollpeV1DetailViewController: UIViewController {
                         // 롤페 종료
                         if remainingTime == "종료됨" {
                             timeLimitLabel.text = "이미 종료된 롤페입니다."
-                            self.timerDisposeBag = DisposeBag()
                         }
                         
-                        // 버튼 설정
                         if endDate > now {
                             (rollpeView! as UIView).rx
                                 .tapGesture()
@@ -573,11 +579,11 @@ class RollpeV1DetailViewController: UIViewController {
                             if model.receive.receiver.id == myId {
                                 setupDoneButtonsView()
                             } else {
+                                self.disposeInterval()
                                 switchViewController(vc: RollpeErrorViewController())
                             }
                         }
                     })
-                    .disposed(by: self.timerDisposeBag)
                 
                 setupShareButton(host: model.host)
             })
@@ -594,6 +600,7 @@ class RollpeV1DetailViewController: UIViewController {
         output.criticalAlertMessage
             .drive(onNext: { message in
                 if message != nil {
+                    self.disposeInterval()
                     switchViewController(vc: RollpeErrorViewController())
                 }
             })
@@ -659,6 +666,14 @@ class RollpeV1DetailViewController: UIViewController {
         formatter.zeroFormattingBehavior = .dropLeading
         
         return formatter.string(from: now, to: endDate) ?? "계산 중..."
+    }
+    
+    private func disposeInterval() {
+        DispatchQueue.main.async {
+            if let intervalSubscription = self.intervalSubscription {
+                intervalSubscription.dispose()
+            }
+        }
     }
 }
 

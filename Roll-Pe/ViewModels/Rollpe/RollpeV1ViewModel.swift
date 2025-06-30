@@ -65,8 +65,7 @@ class RollpeV1ViewModel {
                     }
                 } else {
                     do {
-                        let nodataModel = try decoder.decode(ResponseNoDataModel.self, from: data)
-                        self.criticalAlertMessage.onNext(nodataModel.message)
+                        let _ = try decoder.decode(ResponseNoDataModel.self, from: data)
                     } catch {
                         print("ResponseNoDataModel 변환 실패")
                         print(String(data: data, encoding: .utf8) ?? "")
@@ -86,14 +85,14 @@ class RollpeV1ViewModel {
     // 롤페 들어가기
     func enterRollpe(pCode: String, password: String? = nil) {
         var body: [String: Any] = [
-            "pCode": pCode
+            "pcode": pCode
         ]
         
         if let password = password {
             body["password"] = password
         }
         
-        apiService.request("/api/paper?pcode=\(pCode)", method: .post, parameters: body)
+        apiService.request("/api/paper/enter", method: .post, parameters: body)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { response, data in
                 let decoder = JSONDecoder()
