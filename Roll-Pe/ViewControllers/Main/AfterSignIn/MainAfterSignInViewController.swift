@@ -131,7 +131,13 @@ class MainAfterSignInViewController: BaseRollpeV1ViewController {
     // 사이드 메뉴
     private func addSideMenuButton() {
         // 사이드 메뉴
-        let sideMenuView = SidemenuView(highlight: "홈")
+        let sideMenuView: SidemenuView = {
+            let smv = SidemenuView(highlight: "홈")
+            smv.parentViewController = self
+            
+            return smv
+        }()
+        
         let buttonSideMenu: UIButton = ButtonSideMenu()
         
         view.addSubview(buttonSideMenu)

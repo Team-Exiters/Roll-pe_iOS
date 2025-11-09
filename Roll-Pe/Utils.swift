@@ -79,22 +79,6 @@ func dateToString(date: Date, format: String) -> String {
     return dateFormatter.string(from: date)
 }
 
-// 뷰 컨트롤러 전환
-func switchViewController(vc: UIViewController) {
-    DispatchQueue.main.async {
-        guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else {
-            return
-        }
-        
-        let navVC = UINavigationController(rootViewController: vc)
-        navVC.navigationBar.isHidden = true
-        navVC.hideKeyboardWhenTappedAround()
-        
-        sceneDelegate.window?.rootViewController = navVC
-        sceneDelegate.window?.makeKeyAndVisible()
-    }
-}
-
 // 사진 권한 확인
 func checkNotHavaPhotoPermission() -> Bool {
     var status: PHAuthorizationStatus = .notDetermined

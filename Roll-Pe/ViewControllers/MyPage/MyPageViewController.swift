@@ -28,10 +28,6 @@ class MyPageViewController: BaseRollpeV1ViewController {
     
     private let contentView = UIView()
     
-    // 사이드 메뉴
-    private let buttonSideMenu = ButtonSideMenu()
-    private let sideMenuView = SidemenuView(highlight: "마이페이지")
-    
     // 제목
     private let titleLabel : UILabel = {
         let label = UILabel()
@@ -134,6 +130,15 @@ class MyPageViewController: BaseRollpeV1ViewController {
     // 사이드 메뉴
     private func addSideMenuButton() {
         // 사이드 메뉴
+        let sideMenuView: SidemenuView = {
+            let smv = SidemenuView(highlight: "마이페이지")
+            smv.parentViewController = self
+            
+            return smv
+        }()
+        
+        let buttonSideMenu = ButtonSideMenu()
+        
         view.addSubview(buttonSideMenu)
         
         buttonSideMenu.snp.makeConstraints { make in
@@ -144,8 +149,8 @@ class MyPageViewController: BaseRollpeV1ViewController {
         buttonSideMenu.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                self.view.addSubview(self.sideMenuView)
-                self.sideMenuView.showMenu()
+                self.view.addSubview(sideMenuView)
+                sideMenuView.showMenu()
             })
             .disposed(by: disposeBag)
     }

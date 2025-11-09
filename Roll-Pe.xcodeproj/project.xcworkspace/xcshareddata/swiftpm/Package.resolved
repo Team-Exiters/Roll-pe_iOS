@@ -1,5 +1,5 @@
 {
-  "originHash" : "0be663d2f0ac7e735f3dc082699b57e3b7c5ce03754399f7d3b08ac6bc68f95c",
+  "originHash" : "aa9ec5d336f74fd233a1222114792c3d3ff76a41d459ab7acb1bb78ec9544d32",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -42,7 +42,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "53156c7ec267db846e6b64c9f4c4e31ba4cf75eb",
+        "revision" : "60da361632d0de02786f709bdc0c4df340f7613e",
         "version" : "8.0.2"
       }
     },
@@ -69,7 +69,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kakao/kakao-ios-sdk.git",
       "state" : {
-        "revision" : "ab4309c1950550add307046ad1e08024c7514603",
+        "revision" : "e14a8d1fad75645fd5677a295a8b1956ebd14d3d",
         "version" : "2.23.0"
       }
     },
@@ -78,7 +78,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kakao/kakao-ios-sdk-rx",
       "state" : {
-        "revision" : "fa5ce05d610c4b026df8d42e891a32f31a239d58",
+        "revision" : "5aef039f90063686e520e816542f1ad5987cb78f",
         "version" : "2.23.0"
       }
     },
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cbpowell/MarqueeLabel",
       "state" : {
-        "revision" : "877e810534cda9afabb8143ae319b7c3341b121b",
-        "version" : "4.5.0"
+        "revision" : "c6b4da400c00dfd5db7a4f6e4915ca531d95fc49",
+        "version" : "4.5.3"
       }
     },
     {
@@ -132,7 +132,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveX/RxSwift",
       "state" : {
-        "revision" : "c7c7d2cf50a3211fe2843f76869c698e4e417930",
+        "revision" : "5004a18539bd68905c5939aa893075f578f4f03d",
         "version" : "6.8.0"
       }
     },

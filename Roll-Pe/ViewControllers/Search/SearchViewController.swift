@@ -163,7 +163,14 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
     
     // 사이드 메뉴
     private func addSideMenuButton() {
-        let sideMenuView = SidemenuView(highlight: "검색")
+        // 사이드 메뉴
+        let sideMenuView: SidemenuView = {
+            let smv = SidemenuView(highlight: "검색")
+            smv.parentViewController = self
+            
+            return smv
+        }()
+        
         let buttonSideMenu: UIButton = ButtonSideMenu()
         
         view.addSubview(buttonSideMenu)

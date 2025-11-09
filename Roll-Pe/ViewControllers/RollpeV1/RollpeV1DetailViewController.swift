@@ -580,7 +580,7 @@ class RollpeV1DetailViewController: UIViewController {
                                 setupDoneButtonsView()
                             } else {
                                 self.disposeInterval()
-                                switchViewController(vc: RollpeErrorViewController())
+                                self.navigationController?.setViewControllers([RollpeErrorViewController()], animated: false)
                             }
                         }
                     })
@@ -601,7 +601,7 @@ class RollpeV1DetailViewController: UIViewController {
             .drive(onNext: { message in
                 if message != nil {
                     self.disposeInterval()
-                    switchViewController(vc: RollpeErrorViewController())
+                    self.navigationController?.setViewControllers([RollpeErrorViewController()], animated: false)
                 }
             })
             .disposed(by: disposeBag)

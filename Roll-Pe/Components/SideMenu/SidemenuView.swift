@@ -14,6 +14,7 @@ import SafariServices
 
 class SidemenuView: UIView {
     private let disposeBag = DisposeBag()
+    weak var parentViewController: UIViewController?
     
     // 투명도
     private let ALPHA: CGFloat = 0.5
@@ -187,7 +188,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if highlight != "홈" {
                     self.closeMenu()
-                    switchViewController(vc: MainAfterSignInViewController())
+                    self.parentViewController?.navigationController?.setViewControllers([MainAfterSignInViewController()], animated: false)
                 }
             })
             .disposed(by: disposeBag)
@@ -203,7 +204,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if highlight != "검색" {
                     self.closeMenu()
-                    switchViewController(vc: SearchViewController())
+                    self.parentViewController?.navigationController?.setViewControllers([SearchViewController()], animated: false)
                 }
             })
             .disposed(by: disposeBag)
@@ -242,7 +243,7 @@ class SidemenuView: UIView {
             .subscribe(onNext: { _ in
                 if highlight != "마이페이지" {
                     self.closeMenu()
-                    switchViewController(vc: MyPageViewController())
+                    self.parentViewController?.navigationController?.setViewControllers([MyPageViewController()], animated: false)
                 }
             })
             .disposed(by: disposeBag)

@@ -74,7 +74,7 @@ class NavigationBar: UIView {
             .when(.recognized)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { _ in
-                switchViewController(vc: MainAfterSignInViewController())
+                self.parentViewController?.navigationController?.setViewControllers([MainAfterSignInViewController()], animated: false)
             })
             .disposed(by: disposeBag)
         
@@ -98,7 +98,8 @@ class NavigationBar: UIView {
         buttonSideMenu.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
-                self?.parentViewController?.view.addSubview(sideMenuView)
+                guard let self = self else { return }
+                self.parentViewController?.view.addSubview(sideMenuView)
                 sideMenuView.showMenu()
             })
             .disposed(by: disposeBag)

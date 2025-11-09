@@ -111,7 +111,7 @@ class RollpeErrorViewController: UIViewController {
         backButton.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                switchViewController(vc: MainAfterSignInViewController())
+                self.navigationController?.setViewControllers([MainAfterSignInViewController()], animated: false)
             })
             .disposed(by: disposeBag)
     }
