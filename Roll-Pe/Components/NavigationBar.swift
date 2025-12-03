@@ -13,9 +13,8 @@ import RxGesture
 
 class NavigationBar: UIView {
     private let disposeBag: DisposeBag = DisposeBag()
-    weak var parentViewController: UIViewController?
     
-    var highlight: String = ""
+    private let sideMenuView: SidemenuView
     
     // 사이드 메뉴 표시 기본값 false
     var showSideMenu = false {
@@ -26,12 +25,20 @@ class NavigationBar: UIView {
         }
     }
     
-    override init(frame: CGRect) {
+    weak var parentViewController: UIViewController? {
+        didSet {
+            sideMenuView.parentViewController = parentViewController
+        }
+    }
+    
+    init(frame: CGRect = .zero, highlight: String) {
+        sideMenuView = SidemenuView(highlight: highlight)
         super.init(frame: frame)
         setup()
     }
     
     required init?(coder: NSCoder) {
+        sideMenuView = SidemenuView(highlight: "")
         super.init(coder: coder)
         setup()
     }
@@ -85,7 +92,8 @@ class NavigationBar: UIView {
     
     // 사이드 메뉴
     private func updateSideMenu() {
-        let sideMenuView = SidemenuView(highlight: highlight)
+        sideMenuView.parentViewController = self.parentViewController
+        
         let buttonSideMenu = ButtonSideMenu()
         
         self.addSubview(buttonSideMenu)

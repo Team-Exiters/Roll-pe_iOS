@@ -38,7 +38,7 @@ class RollpeV1DetailViewController: UIViewController {
     
     // 네비게이션 바
     private let navigationBar: NavigationBar = {
-        let navigationBar = NavigationBar()
+        let navigationBar = NavigationBar(highlight: "")
         navigationBar.showSideMenu = false
         
         return navigationBar

@@ -586,7 +586,7 @@ class CreateRollpeViewController: UIViewController {
     
     // 네비게이션 바
     private func addNavigationBar() {
-        let navigationBar = NavigationBar()
+        let navigationBar = NavigationBar(highlight: "")
         view.addSubview(navigationBar)
         
         navigationBar.snp.makeConstraints { make in
