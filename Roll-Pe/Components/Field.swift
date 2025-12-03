@@ -124,23 +124,18 @@ class RoundedBorderTextField: BaseTextField {
     }
     
     // 여백
-    override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
+    private let insets = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+    
+    override open func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: insets)
     }
     
-    override func editingRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
+    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: insets)
     }
     
-    // 최소 높이 설정
-    override var intrinsicContentSize: CGSize {
-        let baseSize = super.intrinsicContentSize
-        let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
-        let minimumHeight = font.lineHeight + 16 + 16
-        return CGSize(
-            width: baseSize.width,
-            height: ((text?.isEmpty) != nil) ? minimumHeight : max(baseSize.height, minimumHeight)
-        )
+    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: insets)
     }
 }
 
@@ -223,6 +218,7 @@ class RoundedBorderPicker: UIButton {
         let baseSize = super.intrinsicContentSize
         let font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20) ?? .systemFont(ofSize: 20)
         let minimumHeight = font.lineHeight + 16 + 16
+        
         return CGSize(
             width: baseSize.width,
             height: text.isEmpty ? minimumHeight : max(baseSize.height, minimumHeight)
