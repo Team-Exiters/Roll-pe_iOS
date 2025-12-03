@@ -40,9 +40,9 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
     
     // 검색 아이콘 버튼
     private let searchButton: UIButton = {
-        let button = UIButton()
-        let iconView = UIImageView()
-        let iconImage = UIImage.iconMagnifyingGlass
+        let button: UIButton = UIButton()
+        let iconView: UIImageView = UIImageView()
+        let iconImage: UIImage = UIImage.iconMagnifyingGlass
         iconView.image = iconImage
         iconView.contentMode = .scaleAspectFit
         iconView.tintColor = .rollpeSecondary
@@ -78,7 +78,7 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         tv.backgroundColor = .rollpePrimary
         tv.separatorStyle = .none
         tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 128
+        tv.estimatedRowHeight = 88
         tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         return tv
@@ -174,7 +174,7 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         amountLabel.snp.makeConstraints { make in
             make.top.equalTo(searchBar.snp.bottom).offset(76)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(20)
+            make.bottom.equalToSuperview()
         }
         
         // Header 높이 계산
@@ -227,7 +227,6 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
             rollpeTableView.isScrollEnabled = true
             rollpeTableView.backgroundView = nil
             amountLabel.isHidden = false
-            amountLabel.text = "총 \(rollpeModels.count)개의 검색 결과"
             setupTableFooter(hasMore: hasMore)
         }
         
@@ -275,6 +274,14 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
                 if let message = message {
                     self?.showOKAlert(title: "오류", message: message)
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        output.rollpeData
+            .drive(onNext: { [weak self] data in
+                guard let self = self, let data = data else { return }
+                
+                amountLabel.text = "총 \(data.data.count)개의 검색 결과"
             })
             .disposed(by: disposeBag)
         
