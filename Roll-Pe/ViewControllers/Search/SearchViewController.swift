@@ -178,13 +178,13 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         }
         
         // Header 높이 계산
-        let headerHeight: CGFloat = 40 + titleLabel.intrinsicContentSize.height + 20 + searchBar.intrinsicContentSize.height + 76 + amountLabel.intrinsicContentSize.height + 20
+        let headerHeight: CGFloat = 40 + titleLabel.intrinsicContentSize.height + 20 + searchBar.intrinsicContentSize.height + 76 + amountLabel.intrinsicContentSize.height
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
         
         if rollpeTableView.backgroundView != nil {
             noDataView.snp.makeConstraints { make in
                 make.centerX.equalToSuperview()
-                make.centerY.equalToSuperview().offset((headerHeight - 76 - amountLabel.intrinsicContentSize.height - 20) / 2)
+                make.centerY.equalToSuperview().offset((headerHeight - 76 - amountLabel.intrinsicContentSize.height) / 2)
             }
         }
         
@@ -291,7 +291,7 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
                 cellType: SearchRollpeTableViewCell.self
             )) { index, data, cell in
                 let (model, length) = data
-                cell.configure(model: model, isFirst: index == 0, isLast: index == length - 1)
+                cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
         
@@ -310,8 +310,8 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
             .subscribe(onNext: { [weak self] (model, length) in
                 guard let self = self else { return }
                 
-                self.rollpeV1ViewModel.selectedRollpeDataModel = model
-                self.rollpeV1ViewModel.getRollpeData(pCode: model.code)
+                rollpeV1ViewModel.selectedRollpeDataModel = model
+                rollpeV1ViewModel.getRollpeData(pCode: model.code)
             })
             .disposed(by: disposeBag)
     }
@@ -347,11 +347,11 @@ class SearchRollpeTableViewCell: UITableViewCell {
         contentView.addSubview(separatorView)
     }
     
-    func configure(model: RollpeListDataModel, isFirst: Bool, isLast: Bool) {
+    func configure(model: RollpeListDataModel, isLast: Bool) {
         rollpeListItem.configure(model: model)
         
         rollpeListItem.snp.remakeConstraints { make in
-            make.top.equalToSuperview().offset(isFirst ? 0 : 20)
+            make.top.equalToSuperview().offset(20)
             make.horizontalEdges.equalToSuperview()
         }
         
