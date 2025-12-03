@@ -14,15 +14,24 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
     private let viewModel = GetRollpeViewModel()
     
     // MARK: - 요소
-    
-    private let scrollView = UIScrollView()
-    
-    private let contentView = UIView()
+    // 테이블 뷰
+    private let rollpeTableView: UITableView = {
+        let tv = UITableView()
+        
+        tv.backgroundColor = .clear
+        tv.separatorStyle = .none
+        tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = 128
+        
+        // 내용 여백
+        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
+        return tv
+    }()
     
     // 네비게이션 바
     private let navigationBar: NavigationBar = {
-        let navigationBar = NavigationBar()
-        navigationBar.highlight = "마이페이지"
+        let navigationBar = NavigationBar(highlight: "마이페이지")
         navigationBar.showSideMenu = true
         
         return navigationBar
@@ -56,22 +65,6 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         return label
     }()
     
-    // 테이블 뷰
-    private let rollpeTableView: UITableView = {
-        let tv = AutoHeightTableView()
-        
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
-        tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 128
-        tv.isScrollEnabled = false
-        
-        // 내용 여백
-        tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        
-        return tv
-    }()
-    
     // MARK: - 생명주기
     
     override func viewDidLoad() {
@@ -82,12 +75,8 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         rollpeTableView.register(RollpeListTableViewCell.self, forCellReuseIdentifier: "RollpeListCell")
         
         // UI 설정
-        setupScrollView()
-        setupContentView()
-        setupTitleLabel()
-        setupAmountLabel()
-        
         setupNavigationBar()
+        setupTableView()
         
         // Bind
         bind()
@@ -96,31 +85,10 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        viewModel.getRollpes(type: "inviting")
+        viewModel.getInvitedRollpes()
     }
     
     // MARK: - UI 설정
-    
-    private func setupScrollView() {
-        view.addSubview(scrollView)
-        
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
-        }
-    }
-    
-    private func setupContentView() {
-        scrollView.addSubview(contentView)
-        
-        contentView.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview()
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.width.equalToSuperview().offset(-40)
-            make.height.greaterThanOrEqualToSuperview()
-        }
-    }
     
     private func setupNavigationBar() {
         view.addSubview(navigationBar)
@@ -133,22 +101,41 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         }
     }
     
-    private func setupTitleLabel() {
-        contentView.addSubview(titleLabel)
+    private func setupTableView() {
+        view.addSubview(rollpeTableView)
+        
+        rollpeTableView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.top.equalTo(navigationBar.snp.bottom)
+            make.bottom.equalToSuperview()
+        }
+        
+        let headerView = UIView()
+        
+        // 제목
+        [titleLabel, amountLabel].forEach {
+            headerView.addSubview($0)
+        }
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(76)
+            make.top.equalToSuperview().offset(8)
             make.centerX.equalToSuperview()
         }
-    }
-    
-    private func setupAmountLabel() {
-        contentView.addSubview(amountLabel)
         
+        // 개수
         amountLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(32)
-            make.leading.equalToSuperview()
+            make.leading.bottom.equalToSuperview()
         }
+        
+        // 헤더 뷰
+        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height
+        headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
+        rollpeTableView.tableHeaderView = headerView
+        
+        // 푸터 뷰
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: 40))
+        rollpeTableView.tableFooterView = footerView
     }
     
     // MARK: - Bind
@@ -178,42 +165,50 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
             }
             .disposed(by: disposeBag)
         
-        output.rollpeModels
-            .drive(onNext: { [weak self] rollpeModels in
+        output.rollpeData
+            .drive(onNext: { [weak self] data in
                 guard let self = self,
-                      let rollpeModels = rollpeModels
+                      let data = data
                 else { return }
                 
-                self.amountLabel.text = "총 \(rollpeModels.count)개"
-                
-                self.contentView.addSubview(self.rollpeTableView)
-                
-                DispatchQueue.main.async {
-                    self.rollpeTableView.snp.remakeConstraints { make in
-                        make.top.equalTo(self.amountLabel.snp.bottom).offset(-4)
-                        make.horizontalEdges.equalToSuperview()
-                        make.height.equalTo(self.rollpeTableView.contentSize.height)
-                        
-                        if self.rollpeTableView.contentSize.height > UIScreen.main.bounds.height - (safeareaTop + safeareaBottom) {
-                            make.bottom.equalToSuperview().inset(40)
-                        }
-                    }
-                }
+                self.amountLabel.text = "총 \(data.data.count)개"
             })
             .disposed(by: disposeBag)
         
-        rollpeTableView.rx.itemSelected
-            .observe(on: MainScheduler.instance)
-            .withLatestFrom(output.rollpeModels) { indexPath, rollpeModels in
-                return (indexPath, rollpeModels)
-            }
-            .subscribe(onNext: { indexPath, rollpeModels in
-                guard let models = rollpeModels,
-                      indexPath.row < models.count else { return }
+        // 셀 선택
+        rollpeTableView.rx.modelSelected((RollpeListDataModel, Int).self)
+            .subscribe(onNext: { [weak self] (model, length) in
+                guard let self = self else { return }
                 
-                let selectedModel = models[indexPath.row]
-                self.rollpeV1ViewModel.selectedRollpeDataModel = selectedModel
-                self.rollpeV1ViewModel.getRollpeData(pCode: selectedModel.code)
+                rollpeV1ViewModel.selectedRollpeDataModel = model
+                rollpeV1ViewModel.getRollpeData(pCode: model.code)
+            })
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        Observable.combineLatest(rollpeTableView.rx.contentOffset, output.rollpeData.asObservable())
+            .map { [weak self] offset, data -> (Bool, RollpeResponsePagenationListModel?) in
+                guard let self = self else { return (false, nil) }
+                
+                let currentOffset = offset.y
+                let maximumOffset = rollpeTableView.contentSize.height - rollpeTableView.frame.size.height
+                let frameHeight = rollpeTableView.frame.size.height
+                
+                guard rollpeTableView.contentSize.height > frameHeight else {
+                    return (false, nil)
+                }
+                
+                return (currentOffset >= maximumOffset - (frameHeight * 0.5), data)
+            }
+            .distinctUntilChanged { prev, current in
+                prev.0 == current.0
+            }
+            .filter { $0 && $1 != nil }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _, data in
+                guard let self = self, let next = data?.data.next else { return }
+                
+                viewModel.getMoreRollpes(next: next)
             })
             .disposed(by: disposeBag)
     }

@@ -271,33 +271,22 @@ class RollpeListTableViewCell: UITableViewCell {
         self.backgroundColor = .clear
         
         contentView.addSubview(rollpeListItem)
+        contentView.addSubview(separatorView)
     }
     
     func configure(model: RollpeListDataModel, isLast: Bool) {
         rollpeListItem.configure(model: model)
-        separatorView.removeFromSuperview()
         
-        if isLast {
-            rollpeListItem.snp.remakeConstraints { make in
-                make.top.equalToSuperview().offset(24)
-                make.horizontalEdges.equalToSuperview()
-                make.bottom.equalToSuperview().inset(24)
-            }
-            
-        } else {
-            rollpeListItem.snp.remakeConstraints { make in
-                make.top.equalToSuperview().offset(24)
-                make.horizontalEdges.equalToSuperview()
-            }
-            
-            contentView.addSubview(separatorView)
-            
-            separatorView.snp.remakeConstraints { make in
-                make.top.equalTo(rollpeListItem.snp.bottom).offset(24)
-                make.horizontalEdges.equalToSuperview()
-                make.bottom.equalToSuperview().priority(.low)
-                make.height.equalTo(2)
-            }
+        rollpeListItem.snp.remakeConstraints { make in
+            make.top.equalToSuperview().offset(20)
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        separatorView.snp.remakeConstraints { make in
+            make.top.equalTo(rollpeListItem.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview().priority(.low)
+            make.height.equalTo(isLast ? 0 : 2)
         }
     }
 }
