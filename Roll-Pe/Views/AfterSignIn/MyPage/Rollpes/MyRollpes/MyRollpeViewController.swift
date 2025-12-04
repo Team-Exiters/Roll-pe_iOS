@@ -61,6 +61,7 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.text = "총 0개"
         
         return label
     }()
@@ -129,7 +130,7 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         }
         
         // 헤더 뷰
-        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height + 20
+        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
         rollpeTableView.tableHeaderView = headerView
         
@@ -153,6 +154,16 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
             })
             .disposed(by: disposeBag)
         
+        output.rollpeData
+            .drive(onNext: { [weak self] data in
+                guard let self = self,
+                      let data = data
+                else { return }
+                
+                self.amountLabel.text = "총 \(data.data.count)개"
+            })
+            .disposed(by: disposeBag)
+        
         output.rollpeModels
             .map { rollpes in
                 return rollpes ?? []
@@ -163,16 +174,6 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
             }
             .disposed(by: disposeBag)
         
-        output.rollpeModels
-            .drive(onNext: { [weak self] models in
-                guard let self = self,
-                      let models = models
-                else { return }
-                
-                self.amountLabel.text = "총 \(models.count)개"
-            })
-            .disposed(by: disposeBag)
-        
         // 셀 선택
         rollpeTableView.rx.modelSelected(RollpeListDataModel.self)
             .subscribe(onNext: { [weak self] model in
@@ -180,6 +181,29 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
                 
                 rollpeV1ViewModel.selectedRollpeDataModel = model
                 rollpeV1ViewModel.getRollpeData(pCode: model.code)
+            })
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        Observable.combineLatest(rollpeTableView.rx.willDisplayCell, output.rollpeData.asObservable())
+            .map { [weak self] cellInfo, data -> (Bool, RollpeResponsePagenationListModel?) in
+                guard let self = self else { return (false, nil) }
+                
+                let (_, indexPath) = cellInfo
+                let totalCount = rollpeTableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
+                
+                return (totalCount > triggerCount && indexPath.row >= totalCount - triggerCount, data)
+            }
+            .distinctUntilChanged { prev, current in
+                prev.0 == current.0
+            }
+            .filter { $0 && $1 != nil }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _, data in
+                guard let self = self, let next = data?.data.next else { return }
+                
+                viewModel.getMoreRollpes(next: next)
             })
             .disposed(by: disposeBag)
     }

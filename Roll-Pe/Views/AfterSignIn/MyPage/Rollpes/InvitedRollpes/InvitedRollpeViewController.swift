@@ -61,6 +61,7 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         label.numberOfLines = 0
         label.textColor = .rollpeSecondary
         label.font = UIFont(name: "HakgyoansimDunggeunmisoOTF-R", size: 20)
+        label.text = "총 0개"
         
         return label
     }()
@@ -129,7 +130,7 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         }
         
         // 헤더 뷰
-        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height + 20
+        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
         rollpeTableView.tableHeaderView = headerView
         
@@ -153,16 +154,6 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
             })
             .disposed(by: disposeBag)
         
-        output.rollpeModels
-            .map { rollpes in
-                return rollpes ?? []
-            }
-            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, model, cell in
-                let length = self.rollpeTableView.numberOfRows(inSection: 0)
-                cell.configure(model: model, isLast: index == length - 1)
-            }
-            .disposed(by: disposeBag)
-        
         output.rollpeData
             .drive(onNext: { [weak self] data in
                 guard let self = self,
@@ -171,6 +162,16 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
                 
                 self.amountLabel.text = "총 \(data.data.count)개"
             })
+            .disposed(by: disposeBag)
+        
+        output.rollpeModels
+            .map { rollpes in
+                return rollpes ?? []
+            }
+            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, model, cell in
+                let length = self.rollpeTableView.numberOfRows(inSection: 0)
+                cell.configure(model: model, isLast: index == length - 1)
+            }
             .disposed(by: disposeBag)
         
         // 셀 선택

@@ -33,10 +33,11 @@ class GetRollpeViewModel {
     
     // 내 롤페 불러오기
     func getMyRollpes() {
-        apiService.requestDecodable("/api/paper/mypage?type=host", method: .get, decodeType: RollpeResponseListModel.self)
+        apiService.requestDecodable("/api/paper/mypage?type=host", method: .get, decodeType: RollpeResponsePagenationListModel.self)
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { model in
-                self.rollpeModels.accept(model.data)
+            .subscribe(onNext: { data in
+                self.rollpeData.accept(data)
+                self.rollpeModels.accept(data.data.results)
             }, onError: { error in
                 self.rollpeModels.accept([])
                 print("롤페 불러오는 중 오류 발생: \(error)")
