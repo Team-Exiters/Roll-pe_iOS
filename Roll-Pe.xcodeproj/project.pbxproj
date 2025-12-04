@@ -57,7 +57,6 @@
 
 /* Begin PBXFileReference section */
 		E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
-		E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +67,7 @@
 		E264F47C2CFA437F002ED763 /* Exceptions for "Roll-Pe" folder in "Roll-Pe" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Common/Secrets.xcconfig,
 				Info.plist,
 			);
 			target = E264F4532CFA437D002ED763 /* Roll-Pe */;
@@ -150,7 +150,6 @@
 		E264F44B2CFA437D002ED763 = {
 			isa = PBXGroup;
 			children = (
-				E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */,
 				E2E7CC992DA64731000F2EFA /* Fonts */,
 				E24D4C892D3C260400C9ABA5 /* .gitignore */,
 				E264F4562CFA437D002ED763 /* Roll-Pe */,
@@ -158,7 +157,6 @@
 				E264F4772CFA437F002ED763 /* Roll-PeUITests */,
 				E24D4C612D3BD03C00C9ABA5 /* Frameworks */,
 				E264F4552CFA437D002ED763 /* Products */,
-				E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -397,7 +395,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2025.11.1;
+				MARKETING_VERSION = 2025.12.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.hugesilver.Roll-Pe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -432,7 +430,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2025.11.1;
+				MARKETING_VERSION = 2025.12.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "dev.hugesilver.Roll-Pe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -447,7 +445,7 @@
 		};
 		E264F4802CFA437F002ED763 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */;
+			baseConfigurationReference = E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -514,7 +512,7 @@
 		};
 		E264F4812CFA437F002ED763 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E20F1D4F2D65ED020093FA1C /* Secrets.xcconfig */;
+			baseConfigurationReference = E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
