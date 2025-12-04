@@ -24,17 +24,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         if let keepSignIn = UserDefaults.standard.object(forKey: "KEEP_SIGN_IN") as? Bool {
             if keepSignIn, keychain.read(key: "REFRESH_TOKEN") != nil {
-                let vc = MainAfterSignInViewController()
+                let vc = HomeViewController()
                 navVC = UINavigationController(rootViewController: vc)
             } else {
                 let userViewModel = UserViewModel()
                 userViewModel.logout()
                 
-                let vc = MainBeforeSignInViewController()
+                let vc = WelcomeViewController()
                 navVC = UINavigationController(rootViewController: vc)
             }
         } else {
-            let vc = MainBeforeSignInViewController()
+            let vc = WelcomeViewController()
             navVC = UINavigationController(rootViewController: vc)
         }
         
@@ -88,7 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // 로그인 전 메인 뷰로 이동
     @objc private func moveToMainBeforeSignInView() {
-        let vc = MainBeforeSignInViewController()
+        let vc = WelcomeViewController()
         let navVC = UINavigationController(rootViewController: vc)
         navVC.navigationBar.isHidden = true
         navVC.hideKeyboardWhenTappedAround()
