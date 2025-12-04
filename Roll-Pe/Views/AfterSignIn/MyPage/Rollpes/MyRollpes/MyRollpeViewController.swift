@@ -129,7 +129,7 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         }
         
         // 헤더 뷰
-        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height
+        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height + 20
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
         rollpeTableView.tableHeaderView = headerView
         
@@ -155,29 +155,27 @@ class MyRollpeViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         
         output.rollpeModels
             .map { rollpes in
-                return (rollpes ?? []).enumerated().map {
-                    ($0.element, rollpes?.count ?? 0)
-                }
+                return rollpes ?? []
             }
-            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, data, cell in
-                let (model, length) = data
+            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, model, cell in
+                let length = self.rollpeTableView.numberOfRows(inSection: 0)
                 cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
         
         output.rollpeModels
-            .drive(onNext: { [weak self] rollpeModels in
+            .drive(onNext: { [weak self] models in
                 guard let self = self,
-                      let rollpeModels = rollpeModels
+                      let models = models
                 else { return }
                 
-                self.amountLabel.text = "총 \(rollpeModels.count)개"
+                self.amountLabel.text = "총 \(models.count)개"
             })
             .disposed(by: disposeBag)
         
         // 셀 선택
-        rollpeTableView.rx.modelSelected((RollpeListDataModel, Int).self)
-            .subscribe(onNext: { [weak self] (model, length) in
+        rollpeTableView.rx.modelSelected(RollpeListDataModel.self)
+            .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
                 rollpeV1ViewModel.selectedRollpeDataModel = model

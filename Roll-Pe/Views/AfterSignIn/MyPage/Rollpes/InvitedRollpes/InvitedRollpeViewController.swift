@@ -129,7 +129,7 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         }
         
         // 헤더 뷰
-        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height
+        let headerHeight: CGFloat = 8 + titleLabel.intrinsicContentSize.height + 32 + amountLabel.intrinsicContentSize.height + 20
         headerView.frame = CGRect(x: 0, y: 0, width: view.bounds.width - 40, height: headerHeight)
         rollpeTableView.tableHeaderView = headerView
         
@@ -155,12 +155,10 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
         
         output.rollpeModels
             .map { rollpes in
-                return (rollpes ?? []).enumerated().map {
-                    ($0.element, rollpes?.count ?? 0)
-                }
+                return rollpes ?? []
             }
-            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, data, cell in
-                let (model, length) = data
+            .drive(rollpeTableView.rx.items(cellIdentifier: "RollpeListCell", cellType: RollpeListTableViewCell.self)) { index, model, cell in
+                let length = self.rollpeTableView.numberOfRows(inSection: 0)
                 cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
@@ -176,8 +174,8 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
             .disposed(by: disposeBag)
         
         // 셀 선택
-        rollpeTableView.rx.modelSelected((RollpeListDataModel, Int).self)
-            .subscribe(onNext: { [weak self] (model, length) in
+        rollpeTableView.rx.modelSelected(RollpeListDataModel.self)
+            .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
                 rollpeV1ViewModel.selectedRollpeDataModel = model
@@ -186,19 +184,15 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
             .disposed(by: disposeBag)
         
         // 페이지네이션
-        Observable.combineLatest(rollpeTableView.rx.contentOffset, output.rollpeData.asObservable())
-            .map { [weak self] offset, data -> (Bool, RollpeResponsePagenationListModel?) in
+        Observable.combineLatest(rollpeTableView.rx.willDisplayCell, output.rollpeData.asObservable())
+            .map { [weak self] cellInfo, data -> (Bool, RollpeResponsePagenationListModel?) in
                 guard let self = self else { return (false, nil) }
                 
-                let currentOffset = offset.y
-                let maximumOffset = rollpeTableView.contentSize.height - rollpeTableView.frame.size.height
-                let frameHeight = rollpeTableView.frame.size.height
+                let (_, indexPath) = cellInfo
+                let totalCount = rollpeTableView.numberOfRows(inSection: 0)
+                let triggerNumber = 3
                 
-                guard rollpeTableView.contentSize.height > frameHeight else {
-                    return (false, nil)
-                }
-                
-                return (currentOffset >= maximumOffset - (frameHeight * 0.5), data)
+                return (totalCount > triggerNumber && indexPath.row >= totalCount - triggerNumber, data)
             }
             .distinctUntilChanged { prev, current in
                 prev.0 == current.0

@@ -288,16 +288,13 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
         // TableView 데이터 바인딩
         output.rollpeModels
             .map { rollpes in
-                let rollpes = rollpes ?? []
-                return (rollpes).enumerated().map {
-                    ($0.element, rollpes.count)
-                }
+                return rollpes ?? []
             }
             .drive(rollpeTableView.rx.items(
                 cellIdentifier: "SearchRollpeCell",
                 cellType: SearchRollpeTableViewCell.self
-            )) { index, data, cell in
-                let (model, length) = data
+            )) { index, model, cell in
+                let length = self.rollpeTableView.numberOfRows(inSection: 0)
                 cell.configure(model: model, isLast: index == length - 1)
             }
             .disposed(by: disposeBag)
@@ -313,8 +310,8 @@ class SearchViewController: BaseRollpeV1ViewController, UITableViewDelegate {
             .disposed(by: disposeBag)
         
         // 셀 선택
-        rollpeTableView.rx.modelSelected((RollpeListDataModel, Int).self)
-            .subscribe(onNext: { [weak self] (model, length) in
+        rollpeTableView.rx.modelSelected(RollpeListDataModel.self)
+            .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
                 rollpeV1ViewModel.selectedRollpeDataModel = model
