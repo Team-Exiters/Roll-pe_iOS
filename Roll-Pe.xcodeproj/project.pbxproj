@@ -140,6 +140,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E20EDB272EE1B03600CA603B /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		E24D4C612D3BD03C00C9ABA5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -157,6 +165,7 @@
 				E264F4772CFA437F002ED763 /* Roll-PeUITests */,
 				E24D4C612D3BD03C00C9ABA5 /* Frameworks */,
 				E264F4552CFA437D002ED763 /* Products */,
+				E20EDB272EE1B03600CA603B /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -445,7 +454,8 @@
 		};
 		E264F4802CFA437F002ED763 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */;
+			baseConfigurationReferenceAnchor = E264F4562CFA437D002ED763 /* Roll-Pe */;
+			baseConfigurationReferenceRelativePath = Common/Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -512,7 +522,8 @@
 		};
 		E264F4812CFA437F002ED763 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */;
+			baseConfigurationReferenceAnchor = E264F4562CFA437D002ED763 /* Roll-Pe */;
+			baseConfigurationReferenceRelativePath = Common/Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
