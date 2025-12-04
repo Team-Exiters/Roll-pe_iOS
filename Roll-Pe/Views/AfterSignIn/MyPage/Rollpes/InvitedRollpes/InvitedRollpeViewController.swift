@@ -190,9 +190,9 @@ class InvitedRollpeViewController: BaseRollpeV1ViewController, UITableViewDelega
                 
                 let (_, indexPath) = cellInfo
                 let totalCount = rollpeTableView.numberOfRows(inSection: 0)
-                let triggerNumber = 3
+                let triggerCount = 3
                 
-                return (totalCount > triggerNumber && indexPath.row >= totalCount - triggerNumber, data)
+                return (totalCount > triggerCount && indexPath.row >= totalCount - triggerCount, data)
             }
             .distinctUntilChanged { prev, current in
                 prev.0 == current.0
