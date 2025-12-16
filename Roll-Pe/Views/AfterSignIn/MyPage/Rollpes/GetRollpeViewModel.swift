@@ -47,7 +47,7 @@ class GetRollpeViewModel {
     
     // 초대받은 롤페 불러오기
     func getInvitedRollpes() {
-        apiService.requestDecodable("/api/paper/user?type=inviting", method: .get, decodeType: RollpeResponsePagenationListModel.self)
+        apiService.requestDecodable("/api/paper/mypage?type=inviting", method: .get, decodeType: RollpeResponsePagenationListModel.self)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { data in
                 self.rollpeData.accept(data)
