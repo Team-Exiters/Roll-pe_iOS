@@ -10,6 +10,7 @@
 		8B93961F2D57A34A00BF847F /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = 8B93961E2D57A34A00BF847F /* MarqueeLabel */; };
 		E20492DE2D5F9C220035E61A /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DD2D5F9C220035E61A /* GoogleSignIn */; };
 		E20492E02D5F9C220035E61A /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E20492DF2D5F9C220035E61A /* GoogleSignInSwift */; };
+		E22D971F2F092A7300410B49 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E22D971E2F092A7300410B49 /* README.md */; };
 		E24421A92D495DD700144CB2 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E24421A82D495DD700144CB2 /* RxCocoa */; };
 		E24D4C7E2D3BD52300C9ABA5 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C7D2D3BD52300C9ABA5 /* RxSwift */; };
 		E24D4C862D3BD54400C9ABA5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E24D4C852D3BD54400C9ABA5 /* SnapKit */; };
@@ -57,6 +58,7 @@
 
 /* Begin PBXFileReference section */
 		E20F1D3E2D65B57D0093FA1C /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
+		E22D971E2F092A7300410B49 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E24D4C892D3C260400C9ABA5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		E264F4542CFA437D002ED763 /* Roll-Pe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Roll-Pe.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E264F46A2CFA437F002ED763 /* Roll-PeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Roll-PeTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -166,6 +168,7 @@
 				E24D4C612D3BD03C00C9ABA5 /* Frameworks */,
 				E264F4552CFA437D002ED763 /* Products */,
 				E20EDB272EE1B03600CA603B /* Recovered References */,
+				E22D971E2F092A7300410B49 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -324,6 +327,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E22D971F2F092A7300410B49 /* README.md in Resources */,
 				E24D4C8A2D3C260800C9ABA5 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
