@@ -121,3 +121,5 @@
 - [RxGesture](https://github.com/RxSwiftCommunity/RxGesture)
 - [RxSwift](https://github.com/ReactiveX/RxSwift)
 - [SnapKit](https://github.com/SnapKit/SnapKit)
+- [Alamofire](https://github.com/RxSwiftCommunity/RxAlamofire)
+- [RxAlamofire](https://github.com/Alamofire/Alamofire)
